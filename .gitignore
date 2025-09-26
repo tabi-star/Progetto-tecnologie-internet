@@ -10,6 +10,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
 
 # Sistema operativo
 .DS_Store
@@ -23,4 +24,5 @@ Thumbs.db
 # Cache vari
 .cache/
 .vite/
-
+.idea/
+.vscode/
