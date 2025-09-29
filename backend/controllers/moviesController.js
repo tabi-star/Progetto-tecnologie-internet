@@ -1,12 +1,29 @@
-// Controller: gestisce la logica
+// controllers/moviesController.js
+import { getAllMovies, insertMovie } from "../models/movieModel.js";
 
-// GET /api/movies
 export const getMovies = (req, res) => {
-  res.json([{ id: 1, title: "Inception" }, { id: 2, title: "Interstellar" }]);
+  getAllMovies((err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
 };
 
-// POST /api/movies
 export const addMovie = (req, res) => {
-  const newMovie = req.body;
-  res.status(201).json({ message: "Film aggiunto con successo", movie: newMovie });
+  const { title, description, duration_minutes, release_date, language, foto_locandina } = req.body;
+
+  const newMovie = {
+    title,
+    description,
+    duration_minutes,
+    release_date,
+    language,
+    foto_locandina,
+    createdAt: new Date()
+  };
+
+  insertMovie(newMovie, (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    newMovie.id = result.insertId;
+    res.status(201).json({ message: "Film aggiunto con successo", movie: newMovie });
+  });
 };

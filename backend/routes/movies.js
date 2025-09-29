@@ -1,3 +1,4 @@
+// routes/movies.js
 import { Router } from "express";
 import { getMovies, addMovie } from "../controllers/moviesController.js";
 
