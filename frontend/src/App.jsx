@@ -1,35 +1,47 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import MoviesPage from "./pages/MoviesPage";
-import UsersPage from "./pages/UsersPage";
-import HallsPage from "./pages/HallsPage";
-import ScreeningsPage from "./pages/ScreeningsPage";
-import TicketsPage from "./pages/TicketsPage";
+import { Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import Layout from './components/Layout'
+import Home from './pages/Home'
+import Movies from './pages/Movies'
+import MovieDetail from './pages/MovieDetail'
+import ScreeningSelection from './pages/ScreeningSelection'
+import SeatSelection from './pages/SeatSelection'
+import Payment from './pages/Payment'
+import Login from './pages/Login'
+import UserProfile from './pages/UserProfile'
+import AdminDashboard from './pages/AdminDashboard'
+import ManageMovies from './pages/admin/ManageMovies'
+import ManageScreenings from './pages/admin/ManageScreenings'
+import ManageHalls from './pages/admin/ManageHalls'
+import AdminDiscounts from './pages/admin/AdminDiscounts'
 
-export default function App() {
+function App() {
   return (
-    <Router>
-      <div style={{ display: "flex" }}>
-        <nav style={{ padding: "1rem", borderRight: "1px solid #ccc" }}>
-          <h2>🎥 Cinema App</h2>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            <li><Link to="/">Movies</Link></li>
-            <li><Link to="/users">Users</Link></li>
-            <li><Link to="/halls">Halls</Link></li>
-            <li><Link to="/screenings">Screenings</Link></li>
-            <li><Link to="/tickets">Tickets</Link></li>
-          </ul>
-        </nav>
-
-        <main style={{ padding: "1rem", flexGrow: 1 }}>
-          <Routes>
-            <Route path="/" element={<MoviesPage />} />
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/halls" element={<HallsPage />} />
-            <Route path="/screenings" element={<ScreeningsPage />} />
-            <Route path="/tickets" element={<TicketsPage />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
-  );
+    <AuthProvider>
+      <Layout>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/movies" element={<Movies />} />
+          <Route path="/movie/:id" element={<MovieDetail />} />
+          <Route path="/screening/:movieId" element={<ScreeningSelection />} />
+          <Route path="/login" element={<Login />} />
+          
+          {/* Protected routes */}
+          <Route path="/seats/:screeningId" element={<SeatSelection />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/profile" element={<UserProfile />} />
+          
+          {/* Admin routes */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/movies" element={<ManageMovies />} />
+          <Route path="/admin/screenings" element={<ManageScreenings />} />
+          <Route path="/admin/halls" element={<ManageHalls />} />
+          <Route path="/admin/discounts" element={<AdminDiscounts />} />
+        </Routes>
+      </Layout>
+    </AuthProvider>
+  )
 }
+
+export default App

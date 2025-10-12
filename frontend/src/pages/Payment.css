@@ -1,0 +1,369 @@
+.payment-page {
+  padding: 2rem 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+}
+
+.payment-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.payment-header h1 {
+  color: #e74c3c;
+  font-size: 2.5rem;
+}
+
+.payment-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 3rem;
+  align-items: start;
+}
+
+.order-review {
+  background: #1a1a1a;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #333;
+}
+
+.order-review h2 {
+  margin-bottom: 2rem;
+  color: #e74c3c;
+  text-align: center;
+}
+
+.movie-info {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #333;
+}
+
+.movie-poster {
+  width: 120px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.movie-details h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.screening-info p {
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+.seats-review {
+  margin-bottom: 2rem;
+}
+
+.seats-review h4 {
+  margin-bottom: 1rem;
+  color: #ccc;
+}
+
+.seats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.seat-badge {
+  background: #2c3e50;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.price-breakdown {
+  background: #2c3e50;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.price-breakdown h4 {
+  margin-bottom: 1rem;
+  color: #ccc;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.price-row.discount {
+  color: #27ae60;
+  border-bottom: 1px solid #34495e;
+}
+
+.price-row.total {
+  border-top: 1px solid #34495e;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+  color: #f1c40f;
+}
+
+.payment-method {
+  background: #1a1a1a;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #333;
+  position: sticky;
+  top: 2rem;
+}
+
+.payment-method h2 {
+  margin-bottom: 2rem;
+  color: #e74c3c;
+  text-align: center;
+}
+
+.payment-card {
+  background: #2c3e50;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #34495e;
+}
+
+.payment-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  color: #f1c40f;
+  font-weight: 600;
+}
+
+.shield-icon {
+  margin-left: auto;
+  color: #27ae60;
+}
+
+.simulated-payment {
+  background: #34495e;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.simulated-payment p {
+  margin-bottom: 0.5rem;
+}
+
+.payment-note {
+  font-size: 0.9rem;
+  color: #ccc;
+  font-style: italic;
+}
+
+.user-info {
+  background: #34495e;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.user-info p {
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+.btn-pay {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-pay:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.security-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.security-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #27ae60;
+}
+
+.payment-success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+}
+
+.success-content {
+  text-align: center;
+  background: #1a1a1a;
+  padding: 3rem;
+  border-radius: 12px;
+  border: 1px solid #333;
+  max-width: 500px;
+  width: 100%;
+}
+
+.success-icon {
+  color: #27ae60;
+  margin: 0 auto 2rem;
+}
+
+.success-content h1 {
+  color: #27ae60;
+  margin-bottom: 1rem;
+}
+
+.success-details {
+  background: #2c3e50;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.success-details p {
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+.redirect-message {
+  color: #666;
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .payment-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .payment-method {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .movie-info {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .movie-poster {
+    align-self: center;
+  }
+  
+  .payment-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+}
+
+.seats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.seat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #2c3e50;
+  border-radius: 6px;
+  border: 1px solid #34495e;
+}
+
+.seat-number {
+  font-weight: 600;
+  color: #fff;
+}
+
+.seat-type {
+  background: #34495e;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+.seat-price {
+  font-weight: 600;
+  color: #f1c40f;
+}
+
+.price-breakdown {
+  background: #2c3e50;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.price-breakdown h4 {
+  margin-bottom: 1rem;
+  color: #ccc;
+  border-bottom: 1px solid #34495e;
+  padding-bottom: 0.5rem;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.price-row.item {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.price-row.subtotal {
+  border-top: 1px solid #34495e;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.price-row.discount {
+  color: #27ae60;
+  border-bottom: 1px solid #34495e;
+  padding-bottom: 1rem;
+}
+
+.price-row.total {
+  border-top: 2px solid #34495e;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+  color: #f1c40f;
+}
+
+/* Migliora il success message */
+.success-details p {
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
