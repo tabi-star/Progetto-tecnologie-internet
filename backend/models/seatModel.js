@@ -76,15 +76,21 @@ export const createSeatsForHall = async (hall_id, rows, columns) => {
 
 export const getAvailableSeats = async (screening_id) => {
   const [rows] = await promisePool.execute(
-    `SELECT s.* 
+    `SELECT 
+       s.*,
+       CASE 
+         WHEN t.id IS NOT NULL AND t.status = 'confirmed' THEN 'occupied'
+         WHEN t.id IS NOT NULL AND t.status = 'reserved' AND t.reserved_until > NOW() THEN 'reserved'
+         ELSE 'available'
+       END as status,
+       t.status as ticket_status,
+       t.reserved_until
      FROM seats s
+     LEFT JOIN tickets t ON s.seat_number = t.seat_number 
+       AND t.screening_id = ? 
+       AND t.status IN ('reserved', 'confirmed')
      WHERE s.hall_id = (
        SELECT hall_id FROM screenings WHERE id = ?
-     )
-     AND s.seat_number NOT IN (
-       SELECT seat_number FROM tickets 
-       WHERE screening_id = ? AND status = 'confirmed'
-       AND (reserved_until IS NULL OR reserved_until > NOW())
      )
      ORDER BY s.seat_row, s.seat_column`,
     [screening_id, screening_id]

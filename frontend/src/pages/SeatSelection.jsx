@@ -148,6 +148,13 @@ const SeatSelection = () => {
     if (selectedSeats.some(s => s.seat_number === seat.seat_number)) {
       return 'selected'
     }
+    // Usa il campo status dal backend
+    if (seat.status === 'occupied') {
+      return 'occupied'
+    }
+    if (seat.status === 'reserved') {
+      return 'occupied' // oppure puoi creare una classe 'reserved' se vuoi distinguerli
+    }
     return 'available'
   }
 
@@ -199,8 +206,8 @@ const SeatSelection = () => {
                           key={seat.id}
                           className={`seat ${getSeatStatus(seat)} ${seat.seat_type}`}
                           onClick={() => handleSeatClick(seat)}
-                          disabled={seat.status === 'occupied'}
-                          title={`Posto ${seat.seat_number} - ${seat.seat_type === 'premium' ? 'Premium €15' : 'Standard €10'}`}
+                          disabled={seat.status === 'occupied' || seat.status === 'reserved'}
+                          title={`Posto ${seat.seat_number} - ${seat.seat_type === 'premium' ? 'Premium €15' : 'Standard €10'}${seat.status === 'occupied' ? ' - OCCUPATO' : seat.status === 'reserved' ? ' - RISERVATO' : ''}`}
                         >
                           {seat.seat_column}
                         </button>
