@@ -1,5 +1,6 @@
 # Dipendenze
 node_modules/
+backend/public/qr-codes/
   
 # Build output
 dist/
