@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS halls (
 -- Tabella movies (esistente)
 CREATE TABLE IF NOT EXISTS movies (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  foto_locandina VARCHAR(255),
+  foto_locandina VARCHAR(1000),
   title VARCHAR(200) NOT NULL,
   description TEXT,
   duration_minutes INT NOT NULL,
