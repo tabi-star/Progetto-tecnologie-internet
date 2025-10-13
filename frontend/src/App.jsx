@@ -1,3 +1,5 @@
+// src/App.jsx
+
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import Layout from './components/Layout'
