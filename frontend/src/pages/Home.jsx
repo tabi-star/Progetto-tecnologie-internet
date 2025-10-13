@@ -35,27 +35,45 @@ const Home = () => {
     }
   }
 
+  const resetProgressBar = () => {
+    if (progressRef.current) {
+      progressRef.current.style.animation = 'none'
+      void progressRef.current.offsetWidth // forza reflow per riavviare l'animazione
+      progressRef.current.style.animation = 'progress 5s linear forwards'
+    }
+  }
+
   const startAutoSlide = () => {
+
     if (upcomingMovies.length <= 1) return
-    
+  
     clearInterval(intervalRef.current)
+    resetProgressBar(); // resetta all'inizio
     intervalRef.current = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % upcomingMovies.length)
+      setCurrentSlide(prev => {
+        const next = (prev + 1) % upcomingMovies.length
+        resetProgressBar() // ogni cambio slide
+        return next
+      })
     }, 5000)
+
   }
 
   const nextSlide = () => {
     setCurrentSlide(prev => (prev + 1) % upcomingMovies.length)
+    resetProgressBar()
     startAutoSlide()
   }
 
   const prevSlide = () => {
     setCurrentSlide(prev => (prev - 1 + upcomingMovies.length) % upcomingMovies.length)
+    resetProgressBar()
     startAutoSlide()
   }
 
   const goToSlide = (index) => {
     setCurrentSlide(index)
+    resetProgressBar()
     startAutoSlide()
   }
 

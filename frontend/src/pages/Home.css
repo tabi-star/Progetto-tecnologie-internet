@@ -115,7 +115,8 @@
   height: 100%;
   background: #f1c40f;
   border-radius: 2px;
-  animation: progress 5s linear infinite;
+  width: 0%;
+  animation: progress 5s linear forwards;
 }
 
 @keyframes progress {
