@@ -69,28 +69,26 @@ const Home = () => {
         {upcomingMovies.length > 0 && (
           <div className="banner">
             <div className="banner-slides">
-              {upcomingMovies.map((movie, index) => (
-                <div
-                  key={movie.id}
-                  className={`banner-slide ${index === currentSlide ? 'active' : ''}`}
-                  style={{
-                    backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${movie.foto_locandina || '/placeholder-movie.jpg'})`
-                  }}
-                >
-                  <div className="banner-content">
-                    <h1 className="banner-title">{movie.title}</h1>
-                    <p className="banner-description">
-                      {movie.description?.substring(0, 150)}...
-                    </p>
-                    <div className="banner-actions">
-                      <Link to={`/movie/${movie.id}`} className="btn btn-primary">
-                        <Play size={16} />
-                        Scopri di più
-                      </Link>
-                    </div>
+              <div
+                key={upcomingMovies[currentSlide]?.id}
+                className="banner-slide active"
+                style={{
+                  backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${upcomingMovies[currentSlide]?.foto_locandina || '/placeholder-movie.jpg'})`
+                }}
+              >
+                <div className="banner-content">
+                  <h1 className="banner-title">{upcomingMovies[currentSlide]?.title}</h1>
+                  <p className="banner-description">
+                    {upcomingMovies[currentSlide]?.description?.substring(0, 150)}...
+                  </p>
+                  <div className="banner-actions">
+                    <Link to={`/movie/${upcomingMovies[currentSlide]?.id}`} className="btn btn-primary">
+                      <Play size={16} />
+                      Scopri di più
+                    </Link>
                   </div>
-            </div>
-              ))}
+                </div>
+              </div>
             </div>
 
             {/* Navigation */}
