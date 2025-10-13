@@ -113,7 +113,7 @@
 
 .banner-progress-bar {
   height: 100%;
-  background: #f1c40f;
+  background: #e74c3c;
   border-radius: 2px;
   width: 0%;
   animation: progress 5s linear forwards;
@@ -144,8 +144,8 @@
 }
 
 .banner-dot.active {
-  background: #f1c40f;
-  border-color: #f1c40f;
+  background: #e74c3c;
+  border-color: #e74c3c;
   transform: scale(1.2);
 }
 
