@@ -122,24 +122,64 @@
   transform: scale(1.1);
 }
 
+/* Posti selezionati - DEVE sovrascrivere premium */
 .seat.selected {
-  background: #f1c40f;
-  color: #2c3e50;
+  background: #f1c40f !important;
+  color: #2c3e50 !important;
   transform: scale(1.1);
 }
 
+.seat.premium.selected {
+  background: #f1c40f !important;
+  color: #2c3e50 !important;
+  transform: scale(1.1);
+}
+
+/* Posti occupati - DEVE sovrascrivere premium */
 .seat.occupied {
-  background: #e74c3c;
+  background: #e74c3c !important;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.seat.premium {
+.seat.premium.occupied {
+  background: #e74c3c !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Posti riservati */
+.seat.reserved {
+  background: #ffa500 !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.seat.premium.reserved {
+  background: #ffa500 !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Posti disponibili premium - solo quando sono disponibili */
+.seat.premium.available {
   background: #9b59b6;
+  color: white;
 }
 
 .seat.premium.available:hover {
   background: #8e44ad;
+  transform: scale(1.1);
+}
+
+/* Assicurati che i posti disabilitati mantengano lo stile corretto */
+.seat:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.seat:disabled:hover {
+  transform: none !important;
 }
 
 .seat-legend {
@@ -163,6 +203,23 @@
   width: 20px;
   height: 20px;
   cursor: default;
+}
+
+/* Legenda per posti premium selezionati/occupati */
+.legend-item .seat.premium.selected {
+  background: #f1c40f !important;
+}
+
+.legend-item .seat.premium.occupied {
+  background: #e74c3c !important;
+}
+
+.legend-item .seat.premium.reserved {
+  background: #ffa500 !important;
+}
+
+.legend-item .seat.premium.available {
+  background: #9b59b6;
 }
 
 .order-summary {
@@ -306,43 +363,6 @@
   color: #666;
 }
 
-@media (max-width: 1024px) {
-  .seat-layout {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  
-  .order-summary {
-    position: static;
-  }
-}
-
-@media (max-width: 768px) {
-  .seat-header {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .screening-details {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .seat {
-    width: 35px;
-    height: 35px;
-    font-size: 0.7rem;
-  }
-  
-  .seat-legend {
-    gap: 1rem;
-  }
-  
-  .discount-input {
-    flex-direction: column;
-  }
-}
-
 .selected-seat {
   display: flex;
   align-items: center;
@@ -447,11 +467,39 @@
   color: #f1c40f;
 }
 
-/* Migliora la legenda */
-.legend-item .seat.premium {
-  background: #9b59b6;
+@media (max-width: 1024px) {
+  .seat-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .order-summary {
+    position: static;
+  }
 }
 
-.legend-item .seat.premium.available:hover {
-  background: #8e44ad;
+@media (max-width: 768px) {
+  .seat-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .screening-details {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .seat {
+    width: 35px;
+    height: 35px;
+    font-size: 0.7rem;
+  }
+  
+  .seat-legend {
+    gap: 1rem;
+  }
+  
+  .discount-input {
+    flex-direction: column;
+  }
 }

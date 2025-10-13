@@ -54,9 +54,12 @@ const AdminDashboard = () => {
     },
     {
       icon: <Settings size={32} />,
-      title: 'Impostazioni',
-      description: 'Configura le impostazioni del sistema',
-      link: '/admin/settings',
+      //title: 'Impostazioni',
+      //description: 'Configura le impostazioni del sistema',
+      //link: '/admin/settings',
+      title: 'Dati e biglietti',
+      description: 'Consulta biglietti prenotati',
+      link: '/profile',
       color: '#95a5a6'
     }
   ]
