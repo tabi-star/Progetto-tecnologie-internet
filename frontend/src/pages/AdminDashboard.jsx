@@ -1,3 +1,5 @@
+// src/pages/AdminDashboard.jsx
+
 import { useAuth } from '../contexts/AuthContext'
 import { Link } from 'react-router-dom'
 import { Film, Calendar, Building, Ticket, Settings, Users } from 'lucide-react'
