@@ -57,70 +57,67 @@ const Payment = () => {
     return baseTotal - discountAmount
   }
 
-  const handlePayment = async () => {
-    if (!user) {
-      navigate('/login')
-      return
-    }
-
-    setLoading(true)
-    setError('')
-
-    try {
-      // Usa il total finale calcolato
-      const totalToPay = finalTotal || calculateFinalTotal()
-      
-      // Crea ordine di pagamento simulato
-      const paymentResponse = await axios.post('/api/payments/create-order', {
-        amount: totalToPay,
-        ticket_ids: [] // Saranno creati dopo la conferma
-      })
-
-      // Simula il pagamento
-      const captureResponse = await axios.post('/api/payments/capture-order', {
-        orderID: paymentResponse.data.orderID
-      })
-
-      if (captureResponse.data.success) {
-        // Prepara i dati per la conferma
-        const confirmData = {
-          ticket_ids: reservationData?.seats || [],
-          paypal_order_id: paymentResponse.data.orderID
-        }
-
-        // Se c'è uno sconto applicato, aggiungi il discount_id
-        if (discountApplied?.discount_id) {
-          confirmData.discount_id = discountApplied.discount_id
-        }
-
-        // Conferma i biglietti
-        const confirmResponse = await axios.post('/api/tickets/confirm-payment', confirmData)
-
-        // Se c'è uno sconto, segnalo come utilizzato
-        if (discountApplied?.discount_id) {
-          try {
-            await axios.post('/api/discounts/use', {
-              discount_id: discountApplied.discount_id
-            })
-          } catch (discountErr) {
-            console.error('Errore nell\'utilizzo dello sconto:', discountErr)
-            // Non blocchiamo il pagamento se lo sconto fallisce
-          }
-        }
-
-        setSuccess(true)
-        
-        // Reindirizza al profilo dopo 3 secondi
-        setTimeout(() => {
-          navigate('/profile')
-        }, 3000)
-      }
-    } catch (err) {
-      setError(err.response?.data?.error || 'Errore nel pagamento')
-    } finally {
-      setLoading(false)
-    }
+const handlePayment = async () => {
+  if (!user) {
+    navigate('/login')
+    return
   }
+
+  setLoading(true)
+  setError('')
+
+  try {
+    const totalToPay = finalTotal || calculateFinalTotal()
+    
+    // 1. Crea ordine di pagamento
+    const paymentResponse = await axios.post('/api/payments/create-order', {
+      amount: totalToPay,
+      ticket_ids: reservationData?.ticket_ids || [] // ASSICURATI che qui ci siano gli ID dei ticket
+    })
+
+    // 2. Simula il pagamento
+    const captureResponse = await axios.post('/api/payments/capture-order', {
+      orderID: paymentResponse.data.orderID
+    })
+
+    if (captureResponse.data.success) {
+      // 3. Prepara i dati per la conferma - gestisci tutti i valori possibilmente undefined
+      const confirmData = {
+        ticket_ids: reservationData?.ticket_ids || [],
+        paypal_order_id: paymentResponse.data.orderID || null,
+        payment_id: captureResponse.data.transactionID || `simulated_${Date.now()}`,
+        qr_code_url: null, // Puoi generarlo dopo se vuoi
+        discount_id: discountApplied?.discount_id || null,
+        user_id: user.id
+      }
+
+      // 4. Conferma i biglietti
+      const confirmResponse = await axios.post('/api/tickets/confirm-payment', confirmData)
+
+      // 5. Se c'è uno sconto, segnalo come utilizzato
+      if (discountApplied?.discount_id) {
+        try {
+          await axios.post('/api/discounts/use', {
+            discount_id: discountApplied.discount_id,
+            user_id: user.id
+          })
+        } catch (discountErr) {
+          console.error('Errore nell\'utilizzo dello sconto:', discountErr)
+        }
+      }
+
+      setSuccess(true)
+      
+      setTimeout(() => {
+        navigate('/profile')
+      }, 3000)
+    }
+  } catch (err) {
+    setError(err.response?.data?.error || 'Errore nel pagamento')
+  } finally {
+    setLoading(false)
+  }
+}
 
   if (!screening || !selectedSeats) {
     return (

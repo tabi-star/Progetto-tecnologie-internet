@@ -1,6 +1,7 @@
 // models/ticketModel.js
 import db from "../db.js";
 import { promisePool } from "../db.js";
+import { sendConfirmationEmail } from '../services/emailService.js';
 
 export const getAllTickets = (cb) => {
   db.query(`
@@ -78,6 +79,14 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id) => {
       [screening_id]
     );
 
+    // Rimuovi prenotazioni personali precedenti
+    await connection.execute(
+      `DELETE FROM tickets 
+       WHERE user_id = ? AND status = 'reserved' 
+       AND reserved_until <= NOW()`,
+      [user_id]
+    );
+
     // Inserisci nuove prenotazioni
     const reservedUntil = new Date(Date.now() + 15 * 60 * 1000);
     
@@ -128,55 +137,114 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
   try {
     await connection.beginTransaction();
 
-    // Crea placeholder dinamicamente per IN clause
-    const placeholders = ticket_ids.map(() => '?').join(', ');
-
-    // Verifica che le prenotazioni siano ancora valide
-    const [tickets] = await connection.execute(
-      `SELECT * FROM tickets 
-       WHERE id IN (${placeholders}) AND status = 'reserved' 
-       AND reserved_until > NOW()`,
-      ticket_ids
-    );
-
-    if (tickets.length !== ticket_ids.length) {
-      throw new Error("Alcune prenotazioni sono scadute o non valide");
+    // Filtra e valida i ticket_ids
+    const validTicketIds = ticket_ids.filter(id => id != null && id !== undefined);
+    
+    if (validTicketIds.length === 0) {
+      throw new Error("Nessun ticket ID valido fornito");
     }
 
-    // Aggiorna i biglietti a confermati
-    await connection.execute(
-      `UPDATE tickets 
-       SET status = 'confirmed', reserved_until = NULL, 
-           payment_id = ?, qr_code_url = ?
-       WHERE id IN (${placeholders})`,
-      [payment_data.payment_id, payment_data.qr_code_url, ...ticket_ids]
+    // Crea placeholder dinamicamente per IN clause
+    const placeholders = validTicketIds.map(() => '?').join(', ');
+
+    console.log('Ticket IDs da confermare:', validTicketIds);
+
+    // VERIFICA 1: Controlla che i ticket esistano e siano nello stato "reserved"
+    const [tickets] = await connection.execute(
+      `SELECT id, screening_id, seat_number, price, status, reserved_until 
+       FROM tickets 
+       WHERE id IN (${placeholders}) AND status = 'reserved'`,
+      validTicketIds
     );
 
-    // Inserisci record pagamento
-    for (const ticket_id of ticket_ids) {
+    if (tickets.length !== validTicketIds.length) {
+      const foundIds = tickets.map(t => t.id);
+      const missingIds = validTicketIds.filter(id => !foundIds.includes(id));
+      throw new Error(`Ticket non validi o già confermati: ${missingIds.join(', ')}`);
+    }
+
+    // VERIFICA 2: Controlla che le prenotazioni non siano scadute
+    const now = new Date();
+    const expiredTickets = tickets.filter(ticket => 
+      new Date(ticket.reserved_until) < now
+    );
+
+    if (expiredTickets.length > 0) {
+      throw new Error(`Prenotazioni scadute per i ticket: ${expiredTickets.map(t => t.id).join(', ')}`);
+    }
+
+    // Prepara i dati per l'update - gestisci valori undefined
+    const paymentId = payment_data.payment_id || null;
+    const qrCodeUrl = payment_data.qr_code_url || `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TICKET-${Date.now()}-${validTicketIds.join('-')}`;
+    const paypalOrderId = payment_data.paypal_order_id || null;
+
+    // AGGIORNA i biglietti a confermati
+    const updateResult = await connection.execute(
+      `UPDATE tickets 
+       SET status = 'confirmed', 
+           reserved_until = NULL, 
+           payment_id = ?, 
+           qr_code_url = ?,
+           bookedAt = NOW()
+       WHERE id IN (${placeholders})`,
+      [paymentId, qrCodeUrl, ...validTicketIds]
+    );
+
+    console.log(`Ticket aggiornati: ${updateResult[0].affectedRows}`);
+
+    // Inserisci record pagamento per ogni ticket
+    for (const ticket of tickets) {
       await connection.execute(
-        `INSERT INTO payments (ticket_id, amount, payment_method, status, transaction_id) 
-         VALUES (?, 10.00, 'simulated', 'completed', ?)`,
-        [ticket_id, payment_data.payment_id]
+        `INSERT INTO payments (ticket_id, amount, payment_method, status, paypal_order_id, transaction_id) 
+         VALUES (?, ?, 'paypal', 'completed', ?, ?)`,
+        [ticket.id, ticket.price, paypalOrderId, paymentId]
       );
     }
 
-    // Ottieni i ticket aggiornati
+    // Se c'è uno sconto applicato, aggiorna la tabella discount_codes
+    if (payment_data.discount_id) {
+      await connection.execute(
+        `UPDATE discount_codes 
+         SET used = TRUE, used_by = ?, used_at = NOW() 
+         WHERE id = ? AND used = FALSE`,
+        [payment_data.user_id, payment_data.discount_id]
+      );
+    }
+
+    // Ottieni i ticket aggiornati con tutte le informazioni
     const [updatedTickets] = await connection.execute(
-      `SELECT t.*, m.title, s.start_time, h.name as hall_name
+      `SELECT t.*, m.title, m.foto_locandina, s.start_time, h.name as hall_name,
+              u.name as user_name, u.email as user_email
        FROM tickets t
        JOIN screenings s ON t.screening_id = s.id
        JOIN movies m ON s.movie_id = m.id
        JOIN halls h ON s.hall_id = h.id
+       JOIN users u ON t.user_id = u.id
        WHERE t.id IN (${placeholders})`,
-      ticket_ids
+      validTicketIds
     );
 
     await connection.commit();
+
+    // INVIA EMAIL DI CONFERMA
+    try {
+      // Calcola il totale in modo sicuro
+      const totalAmount = updatedTickets.reduce((sum, ticket) => {
+        return sum + Number(ticket.price || 0);
+      }, 0);
+      
+      await sendConfirmationEmail(updatedTickets[0].user_email, updatedTickets, totalAmount);
+    } catch (emailError) {
+      console.error('⚠️ Errore invio email, ma pagamento confermato:', emailError);
+      // Non blocchiamo il processo se l'email fallisce
+    }
     
+    console.log(`Confermati ${updatedTickets.length} ticket`);
     return updatedTickets;
+
   } catch (error) {
     await connection.rollback();
+    console.error('Errore nella conferma dei ticket:', error);
     throw error;
   } finally {
     connection.release();
