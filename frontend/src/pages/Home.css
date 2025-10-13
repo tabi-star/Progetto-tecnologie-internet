@@ -150,7 +150,9 @@
 }
 
 .cta-section {
-  padding: 4rem 0;
+  /*padding: 4rem 0;*/
+  padding-top: 2vh;   /* riduce lo spazio sopra: 2% dell’altezza dello schermo */
+  padding-bottom: 5vh; /* mantiene un po’ di spazio sotto */
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
 }
 
@@ -158,6 +160,7 @@
   text-align: center;
   max-width: 600px;
   margin: 0 auto;
+  /*margin-top: -3vh;*/
 }
 
 .cta-content h2 {
