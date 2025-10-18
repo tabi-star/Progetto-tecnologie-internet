@@ -86,20 +86,21 @@ const Home = () => {
       <section className="hero">
         {upcomingMovies.length > 0 && (
           <div className="banner">
-            <div className="banner-slides">
+
+            {/*<div className="banner-slides">
               <div
                 key={upcomingMovies[currentSlide]?.id}
                 className="banner-slide active"
                 style={{
-                  backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${upcomingMovies[currentSlide]?.foto_locandina || '/placeholder-movie.jpg'})`
+                  backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${upcomingMovies[currentSlide]?.banner_image || '/placeholder-movie.jpg'})`
                 }}
               >
                 <div className="banner-content">
-                  <h1 className="banner-title">{upcomingMovies[currentSlide]?.title}</h1>
-                  <p className="banner-description">
+                  <h1 className="banner-title">{upcomingMovies[currentSlide]?.title}</h1> 
+                  {/*<p className="banner-description">
                     {upcomingMovies[currentSlide]?.description?.substring(0, 150)}...
-                  </p>
-                  <div className="banner-actions">
+                  </p>*/}
+                  {/*<div className="banner-actions">
                     <Link to={`/movie/${upcomingMovies[currentSlide]?.id}`} className="btn btn-primary">
                       <Play size={16} />
                       Scopri di più
@@ -107,42 +108,76 @@ const Home = () => {
                   </div>
                 </div>
               </div>
+            </div>*/}
+
+            <div className="banner-slides">
+              <div
+                key={upcomingMovies[currentSlide]?.id}
+                className="banner-slide active"
+              >
+                {/* Sfondo sfocato */}
+                <div
+                  className="banner-bg"
+                  style={{
+                    backgroundImage: `url(${upcomingMovies[currentSlide]?.banner_image || '/placeholder-movie.jpg'})`
+                  }}
+                />
+
+                {/* Immagine principale centrata */}
+                <img
+                  className="banner-img"
+                  src={upcomingMovies[currentSlide]?.banner_image || '/placeholder-movie.jpg'}
+                  alt={upcomingMovies[currentSlide]?.title}
+                />
+
+                {/* Contenuto testuale */}
+                <div className="banner-content">
+                  <h1 className="banner-title">{upcomingMovies[currentSlide]?.title}</h1>
+                  <div className="banner-actions">
+                    <Link to={`/movie/${upcomingMovies[currentSlide]?.id}`} className="btn btn-primary">
+                      <Play size={16} />
+                      Scopri di più
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                {upcomingMovies.length > 1 && (
+                  <>
+                    <button className="banner-nav banner-nav-prev" onClick={prevSlide}>
+                      <ChevronLeft size={24} />
+                    </button>
+                    <button className="banner-nav banner-nav-next" onClick={nextSlide}>
+                      <ChevronRight size={24} />
+                    </button>
+
+                    {/* Progress bar */}
+                    <div className="banner-progress">
+                      <div 
+                        ref={progressRef}
+                        className="banner-progress-bar" 
+                        style={{ 
+                          animationDuration: '5s',
+                          animationPlayState: 'running'
+                        }}
+                      />
+                    </div>
+
+                    {/* Dots indicator */}
+                    <div className="banner-dots">
+                      {upcomingMovies.map((_, index) => (
+                        <button
+                        key={index}
+                        className={`banner-dot ${index === currentSlide ? 'active' : ''}`}
+                        onClick={() => goToSlide(index)}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+                
+              </div>
             </div>
-
-            {/* Navigation */}
-            {upcomingMovies.length > 1 && (
-              <>
-                <button className="banner-nav banner-nav-prev" onClick={prevSlide}>
-                  <ChevronLeft size={24} />
-                </button>
-                <button className="banner-nav banner-nav-next" onClick={nextSlide}>
-                  <ChevronRight size={24} />
-                </button>
-
-                {/* Progress bar */}
-                <div className="banner-progress">
-                  <div 
-                    ref={progressRef}
-                    className="banner-progress-bar" 
-                    style={{ 
-                      animationDuration: '5s',
-                      animationPlayState: 'running'
-                    }}
-                  />
-                </div>
-
-                {/* Dots indicator */}
-                <div className="banner-dots">
-                  {upcomingMovies.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`banner-dot ${index === currentSlide ? 'active' : ''}`}
-                      onClick={() => goToSlide(index)}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
           </div>
         )}
       </section>

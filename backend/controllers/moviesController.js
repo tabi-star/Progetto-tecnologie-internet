@@ -25,7 +25,7 @@ export const getMovie = (req, res) => {
 };
 
 export const addMovie = (req, res) => {
-  const { title, description, duration_minutes, release_date, language, foto_locandina } = req.body;
+  const { title, description, duration_minutes, release_date, language, foto_locandina, banner_image } = req.body;
 
   const newMovie = {
     title,
@@ -34,6 +34,7 @@ export const addMovie = (req, res) => {
     release_date,
     language: language || "Italiano",
     foto_locandina,
+    banner_image,
     createdAt: new Date()
   };
 
@@ -46,7 +47,7 @@ export const addMovie = (req, res) => {
 
 export const modifyMovie = (req, res) => {
   const { id } = req.params;
-  const { title, description, duration_minutes, release_date, language, foto_locandina } = req.body;
+  const { title, description, duration_minutes, release_date, language, foto_locandina, banner_image } = req.body;
 
   const updatedMovie = {
     title,
@@ -54,7 +55,8 @@ export const modifyMovie = (req, res) => {
     duration_minutes,
     release_date,
     language,
-    foto_locandina
+    foto_locandina,
+    banner_image
   };
 
   updateMovie(id, updatedMovie, (err, result) => {
