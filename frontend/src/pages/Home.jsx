@@ -124,20 +124,33 @@ const Home = () => {
                 />
 
                 {/* Immagine principale centrata */}
-                <img
-                  className="banner-img"
-                  src={upcomingMovies[currentSlide]?.banner_image || '/placeholder-movie.jpg'}
-                  alt={upcomingMovies[currentSlide]?.title}
-                />
+                <div className="banner-centered">
+                  <img
+                    className="banner-img"
+                    src={upcomingMovies[currentSlide]?.banner_image || '/placeholder-movie.jpg'}
+                    alt={upcomingMovies[currentSlide]?.title}
+                  />
 
-                {/* Contenuto testuale */}
-                <div className="banner-content">
-                  <h1 className="banner-title">{upcomingMovies[currentSlide]?.title}</h1>
-                  <div className="banner-actions">
-                    <Link to={`/movie/${upcomingMovies[currentSlide]?.id}`} className="btn btn-primary">
-                      <Play size={16} />
-                      Scopri di più
-                    </Link>
+                  {/* Contenuto testuale */}
+                  <div className="banner-content">
+                    <h1 className="banner-title">{upcomingMovies[currentSlide]?.title}</h1>
+                    <div className="banner-actions">
+                      <Link to={`/movie/${upcomingMovies[currentSlide]?.id}`} className="btn btn-primary">
+                        <Play size={16} />
+                        Scopri di più
+                      </Link>
+                    </div>
+                
+                    {/* Dots indicator */}
+                    <div className="banner-dots">
+                      {upcomingMovies.map((_, index) => (
+                        <button
+                        key={index}
+                        className={`banner-dot ${index === currentSlide ? 'active' : ''}`}
+                        onClick={() => goToSlide(index)}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -163,16 +176,6 @@ const Home = () => {
                       />
                     </div>
 
-                    {/* Dots indicator */}
-                    <div className="banner-dots">
-                      {upcomingMovies.map((_, index) => (
-                        <button
-                        key={index}
-                        className={`banner-dot ${index === currentSlide ? 'active' : ''}`}
-                        onClick={() => goToSlide(index)}
-                        />
-                      ))}
-                    </div>
                   </>
                 )}
                 
