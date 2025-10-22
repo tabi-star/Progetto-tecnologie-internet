@@ -61,6 +61,32 @@ const Home = () => {
 
   const nextSlide = () => {
     setCurrentSlide(prev => (prev + 1) % upcomingMovies.length)
+    {/* CODICE CHE POTREBBE ESSERE UTILE PER IL BANNER "ROTANTE" */}
+    {/*useEffect(() => {
+      if (currentSlide === upcomingMovies.length) {
+        // Disattiva transizione momentaneamente
+        setTimeout(() => {
+          document.querySelector('.banner-slides').style.transition = 'none';
+          setCurrentSlide(0);
+          // Ripristina la transizione per gli step successivi
+          setTimeout(() => {
+            document.querySelector('.banner-slides').style.transition = 'transform 0.8s ease-in-out';
+          }, 50);
+        }, 800); // 800 ms = durata della tua transizione
+      }
+    }, [currentSlide])*/}
+    {/*if (currentSlide === upcomingMovies.length - 1) {
+      // vai temporaneamente alla copia nascosta della prima
+      setCurrentSlide(currentSlide + 1);
+      setTimeout(() => {
+        // disabilita la transizione e torna invisibilmente a 0
+        setIsTransitioning(false);
+        setCurrentSlide(0);
+        setTimeout(() => setIsTransitioning(true), 50);
+      }, 800);
+    } else {
+      setCurrentSlide(currentSlide + 1);
+    }*/}
     resetProgressBar()
     startAutoSlide()
   }
@@ -115,6 +141,7 @@ const Home = () => {
                 key={upcomingMovies[currentSlide]?.id}
                 className="banner-slide active"
               >
+
                 {/* Sfondo sfocato */}
                 <div
                   className="banner-bg"
@@ -163,7 +190,6 @@ const Home = () => {
                     <button className="banner-nav banner-nav-next" onClick={nextSlide}>
                       <ChevronRight size={24} />
                     </button>
-
                     {/* Progress bar */}
                     <div className="banner-progress">
                       <div 
@@ -175,12 +201,12 @@ const Home = () => {
                         }}
                       />
                     </div>
-
                   </>
                 )}
                 
               </div>
             </div>
+
           </div>
         )}
       </section>

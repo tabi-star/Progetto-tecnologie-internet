@@ -2,6 +2,7 @@
 
 .home {
   min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
 }
 
 .hero {
@@ -11,44 +12,42 @@
 }
 
 .banner {
-  position: relative;
+  position: absolute;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 .banner-slides {
   position: relative;
   height: 100%;
   width: 100%;
+  display: flex;
+  /*flex: 200 0 100;*/
+  align-items: center;
+  justify-content: center;
+  /*overflow: hidden;
+  display: flex;
+  transition: transform 1s ease-in-out;*/
 }
 
-/*.banner-slide {
+.banner-slide {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-size: contain;
+  /*background-size: contain;
   background-position: center;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat;*/
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 1s ease-in-out; /* durata dello sfumamento */
   display: flex;
-  align-items: center;
-  justify-content: center;
-}*/
-
-.banner-slide {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
+  /*flex: 200 0 100;*/
   align-items: center;
   justify-content: center;
 }
 
-/* Sfondo sfocato */
 .banner-bg {
   /*position: absolute;
   inset: 0;
@@ -75,39 +74,39 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  /*padding-bottom: 5%*/
 }
 
 /* Immagine nitida centrata */
 .banner-img {
+  opacity: 1;
   position: relative;
   z-index: 2;
-  max-width: 97.5%;
+  max-width: 100%;
+  /*si potrebbe provare con width: 120%*/
   max-height: 97.5%;
   object-fit: contain;
   border-radius: 12px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  top: -2px;
 }
 
 /* Testo in primo piano */
 .banner-content {
   position: absolute;
   z-index: 3;
-  bottom: 5%;
+  bottom: 5%; /*bottom: 60px;*/
   text-align: center;
   color: white;
   max-width: 100%;
   max-height: 100%;
+  /*padding: 0 20px;*/
 }
 
 .banner-slide.active {
   opacity: 1;
+  z-index: 2;
 }
-
-/*.banner-content {
-  text-align: center;
-  max-width: 600px;
-  padding: 0 20px;
-}*/
 
 .banner-title {
   font-size: 2.75rem;
@@ -143,8 +142,8 @@
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
-  width: 50px;
-  height: 50px;
+  width: 75px;
+  height: 75px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -161,11 +160,11 @@
 }
 
 .banner-nav-prev {
-  left: 20px;
+  left: 30px;
 }
 
 .banner-nav-next {
-  right: 20px;
+  right: 30px;
 }
 
 .banner-progress {
@@ -184,6 +183,11 @@
   z-index: 5;
 }
 
+@keyframes progress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
 .banner-progress-bar {
   height: 100%;
   background: #e74c3c;
@@ -191,11 +195,6 @@
   width: 0%;
   animation: progress 5s linear forwards;
   z-index: 5;
-}
-
-@keyframes progress {
-  0% { width: 0%; }
-  100% { width: 100%; }
 }
 
 .banner-dots {

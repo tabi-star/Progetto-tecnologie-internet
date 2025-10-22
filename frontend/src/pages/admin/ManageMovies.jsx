@@ -22,7 +22,8 @@ const ManageMovies = () => {
     duration_minutes: '',
     release_date: '',
     language: 'Italiano',
-    foto_locandina: ''
+    foto_locandina: '',
+    banner_image: '',
   })
 
   useEffect(() => {
@@ -69,7 +70,8 @@ const ManageMovies = () => {
       duration_minutes: movie.duration_minutes,
       release_date: movie.release_date,
       language: movie.language,
-      foto_locandina: movie.foto_locandina || ''
+      foto_locandina: movie.foto_locandina || '',
+      banner_image: movie.banner_image || ''
     })
     setShowForm(true)
   }
@@ -93,7 +95,8 @@ const ManageMovies = () => {
       duration_minutes: '',
       release_date: '',
       language: 'Italiano',
-      foto_locandina: ''
+      foto_locandina: '',
+      banner_image: ''
     })
     setEditingMovie(null)
     setShowForm(false)
@@ -202,6 +205,17 @@ const ManageMovies = () => {
                       placeholder="https://example.com/poster.jpg"
                     />
                   </div>
+
+                  <div className="form-group full-width">
+                    <label>URL Immagine per il banner della homepage</label>
+                    <input
+                      type="url"
+                      value={formData.banner_image}
+                      onChange={(e) => setFormData(prev => ({ ...prev, banner_image: e.target.value }))}
+                      placeholder="https://example.com/homepage-banner-image.jpg"
+                    />
+                  </div>
+
 
                   <div className="form-group full-width">
                     <label>Descrizione *</label>

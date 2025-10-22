@@ -11,7 +11,8 @@ export default function MoviesPage() {
     duration_minutes: "",
     release_date: "",
     language: "Italiano",
-    foto_locandina: ""
+    foto_locandina: "",
+    banner_image: "",
   });
 
   useEffect(() => {
@@ -42,6 +43,7 @@ export default function MoviesPage() {
         <input placeholder="Duration (minutes)" type="number" onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })} />
         <input placeholder="Release date" type="date" onChange={(e) => setForm({ ...form, release_date: e.target.value })} />
         <input placeholder="Poster URL" onChange={(e) => setForm({ ...form, foto_locandina: e.target.value })} />
+        <input placeholder="Homepage banner image URL" onChange={(e) => setForm({ ...form, banner_image: e.target.value })} />
         <button type="submit">Add</button>
       </form>
     </div>
