@@ -64,17 +64,34 @@
 }
 
 .movies-grid {
+  /*display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;*/
+  /*display: flex;
+  flex-wrap: wrap;*/
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  justify-content: center;
+  align-items: stretch; /* tutte le card stesse altezze */
+  gap: 1.5rem;
 }
 
+/* grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  justify-items: center;*/
+
 .movie-card {
+  /*display: flex;*/
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  flex-direction: column;
+  /*justify-content: space-between;*/ /*Vedere se metterlo o toglierlo, al momento sono più per toglierlo*/
   background: #1a1a1a;
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid #333;
+  height: auto; /*vedi se mettere 100%*/
 }
 
 .movie-card:hover {
@@ -82,17 +99,36 @@
   box-shadow: 0 15px 35px rgba(231, 76, 60, 0.15);
 }
 
+.movie-head-data {
+  /*flex: 1.3;*/
+  display: flex;
+  /*display: grid;*/
+  /*grid-template-columns: 0.75fr 1.25fr;*/
+  /*flex-direction: row;*/
+  justify-content: center;
+  align-items: stretch;
+  /*margin-bottom: auto;*/
+  height: 100%;
+}
+
 .movie-poster {
   position: relative;
-  height: 400px;
+  /*height: auto; modifica fatta per ultimo tentativo*/
+  /*width: 100%;*/ /*Non ne sono sicuro di tenerlo, dopo vediamo*/
+  /*display: flex;*/
+  text-align: center;
+  justify-content: center;
   overflow: hidden;
+  flex: 0.75;
+  height: 100%;
 }
 
 .movie-poster img {
-  width: 100%;
+  width: 100%; /*Penso che andrà tolto*/
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  display: block; /*No sicuro*/
 }
 
 .movie-card:hover .movie-poster img {
@@ -120,20 +156,23 @@
 }
 
 .movie-info {
-  padding: 1.5rem;
+  margin-top: 1rem;
+  flex: 1.25;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /*prima c'era space-between*/
+  align-items: center;
+  /*gap: 10px*/
+  padding: 1.5rem; /*Potrebbe non servire*/
+  text-align: center;
+  flex-grow: 1; /*Non sicuro di tenerlo*/
+  height: auto;
 }
 
 .movie-title {
   font-size: 1.3rem;
   margin-bottom: 0.5rem;
   color: #fff;
-}
-
-.movie-description {
-  color: #ccc;
-  margin-bottom: 1rem;
-  line-height: 1.5;
-  font-size: 0.9rem;
 }
 
 .movie-meta {
@@ -156,6 +195,18 @@
   border-radius: 20px;
 }
 
+.movie-description {
+  /*flex: 0.7;*/
+  padding: 0 5%;
+  /*margin-top: 0;*/
+  color: #ccc;
+  /*margin-bottom: 2.5rem;*/
+  /*line-height: 1.5;*/
+  font-size: 0.9rem;
+  /*flex-shrink: 0;*/ /* impedisce che si accorci */
+  /*min-height: 60px;*/ /* stessa altezza per allineare visivamente */
+}
+
 .no-movies {
   text-align: center;
   padding: 4rem 2rem;
@@ -169,17 +220,29 @@
 
 @media (max-width: 768px) {
   .movies-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    /*grid-template-columns: 1fr;
+    gap: 1.5rem;*/
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adatta automaticamente */
+    gap: 1rem;
+    justify-items: center;
+  }
+
+  .movie-card {
+    max-width: 250px;
   }
   
   .date-buttons {
     justify-content: center;
+    flex-wrap: wrap; /*aggiunto*/
   }
   
   .date-btn {
-    flex: 1;
+    /*flex: 1;
     min-width: 100px;
+    text-align: center;*/
+    flex: 1 1 auto;
+    min-width: 80px;
     text-align: center;
+    margin: 0.25rem;
   }
 }

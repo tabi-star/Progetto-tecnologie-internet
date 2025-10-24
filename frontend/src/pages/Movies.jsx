@@ -83,29 +83,44 @@ const Movies = () => {
         <div className="movies-grid">
           {movies.map(movie => (
             <div key={movie.id} className="movie-card">
-              <div className="movie-poster">
-                <img 
-                  src={movie.foto_locandina || '/placeholder-movie.jpg'} 
-                  alt={movie.title}
-                  onError={(e) => {
-                    e.target.src = '/placeholder-movie.jpg'
-                  }}
-                />
-                <div className="movie-overlay">
-                  <Link to={`/movie/${movie.id}`} className="btn btn-primary">
-                    Dettagli
-                  </Link>
-                  <Link 
-                    to={`/screening/${movie.id}?date=${selectedDate}`} 
-                    className="btn btn-secondary"
-                  >
-                    <Clock size={16} />
-                    Orari
-                  </Link>
+              <div className="movie-head-data">
+                <div className="movie-poster">
+                  <img 
+                    src={movie.foto_locandina || '/placeholder-movie.jpg'} 
+                    alt={movie.title}
+                    onError={(e) => {
+                      e.target.src = '/placeholder-movie.jpg'
+                    }}
+                  />
+                  <div className="movie-overlay">
+                    <Link to={`/movie/${movie.id}`} className="btn btn-primary">
+                      Dettagli
+                    </Link>
+                    <Link 
+                      to={`/screening/${movie.id}?date=${selectedDate}`} 
+                      className="btn btn-secondary"
+                    >
+                      <Clock size={16} />
+                      Orari
+                    </Link>
+                  </div>
                 </div>
+                <div className="movie-info">
+                  <h3 className="movie-title">{movie.title}</h3>
+                  <div className="movie-meta">
+                    <span className="movie-duration">
+                      {Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m
+                    </span>
+                    <span className="movie-language">{movie.language}</span>
+                  </div>
+                </div>  
+              </div> 
+
+              <div className="movie-description">
+                <p> {movie?.description || null} </p>
               </div>
-              
-              <div className="movie-info">
+
+              {/*<div className="movie-info">
                 <h3 className="movie-title">{movie.title}</h3>
                 <p className="movie-description">
                   {movie.description?.substring(0, 120)}...
@@ -116,7 +131,7 @@ const Movies = () => {
                   </span>
                   <span className="movie-language">{movie.language}</span>
                 </div>
-              </div>
+              </div>*/}
             </div>
           ))}
         </div>
