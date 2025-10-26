@@ -18,6 +18,7 @@
 .page-header p {
   font-size: 1.2rem;
   opacity: 0.8;
+  /*color: #fff;*/
 }
 
 .date-selector {
@@ -33,13 +34,46 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
+  color: /*#fff;*/#e74c3c;
+}
+
+.date-buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.left-arrow-btn,
+.right-arrow-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;/*#fff;*/
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.left-arrow-btn:hover,
+.right-arrow-btn:hover {
   color: #e74c3c;
+  filter: drop-shadow(0 0 8px #e74c3c) drop-shadow(0 0 16px #e74c3c);
+  transition: all 0.3s ease;
 }
 
 .date-buttons {
   display: flex;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;/*wrap;*/
+  justify-content: center;
+  flex-grow: 1; /* permette ai bottoni di occupare più spazio */
+  overflow-x: auto; /* in caso di troppi bottoni, scroll orizzontale */
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+}
+
+.date-buttons::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 .date-btn {
@@ -51,6 +85,8 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 500;
+  white-space: wrap;
+  flex-shrink: 0;
 }
 
 .date-btn:hover {
