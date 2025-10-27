@@ -154,7 +154,7 @@ const Home = () => {
                 <div className="banner-centered">
                   <img
                     className="banner-img"
-                    src={upcomingMovies[currentSlide]?.banner_image || '/placeholder-movie.jpg'}
+                    src={upcomingMovies[currentSlide]?.banner_image || upcomingMovies[currentSlide]?.foto_locandina || '/placeholder-movie.jpg'}
                     alt={upcomingMovies[currentSlide]?.title}
                   />
 

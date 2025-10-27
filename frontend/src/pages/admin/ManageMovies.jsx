@@ -249,7 +249,7 @@ const ManageMovies = () => {
               <div key={movie.id} className="movie-card">
                 <div className="movie-poster">
                   <img 
-                    src={movie.foto_locandina || '/placeholder-movie.jpg'} 
+                    src={movie.foto_locandina || '/placeholder-movie.jpg'}
                     alt={movie.title}
                   />
                   <div className="movie-actions">

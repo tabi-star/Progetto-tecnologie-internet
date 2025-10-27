@@ -1,5 +1,6 @@
 // controllers/moviesController.js
 import { getAllMovies, getMovieById, getUpcomingMovies, insertMovie, updateMovie, deleteMovie } from "../models/movieModel.js";
+import db from "../db.js";
 
 export const getMovies = (req, res) => {
   getAllMovies((err, results) => {
@@ -21,6 +22,23 @@ export const getMovie = (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     if (results.length === 0) return res.status(404).json({ error: "Film non trovato" });
     res.json(results[0]);
+  });
+};
+
+export const getMoviesByScreeningsDate = (req, res) => {
+  const { date } = req.params;
+
+  const query = `
+    SELECT DISTINCT m.*
+    FROM movies m
+    JOIN screenings s ON m.id = s.movie_id
+    WHERE DATE(s.start_time) = ?
+    ORDER BY m.title
+  `;
+
+  db.query(query, [date], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
   });
 };
 

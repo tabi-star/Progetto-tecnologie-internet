@@ -9,6 +9,27 @@ export const getScreenings = (req, res) => {
   });
 };
 
+/*Valutare se lasciare o togliere*/
+/*export const getScreeningsByDate = (req, res) => {
+
+  const { date } = req.params;
+  
+  const query = `
+    SELECT s.*, h.name AS hall_name, h.hall_type, m.title, m.duration_minutes
+    FROM screenings s
+    JOIN halls h ON s.hall_id = h.id
+    JOIN movies m ON s.movie_id = m.id
+    WHERE DATE(s.start_time) = ?
+    ORDER BY s.start_time ASC
+    `;
+
+  db.query(query, [date], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+
+};*/
+
 export const getScreeningsByMovieAndDate = (req, res) => {
   const { movie_id, date } = req.params;
   
