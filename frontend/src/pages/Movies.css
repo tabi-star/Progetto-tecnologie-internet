@@ -119,7 +119,7 @@
 .movie-card {
   /*display: flex;*/
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr 0.75fr; /*Nel caso di problemi con la descrizione e la lunghezza della movie card, rimetti 1fr 1fr*/
   flex-direction: column;
   /*justify-content: space-between;*/ /*Vedere se metterlo o toglierlo, al momento sono più per toglierlo*/
   background: #1a1a1a;

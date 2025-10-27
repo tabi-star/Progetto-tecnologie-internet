@@ -194,7 +194,7 @@ const Movies = () => {
                       to={`/screening/${movie.id}?date=${selectedDate}`} 
                       className="btn btn-secondary"
                     >
-                      <Clock size={16} />
+                      <Clock size={22} />
                       Orari
                     </Link>
                   </div>
