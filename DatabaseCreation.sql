@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS halls (
 CREATE TABLE IF NOT EXISTS movies (
   id INT AUTO_INCREMENT PRIMARY KEY,
   foto_locandina VARCHAR(1000),
+  banner_image VARCHAR(1000);
   title VARCHAR(200) NOT NULL,
   description TEXT,
   duration_minutes INT NOT NULL,
@@ -97,4 +98,17 @@ CREATE TABLE IF NOT EXISTS discount_codes (
   used_at DATETIME NULL,
   FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (used_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Tabella per chi resetta la password se l'ha dimenticata
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  token VARCHAR(255) NOT NULL UNIQUE,
+  expires_at DATETIME NOT NULL,
+  used BOOLEAN DEFAULT FALSE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_token (token),
+  INDEX idx_expires (expires_at)
 );

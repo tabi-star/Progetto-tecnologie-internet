@@ -16,6 +16,8 @@ import ManageMovies from './pages/admin/ManageMovies'
 import ManageScreenings from './pages/admin/ManageScreenings'
 import ManageHalls from './pages/admin/ManageHalls'
 import AdminDiscounts from './pages/admin/AdminDiscounts'
+import ForgotPassword from './pages/ForgotPassword' // AGGIUNGI
+import ResetPassword from './pages/ResetPassword'   // AGGIUNGI
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
           <Route path="/movie/:id" element={<MovieDetail />} />
           <Route path="/screening/:movieId" element={<ScreeningSelection />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} /> {/* AGGIUNGI */}
+          <Route path="/reset-password/:token" element={<ResetPassword />} /> {/* AGGIUNGI */}
           
           {/* Protected routes */}
           <Route path="/seats/:screeningId" element={<SeatSelection />} />

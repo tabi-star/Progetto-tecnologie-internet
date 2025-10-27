@@ -128,3 +128,89 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
     throw new Error(`Errore nell'invio dell'email: ${error.message}`);
   }
 };
+
+// services/emailService.js - AGGIUNGI queste funzioni
+
+// ... codice esistente ...
+
+export const sendPasswordResetEmail = async (userEmail, userName, resetToken) => {
+  const transporter = createTransporter();
+  
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+  const mailOptions = {
+    from: {
+      name: 'Cinema API - Supporto',
+      address: process.env.EMAIL_USER
+    },
+    to: userEmail,
+    subject: '🔐 Reimposta la tua password - Cinema API',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; color: #333; margin: 0; padding: 20px; background: #f5f5f5; }
+          .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+          .header { background: #e74c3c; color: white; padding: 30px; text-align: center; }
+          .content { padding: 30px; }
+          .reset-button { display: inline-block; background: #e74c3c; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
+          .info-box { background: #fff3cd; padding: 15px; border-radius: 5px; border: 1px solid #ffeaa7; margin: 20px 0; }
+          .footer { background: #2c3e50; color: white; padding: 20px; text-align: center; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🎬 Cinema API</h1>
+            <h2>Reimposta la tua password</h2>
+          </div>
+          
+          <div class="content">
+            <p>Ciao <strong>${userName}</strong>,</p>
+            <p>Abbiamo ricevuto una richiesta per reimpostare la password del tuo account.</p>
+            <p>Clicca il pulsante qui sotto per creare una nuova password:</p>
+            
+            <div style="text-align: center;">
+              <a href="${resetLink}" class="reset-button" target="_blank">
+                🔐 Reimposta Password
+              </a>
+            </div>
+
+            <div class="info-box">
+              <h4>ℹ️ Informazioni Importanti</h4>
+              <ul style="margin: 10px 0; padding-left: 20px;">
+                <li>Questo link è valido per <strong>1 ora</strong></li>
+                <li>Se non hai richiesto il reset, ignora pure questa email</li>
+                <li>Per sicurezza, non condividere questo link con nessuno</li>
+                <li>Se hai problemi, rispondi a questa email</li>
+              </ul>
+            </div>
+
+            <p style="color: #666; font-size: 14px;">
+              <strong>Nota:</strong> Se il pulsante non funziona, copia e incolla questo link nel browser:<br>
+              <a href="${resetLink}" style="color: #e74c3c; word-break: break-all;">${resetLink}</a>
+            </p>
+          </div>
+          
+          <div class="footer">
+            <p>Grazie per aver scelto il nostro cinema! 🍿</p>
+            <p>Per assistenza: ${process.env.EMAIL_USER}</p>
+            <p>© ${new Date().getFullYear()} Cinema API - Tutti i diritti riservati</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  try {
+    const result = await transporter.sendMail(mailOptions);
+    console.log('✅ Email di reset password inviata a:', userEmail);
+    console.log('📧 Message ID:', result.messageId);
+    return true;
+  } catch (error) {
+    console.error('❌ Errore invio email reset:', error);
+    throw new Error(`Errore nell'invio dell'email di reset: ${error.message}`);
+  }
+};
