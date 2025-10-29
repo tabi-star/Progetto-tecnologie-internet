@@ -1,9 +1,9 @@
 // src/pages/MovieDetail.jsx
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { Calendar, Clock, ArrowLeft, Ticket } from 'lucide-react'
+import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft, Ticket, LucideSquareArrowUpRight } from 'lucide-react'
 import './MovieDetail.css'
 
 const MovieDetail = () => {
@@ -12,20 +12,10 @@ const MovieDetail = () => {
   const [movie, setMovie] = useState(null)
   const [screenings, setScreenings] = useState([])
   const [selectedDate, setSelectedDate] = useState('')
+  const [startDate, setStartDate] = useState(new Date())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    fetchMovie()
-    const today = new Date().toISOString().split('T')[0]
-    setSelectedDate(today)
-  }, [id])
-
-  useEffect(() => {
-    if (selectedDate && movie) {
-      fetchScreenings()
-    }
-  }, [selectedDate, movie])
+  const scrollRef = useRef(null)
 
   const fetchMovie = async () => {
     try {
@@ -39,6 +29,12 @@ const MovieDetail = () => {
     }
   }
 
+  useEffect(() => {
+    fetchMovie()
+    const today = new Date().toISOString().split('T')[0]
+    setSelectedDate(today)
+  }, [id])
+
   const fetchScreenings = async () => {
     try {
       const response = await axios.get(`/api/screenings/movie/${id}/date/${selectedDate}`)
@@ -49,21 +45,71 @@ const MovieDetail = () => {
     }
   }
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Se il click NON avviene dentro .date-buttons
+      if (!event.target.closest('.date-buttons') && !event.target.closest('.left-arrow-btn') && !event.target.closest('.right-arrow-btn')) {
+        setSelectedDate('');
+      }
+    };
+
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (selectedDate && movie) {
+      fetchScreenings()
+    }
+  }, [selectedDate, movie])
+
+  useEffect(() => {
+    if (!selectedDate) {
+      setScreenings([]);
+    } else if (selectedDate && movie) {
+      fetchScreenings;
+    }
+  }, [selectedDate])
+
+  // Genera date della settimana
   const getWeekDates = () => {
     const dates = []
-    const today = new Date()
+    /*const today = new Date()*/
     
     for (let i = 0; i < 7; i++) {
-      const date = new Date(today)
-      date.setDate(today.getDate() + i)
+      const date = new Date(startDate/*today*/)
+      /*date.setDate(today.getDate() + i)*/
+      date.setDate(startDate.getDate() + i)
+      const today = new Date()
+      const tomorrow = new Date()
+      tomorrow.setDate(tomorrow.getDate() + 1)
       dates.push({
         date: date.toISOString().split('T')[0],
-        label: i === 0 ? 'Oggi' : 
-               i === 1 ? 'Domani' : 
-               date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'short' })
+        label:
+          date.toDateString() === today.toDateString() ? 'Oggi' :
+          date.toDateString() === tomorrow.toDateString() ? 'Domani' :
+          date.toLocaleDateString('it-IT', { weekday : 'long', day : 'numeric', month : 'long' }),
       })
     }
     return dates
+  }
+
+  // 🔹 Sposta i 7 giorni in avanti
+  const handleNextDays = () => {
+    scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' })
+    const newStart = new Date(startDate)
+    newStart.setDate(startDate.getDate() + 1)
+    setStartDate(newStart)
+  }
+
+  // 🔹 Sposta i 7 giorni indietro (senza andare prima di oggi)
+  const handlePrevDays = () => {
+    const today = new Date()
+    if (startDate.toDateString() === today.toDateString()) return
+    scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' })
+    const newStart = new Date(startDate)
+    newStart.setDate(startDate.getDate() - 1)
+    setStartDate(newStart)
   }
 
   const formatTime = (dateTime) => {
@@ -102,20 +148,23 @@ const MovieDetail = () => {
           
           <div className="movie-info">
             <h1>{movie.title}</h1>
-            <p className="movie-description">{movie.description}</p>
+
+            <div className="movie-details-container">
+              <p className="movie-description">{movie.description}</p>
             
-            <div className="movie-meta-grid">
-              <div className="meta-item">
-                <strong>Durata:</strong>
-                <span>{Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m</span>
-              </div>
-              <div className="meta-item">
-                <strong>Lingua:</strong>
-                <span>{movie.language}</span>
-              </div>
-              <div className="meta-item">
-                <strong>Data uscita:</strong>
-                <span>{new Date(movie.release_date).toLocaleDateString('it-IT')}</span>
+              <div className="movie-meta-grid">
+                <div className="meta-item">
+                  <strong>Durata:</strong>
+                  <span>{Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m</span>
+                </div>
+                <div className="meta-item">
+                  <strong>Lingua:</strong>
+                  <span>{movie.language}</span>
+                </div>
+                <div className="meta-item">
+                  <strong>Data uscita:</strong>
+                  <span>{new Date(movie.release_date).toLocaleDateString('it-IT')}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -123,23 +172,42 @@ const MovieDetail = () => {
 
         {/* Screening Selection */}
         <section className="screenings-section">
-          <h2>
-            <Calendar size={24} />
-            Proiezioni disponibili
-          </h2>
 
           {/* Date Selector */}
           <div className="date-selector">
-            <div className="date-buttons">
-              {getWeekDates().map(({ date, label }) => (
-                <button
-                  key={date}
-                  className={`date-btn ${selectedDate === date ? 'active' : ''}`}
-                  onClick={() => setSelectedDate(date)}
-                >
-                  {label}
-                </button>
-              ))}
+            <h2>
+              <Calendar size={24} />
+              Proiezioni disponibili
+            </h2>
+
+            <div className="date-buttons-container">
+
+              <button
+                className="left-arrow-btn"
+                onClick={handlePrevDays}
+              >
+                <ChevronLeft size={30} />
+              </button>
+
+              <div className="date-buttons" ref={scrollRef}>
+                {getWeekDates().map(({ date, label }) => (
+                  <button
+                    key={date}
+                    className={`date-btn ${selectedDate === date ? 'active' : ''}`}
+                    onClick={() => setSelectedDate(selectedDate === date ? '' : date)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className="right-arrow-btn"
+                onClick={handleNextDays}
+              >
+                <ChevronRight size={30} />
+              </button>
+
             </div>
           </div>
 
@@ -155,8 +223,8 @@ const MovieDetail = () => {
                   
                   <div className="screening-info">
                     <div className="screening-hall">
-                      <span className="hall-name">{screening.hall_name}</span>
-                      <span className="hall-type">{screening.hall_type}</span>
+                      <div className="hall-name">{screening.hall_name}</div>
+                      <div className="hall-type">{screening.hall_type}</div>
                     </div>
                     <div className="screening-duration">
                       {Math.floor(screening.duration_minutes / 60)}h {screening.duration_minutes % 60}m

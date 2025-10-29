@@ -1,9 +1,9 @@
 // src/pages/ScreeningSelection.jsx
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { Calendar, Clock, ArrowLeft, Ticket } from 'lucide-react'
+import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft, Ticket } from 'lucide-react'
 import './ScreeningSelection.css'
 
 const ScreeningSelection = () => {
@@ -13,8 +13,28 @@ const ScreeningSelection = () => {
   const [movie, setMovie] = useState(null)
   const [screenings, setScreenings] = useState([])
   const [selectedDate, setSelectedDate] = useState('')
+  const [startDate, setStartDate] = useState(new Date())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const scrollRef = useRef(null)
+
+  const fetchMovie = async () => {
+    try {
+      const response = await axios.get(`/api/movies/${movieId}`)
+      setMovie(response.data)
+    } catch (err) {
+      setError('Film non trovato')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchMovie()
+    const today = new Date().toISOString().split('T')[0]
+    setSelectedDate(today)
+  }, [movieId])
 
   useEffect(() => {
     const dateFromParams = searchParams.get('date')
@@ -26,22 +46,6 @@ const ScreeningSelection = () => {
     }
     fetchMovie()
   }, [movieId, searchParams])
-
-  useEffect(() => {
-    if (selectedDate && movieId) {
-      fetchScreenings()
-    }
-  }, [selectedDate, movieId])
-
-  const fetchMovie = async () => {
-    try {
-      const response = await axios.get(`/api/movies/${movieId}`)
-      setMovie(response.data)
-    } catch (err) {
-      setError('Film non trovato')
-      console.error(err)
-    }
-  }
 
   const fetchScreenings = async () => {
     try {
@@ -56,21 +60,76 @@ const ScreeningSelection = () => {
     }
   }
 
+  useEffect(() => {
+    if (selectedDate && movieId) {
+      fetchScreenings()
+    }
+  }, [selectedDate, movieId])
+
+  /*Bisogna ripartire da qui e capire cosa fa l'useEffect di sopra*/
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Se il click NON avviene dentro .date-buttons
+      if (!event.target.closest('.date-buttons') && !event.target.closest('.left-arrow-btn') && !event.target.closest('.right-arrow-btn')) {
+        setSelectedDate('');
+      }
+    };
+
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  /*useEffect(() => {
+    if (selectedDate && movie) {
+      fetchScreenings()
+    }
+  }, [selectedDate, movie])*/
+
+  useEffect(() => {
+    if (!selectedDate) {
+      setScreenings([]);
+    } else if (selectedDate && movie) {
+      fetchScreenings;
+    }
+  }, [selectedDate])
+
   const getWeekDates = () => {
     const dates = []
-    const today = new Date()
-    
+    /*const today = new Date()*/
     for (let i = 0; i < 7; i++) {
-      const date = new Date(today)
-      date.setDate(today.getDate() + i)
+      const date = new Date(startDate/*today*/)
+      /*date.setDate(today.getDate() + i)*/
+      date.setDate(startDate.getDate() + i)
+      const today = new Date()
+      const tomorrow = new Date()
+      tomorrow.setDate(tomorrow.getDate() + 1)
       dates.push({
         date: date.toISOString().split('T')[0],
-        label: i === 0 ? 'Oggi' : 
-               i === 1 ? 'Domani' : 
-               date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'short' })
+        label:
+          date.toDateString() === today.toDateString() ? 'Oggi' :
+          date.toDateString() === tomorrow.toDateString() ? 'Domani' :
+          date.toLocaleDateString('it-IT', { weekday : 'long', day : 'numeric', month : 'long' }),
       })
     }
     return dates
+  }
+
+  // 🔹 Sposta i 7 giorni in avanti
+  const handleNextDays = () => {
+    scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' })
+    const newStart = new Date(startDate)
+    newStart.setDate(startDate.getDate() + 1)
+    setStartDate(newStart)
+  }
+
+  // 🔹 Sposta i 7 giorni indietro (senza andare prima di oggi)
+  const handlePrevDays = () => {
+    const today = new Date()
+    if (startDate.toDateString() === today.toDateString()) return
+    scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' })
+    const newStart = new Date(startDate)
+    newStart.setDate(startDate.getDate() - 1)
+    setStartDate(newStart)
   }
 
   const formatTime = (dateTime) => {
@@ -80,26 +139,43 @@ const ScreeningSelection = () => {
     })
   }
 
+  /*if (loading) return <div className="loading">Caricamento proiezioni...</div>*/
   if (error) return <div className="error">{error}</div>
+
+  function getEndTime(startTime, durationMinutes) {
+    const start = new Date(startTime);
+    if (isNaN(start)) {
+      console.warn("Data non valida:", startTime);
+      return "Orario non disponibile";
+    }
+    const end = new Date(start.getTime() + durationMinutes * 60000);
+    return end.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  }
 
   return (
     <div className="screening-selection">
       <div className="container">
         {/* Header */}
         <div className="page-header">
+          {/*<div className="btn-back-container">*/}
           <button onClick={() => navigate(-1)} className="btn-back">
             <ArrowLeft size={20} />
-            Torna al film
+            Torna ai film
           </button>
+          {/*</div>*/}
           {movie && (
-            <div className="movie-mini-info">
+            <div className="movie-mini-data">
               <img 
                 src={movie.foto_locandina || '/placeholder-movie.jpg'} 
                 alt={movie.title}
                 className="movie-thumb"
               />
-              <div>
+              <div className="movie-mini-info">
                 <h1>{movie.title}</h1>
+                <div className="movie-mini-meta">
+                  <span1>{movie.language}</span1>
+                  <span2>{Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m</span2>
+                </div>
                 <p>Scegli la proiezione</p>
               </div>
             </div>
@@ -112,16 +188,32 @@ const ScreeningSelection = () => {
             <Calendar size={24} />
             Seleziona la data
           </h2>
-          <div className="date-buttons">
-            {getWeekDates().map(({ date, label }) => (
+          <div className="date-buttons-container">
               <button
-                key={date}
-                className={`date-btn ${selectedDate === date ? 'active' : ''}`}
-                onClick={() => setSelectedDate(date)}
+                className="left-arrow-btn"
+                onClick={handlePrevDays}
               >
-                {label}
+                <ChevronLeft size={30} />
               </button>
-            ))}
+
+              <div className="date-buttons" ref={scrollRef}>
+                {getWeekDates().map(({ date, label }) => (
+                  <button
+                    key={date}
+                    className={`date-btn ${selectedDate === date ? 'active' : ''}`}
+                    onClick={() => setSelectedDate(selectedDate === date ? '' : date)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className="right-arrow-btn"
+                onClick={handleNextDays}
+              >
+                <ChevronRight size={30} />
+              </button>
           </div>
         </section>
 
@@ -139,16 +231,16 @@ const ScreeningSelection = () => {
           {loading ? (
             <div className="loading">Caricamento proiezioni...</div>
           ) : screenings.length > 0 ? (
-            <div className="screenings-grid">
+            <div className="screenings-list">
               {screenings.map(screening => (
                 <div key={screening.id} className="screening-card">
                   <div className="screening-header">
                     <div className="screening-time">
-                      <strong>{formatTime(screening.start_time)}</strong>
+                      <strong>{formatTime(screening.start_time)} - {getEndTime(screening.start_time, screening.duration_minutes)}</strong>
                     </div>
-                    <div className="screening-duration">
+                    {/*<div className="screening-duration">
                       {Math.floor(screening.duration_minutes / 60)}h {screening.duration_minutes % 60}m
-                    </div>
+                    </div>*/}
                   </div>
 
                   <div className="screening-info">

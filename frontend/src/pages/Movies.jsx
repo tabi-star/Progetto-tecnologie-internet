@@ -74,7 +74,7 @@ const Movies = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Se il click NON avviene dentro .date-buttons
-      if (!event.target.closest('.date-buttons')) {
+      if (!event.target.closest('.date-buttons') && !event.target.closest('.left-arrow-btn') && !event.target.closest('.right-arrow-btn')) {
         setSelectedDate('');
       }
     };
@@ -138,7 +138,7 @@ const Movies = () => {
         {/* Date Selector */}
         <div className="date-selector">
           <h3>
-            <Calendar size={20} />
+            <Calendar size={24} />
             Seleziona la data
           </h3>
 

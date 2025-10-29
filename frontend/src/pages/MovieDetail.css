@@ -34,8 +34,17 @@
   color: #e74c3c;
 }
 
+.movie-details-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
 .movie-description {
-  font-size: 1.1rem;
+  text-align: left;
+  font-size: 1.5rem;
   line-height: 1.7;
   margin-bottom: 2rem;
   color: #ccc;
@@ -53,7 +62,8 @@
 
 .meta-item {
   display: flex;
-  flex-direction: column;
+  flex-direction: space-between;/*row;*/
+  align-items: center;
   gap: 0.5rem;
 }
 
@@ -130,12 +140,17 @@
   border-radius: 8px;
   border: 1px solid #34495e;
   transition: all 0.3s ease;
+  /*gap: 2rem;*/ /* aggiunge spazio costante tra i blocchi principali */
 }
 
 .screening-card:hover {
   background: #34495e;
   border-color: #e74c3c;
   transform: translateX(8px);
+}
+
+.screening-card:hover .screening-duration {
+  background: #1a1a1a;
 }
 
 .screening-time {
@@ -148,16 +163,17 @@
 
 .screening-info {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 2rem;
   flex: 1;
-  margin: 0 2rem;
+  margin: 1.5rem 2rem;
 }
 
 .screening-hall {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  flex-direction: row;
+  gap: 0.5rem;
 }
 
 .hall-name {
