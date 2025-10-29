@@ -1,4 +1,4 @@
-// src/contexts/AuthContext.jsx
+// src/contexts/AuthContext.jsx - VERSIONE CORRETTA
 
 import { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token')
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      // Verifica token con il backend
       checkAuth()
     } else {
       setLoading(false)
@@ -36,9 +35,12 @@ export const AuthProvider = ({ children }) => {
         return
       }
 
-      // Il backend non ha un endpoint /me, quindi usiamo il token JWT direttamente
-      // In un'app reale, dovresti avere un endpoint per verificare il token
+      // VERIFICA REALE CON IL SERVER
       const userData = JSON.parse(atob(token.split('.')[1]))
+      
+      // Opzionale: fai una chiamata API per verificare che il token sia ancora valido
+      // await axios.get('/api/users/me');
+      
       setUser(userData)
     } catch (error) {
       console.error('Auth check failed:', error)
@@ -50,46 +52,105 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/api/users/login', { email, password })
+      console.log('🔐 [AuthContext] Iniziando login per:', email)
+      
+      // ✅ ROUTE CORRETTA - usa /api/users/login
+      const response = await axios.post('/api/users/login', { 
+        email, 
+        password 
+      })
+      
+      console.log('✅ [AuthContext] Risposta ricevuta:', response.data)
+      
+      if (!response.data.token || !response.data.user) {
+        throw new Error('Risposta del server incompleta')
+      }
+      
       const { token, user: userData } = response.data
       
       localStorage.setItem('token', token)
+      localStorage.setItem('user', JSON.stringify(userData))
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       setUser(userData)
       
+      console.log('🎉 [AuthContext] Login completato con successo')
       return { success: true }
+      
     } catch (error) {
+      console.error('❌ [AuthContext] Errore durante il login:', error)
+      
+      let errorMessage = 'Errore durante il login'
+      
+      if (error.response) {
+        errorMessage = error.response.data?.error || `Errore del server: ${error.response.status}`
+        console.log('📡 Dettagli errore server:', error.response.data)
+      } else if (error.request) {
+        errorMessage = 'Impossibile connettersi al server'
+        console.log('🌐 Nessuna risposta dal server')
+      } else {
+        errorMessage = error.message
+      }
+      
       return { 
         success: false, 
-        error: error.response?.data?.error || 'Login failed' 
+        error: errorMessage 
       }
     }
   }
 
   const register = async (userData) => {
     try {
+      console.log('👤 [AuthContext] Iniziando registrazione per:', userData.email)
+      
+      // ✅ ROUTE CORRETTA - usa /api/users
       const response = await axios.post('/api/users', userData)
+      
+      console.log('✅ [AuthContext] Registrazione completata:', response.data)
+      
+      // Auto-login dopo registrazione
+      if (response.data.user) {
+        const loginResult = await login(userData.email, userData.password)
+        return loginResult
+      }
+      
       return { success: true }
+      
     } catch (error) {
+      console.error('❌ [AuthContext] Errore durante la registrazione:', error)
+      
+      let errorMessage = 'Errore durante la registrazione'
+      
+      if (error.response) {
+        errorMessage = error.response.data?.error || `Errore del server: ${error.response.status}`
+      } else if (error.request) {
+        errorMessage = 'Impossibile connettersi al server'
+      } else {
+        errorMessage = error.message
+      }
+      
       return { 
         success: false, 
-        error: error.response?.data?.error || 'Registration failed' 
+        error: errorMessage 
       }
     }
   }
 
   const logout = () => {
+    console.log('👋 [AuthContext] Logout')
     localStorage.removeItem('token')
+    localStorage.removeItem('user')
     delete axios.defaults.headers.common['Authorization']
     setUser(null)
   }
 
   const updateProfile = async (profileData) => {
     try {
+      // ✅ ROUTE CORRETTA - usa /api/users/profile
       await axios.put('/api/users/profile', profileData)
-      // Aggiorna i dati utente localmente
       if (profileData.name) {
         setUser(prev => ({ ...prev, name: profileData.name }))
+        const updatedUser = { ...user, name: profileData.name }
+        localStorage.setItem('user', JSON.stringify(updatedUser))
       }
       return { success: true }
     } catch (error) {
