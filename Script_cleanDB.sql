@@ -1,6 +1,6 @@
 -- =====================================================================
 -- Script di reset del database "cinema"
--- Mantiene solo l'utente admin e svuota tutte le altre tabelle
+-- Mantiene solo l'utente admin (id = 1) e svuota tutte le altre tabelle
 -- =====================================================================
 
 USE cinema;
@@ -14,6 +14,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE payments;
 TRUNCATE TABLE tickets;
 TRUNCATE TABLE discount_codes;
+TRUNCATE TABLE password_reset_tokens;
 TRUNCATE TABLE screenings;
 TRUNCATE TABLE seats;
 TRUNCATE TABLE movies;
