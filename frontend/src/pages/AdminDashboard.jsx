@@ -70,7 +70,7 @@ const AdminDashboard = () => {
       title: 'Gestisci Sale',
       description: 'Configura le sale e i posti disponibili',
       link: '/admin/halls',
-      color: '#9b59b6'
+      color: '#2ecc71'
     },
     {
       icon: <Ticket size={32} />,
@@ -84,7 +84,7 @@ const AdminDashboard = () => {
       title: 'Scansiona biglietti',
       description: 'Verifica e convalida i biglietti con QR code',
       link: '/admin/qr-scanner',
-      color: '#2ecc71'
+      color: '#9b59b6'
     },
     {
       icon: <Settings size={32} />,
