@@ -128,10 +128,10 @@ const MovieDetail = () => {
       <div className="container">
         {/* Header con navigazione */}
         <div className="movie-header">
-          <button onClick={() => navigate(-1)} className="btn-back">
+          {/*<button onClick={() => navigate(-1)} className="btn-back">
             <ArrowLeft size={20} />
             Torna indietro
-          </button>
+          </button>*/}
         </div>
 
         {/* Movie Hero */}
@@ -146,11 +146,13 @@ const MovieDetail = () => {
             />
           </div>
           
-          <div className="movie-info">
+          <div className="detail-movie-info">
+            
             <h1>{movie.title}</h1>
 
             <div className="movie-details-container">
-              <p className="movie-description">{movie.description}</p>
+
+              <p className="detail-movie-description">{movie.description}</p>
             
               <div className="movie-meta-grid">
                 <div className="meta-item">
@@ -166,8 +168,13 @@ const MovieDetail = () => {
                   <span>{new Date(movie.release_date).toLocaleDateString('it-IT')}</span>
                 </div>
               </div>
+
             </div>
+
+            <hr />
+
           </div>
+          
         </div>
 
         {/* Screening Selection */}

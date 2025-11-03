@@ -12,8 +12,10 @@
 
 .header-content {
   display: flex;
+  flex-grow: 1;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .logo {
@@ -28,16 +30,19 @@
   color: #c0392b;
 }
 
-.header-actions {
+/*.header-actions {
   display: flex;
-  align-items: center;
+  flex-grow: 1;*/
+  /*justify-content: space-between*//*flex-end;*/
+  /*align-items: center;
   gap: 1rem;
-}
+}*/
 
 .btn-back {
   background: #34495e;
   color: white;
   border: none;
+  font-size: 0.9rem;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
@@ -89,7 +94,7 @@
   border-radius: 6px;
   padding: 8px;
   margin-top: 8px;
-  min-width: 150px;
+  min-width: 100%; /*150px*/
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);

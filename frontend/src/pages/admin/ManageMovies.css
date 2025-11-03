@@ -151,61 +151,77 @@
   justify-content: flex-end;
 }
 
-.movies-grid {
+.manage-movies-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  justify-content: center;
+  align-items: stretch;
   gap: 1.5rem;
 }
 
-.movie-card {
+.manage-movie-card {
   background: #1a1a1a;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #333;
-  transition: all 0.3s ease;
+  border: 1.5px solid #333;
+  /*transition: all 0.3s ease;*/
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto/*0.75fr*/;
+  /*flex-direction: column;*/
+  height: 100%;
 }
 
-.movie-card:hover {
+.manage-movie-card:hover {
   border-color: #e74c3c;
   transform: translateY(-4px);
   box-shadow: 0 10px 25px rgba(231, 76, 60, 0.1);
 }
 
-.movie-poster {
-  position: relative;
-  height: 200px;
-  overflow: hidden;
-}
-
-.movie-poster img {
+/*.movie-poster {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
-}
+  transition: transform 0.3s ease;*/
+  /*position: relative;
+  height: auto;*/
+  /*width: 100%;*/
+  /*overflow: hidden;
+  flex-shrink: 0;
+}*/
 
-.movie-card:hover .movie-poster img {
+/*.movie-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.3s ease;
+  display: block;
+}*/
+
+.manage-movie-card:hover .movie-poster img {
   transform: scale(1.05);
 }
 
-.movie-actions {
+.movie-actions { /*OCCHIO E' MOVIE-ACTIONS NON MOVIES-ACTIONS!*/
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.5rem;
+  right: 0.5rem;
   display: flex;
   gap: 0.5rem;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
-.movie-card:hover .movie-actions {
+.manage-movie-card:hover .movie-actions {
   opacity: 1;
 }
 
-.btn-action {
-  width: 35px;
-  height: 35px;
+.manage-btn-action {
+  /*width: 6rem;
+  height: 2.5rem;*/
+  padding: 0.5rem 2.25rem;
   border: none;
   border-radius: 6px;
   display: flex;
@@ -215,60 +231,117 @@
   transition: all 0.3s ease;
 }
 
-.btn-action.edit {
+.manage-btn-action.edit {
   background: #3498db;
   color: white;
 }
 
-.btn-action.delete {
+.manage-btn-action.delete {
   background: #e74c3c;
   color: white;
 }
 
-.btn-action:hover {
+.manage-btn-action:hover {
   transform: scale(1.1);
 }
 
-.movie-info {
-  padding: 1.5rem;
+.manage-movie-info {
+  /*padding: 1.5rem;*/
+  flex: 1.25;
+  display: flex;
+  flex-direction: column;
+  justify-content: center/*space-between*/;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  flex-grow: 1;
+  height: auto;
+  border-bottom: 1.5px solid #333;
+  /*border-bottom: 1px solid lime;*/
 }
 
-.movie-info h3 {
+.manage-movie-info h3 {
   font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  /*margin-bottom: 0.5rem;*/
+  padding: 0rem 1rem;
   color: #fff;
 }
 
-.movie-description {
-  color: #ccc;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  margin-bottom: 1rem;
-}
-
-.movie-meta {
+.manage-movie-meta {
   display: flex;
+  justify-content: /*space-between;*/center;
+  align-items: center;
   flex-wrap: wrap;
+  color: #999;
   gap: 0.5rem;
-  margin-bottom: 1rem;
 }
 
-.movie-meta span {
-  background: #2c3e50;
+.manage-movie-meta span {
+  background: #34495e;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.8rem;
+  text-align: center;
+}
+
+/*.manage-movie-description-bottom {
+  padding: 3% 3%;*/
+  /*line-height: 1.4;*/
+  /*margin-bottom: 1rem;*/
+/*}*/
+
+.manage-movie-description-bottom p {
   color: #ccc;
+  font-size: 0.9rem;
+  text-align: left;
+  padding: 3% 3%;
 }
 
 .movie-stats {
+  width: 90%;
   border-top: 1px solid #333;
-  padding-top: 1rem;
+  /*padding-top: 1rem;*/
+  margin: 0 auto;
+  text-align: center;
 }
 
 .movie-stats span {
-  font-size: 0.8rem;
+  display: block;
+  font-size: 0.85rem;
   color: #666;
+  text-align: center;
+  padding: 5% 0;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #1a1a1a;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #e74c3c;
+  text-align: center;
+  max-width: 400px;
+}
+
+.modal h3 {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.modal-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .no-movies {
@@ -296,7 +369,7 @@
     grid-template-columns: 1fr;
   }
   
-  .movies-grid {
+  .manage-movies-grid {
     grid-template-columns: 1fr;
   }
   

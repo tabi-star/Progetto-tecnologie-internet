@@ -176,13 +176,13 @@ const handlePayment = async () => {
           <div className="order-review">
             <h2>Riepilogo ordine</h2>
             
-            <div className="movie-info">
+            <div className="payment-movie-info">
               <img 
                 src={screening.foto_locandina || '/placeholder-movie.jpg'} 
                 alt={screening.title}
-                className="movie-poster"
+                className="payment-movie-poster"
               />
-              <div className="movie-details">
+              <div className="payment-movie-details">
                 <h3>{screening.title}</h3>
                 <div className="screening-info">
                   <p><strong>Data:</strong> {new Date(screening.start_time).toLocaleDateString('it-IT')}</p>

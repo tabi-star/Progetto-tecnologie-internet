@@ -38,22 +38,22 @@
   text-align: center;
 }
 
-.movie-info {
+.payment-movie-info {
   display: flex;
   gap: 1.5rem;
   margin-bottom: 2rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #333; /*OCCHIO!!!!!!*/
 }
 
-.movie-poster {
+.payment-movie-poster {
   width: 120px;
   height: 160px;
   object-fit: cover;
   border-radius: 8px;
 }
 
-.movie-details h3 {
+.payment-movie-details h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
   color: #fff;

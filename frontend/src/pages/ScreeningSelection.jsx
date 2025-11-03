@@ -156,12 +156,12 @@ const ScreeningSelection = () => {
     <div className="screening-selection">
       <div className="container">
         {/* Header */}
-        <div className="page-header">
+        <div className="screening-page-header">
           {/*<div className="btn-back-container">*/}
-          <button onClick={() => navigate(-1)} className="btn-back">
+          {/*<button onClick={() => navigate(-1)} className="btn-back">
             <ArrowLeft size={20} />
             Torna ai film
-          </button>
+          </button>*/}
           {/*</div>*/}
           {movie && (
             <div className="movie-mini-data">
@@ -173,8 +173,8 @@ const ScreeningSelection = () => {
               <div className="movie-mini-info">
                 <h1>{movie.title}</h1>
                 <div className="movie-mini-meta">
-                  <span1>{movie.language}</span1>
-                  <span2>{Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m</span2>
+                  <span1>{Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m</span1>
+                  <span2>{movie.language}</span2>
                 </div>
                 <p>Scegli la proiezione</p>
               </div>
