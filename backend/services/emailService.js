@@ -22,14 +22,15 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
   const transporter = createTransporter();
   
   // Genera QR code URL per ogni ticket
-  const qrCodesHtml = tickets.map(t => `
+  const qrCodesHtml = 
+  `
     <div style="text-align: center; margin: 15px; display: inline-block;">
-      <p><strong>Posto ${t.seat_number}</strong></p>
+      <p><strong>Sono inclusi tutti i posti prenotati</strong></p>
       <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CINEMA-TICKET-${t.id}-${t.seat_number}-${t.screening_id}" 
            alt="QR Code Posto ${t.seat_number}" 
            style="max-width: 150px; border: 2px solid #333; padding: 10px; background: white;" />
     </div>
-  `).join('');
+  `
 
   const mailOptions = {
     from: {
@@ -87,12 +88,12 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
             </div>
 
             <div class="qr-section">
-              <h3>📱 QR Codes per l'ingresso:</h3>
+              <h3>📱 QR Code per l'ingresso:</h3>
               <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
                 ${qrCodesHtml}
               </div>
               <p style="font-size: 12px; color: #666; margin-top: 15px;">
-                Presenta questi QR code all'ingresso della sala
+                Presenta questo QR code all'ingresso del cinema
               </p>
             </div>
 
@@ -128,10 +129,6 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
     throw new Error(`Errore nell'invio dell'email: ${error.message}`);
   }
 };
-
-// services/emailService.js - AGGIUNGI queste funzioni
-
-// ... codice esistente ...
 
 export const sendPasswordResetEmail = async (userEmail, userName, resetToken) => {
   const transporter = createTransporter();

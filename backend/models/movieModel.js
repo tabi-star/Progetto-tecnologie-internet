@@ -8,11 +8,11 @@ export const getAllMovies = (cb) => {
 export const getMovieById = (id, cb) => {
   db.query("SELECT * FROM movies WHERE id = ?", [id], cb);
 };
-
+// Film che sono nell'intervallo "attivo" (da 1 settimana prima a 30 giorni dopo l'uscita)
 export const getUpcomingMovies = (cb) => {
   const query = `
     SELECT * FROM movies 
-    WHERE release_date > CURDATE() 
+    WHERE CURDATE() BETWEEN DATE_SUB(release_date, INTERVAL 7 DAY) AND DATE_ADD(release_date, INTERVAL 30 DAY) 
     ORDER BY release_date ASC 
     LIMIT 5
   `;

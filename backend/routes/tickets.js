@@ -1,4 +1,5 @@
 // routes/tickets.js
+
 import { Router } from "express";
 import { getTickets, addTicket, getUserTickets, reserveTicketSeats, confirmTicketPayment, cancelUserTicket } from "../controllers/ticketsController.js";
 import { authenticateToken } from "../middleware/auth.js";

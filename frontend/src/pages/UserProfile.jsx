@@ -79,6 +79,19 @@ const UserProfile = () => {
     setMessage('')
   }
 
+  const handleCancelTicket = async (ticketId) => {
+    if (window.confirm('Sei sicuro di voler cancellare questo biglietto?')) {
+      try {
+        await axios.delete(`/api/tickets/${ticketId}/cancel`)
+        setMessage('Biglietto cancellato con successo')
+        // Ricarica la lista dei biglietti
+        fetchUserTickets()
+      } catch (err) {
+        setError('Errore nella cancellazione del biglietto')
+      }
+    }
+  }
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('it-IT', {
       weekday: 'long',
@@ -136,9 +149,6 @@ const UserProfile = () => {
                 </button>
               )}
             </div>
-
-            {message && <div className="success-message">{message}</div>}
-            {error && <div className="error-message">{error}</div>}
 
             {editMode ? (
               <form onSubmit={handleUpdateProfile} className="edit-form">
@@ -218,6 +228,9 @@ const UserProfile = () => {
             )}
           </section>
 
+          {message && <div className="success-message">{message}</div>}
+          {error && <div className="error-message">{error}</div>}
+
           {/* Sezione Biglietti */}
           <section className="profile-section">
             <div className="section-header">
@@ -233,32 +246,67 @@ const UserProfile = () => {
               <div className="tickets-grid">
                 {tickets.map(ticket => (
                   <div key={ticket.id} className="ticket-card">
-                    <img 
-                      src={ticket.foto_locandina || '/placeholder-movie.jpg'} 
-                      alt={ticket.title}
-                      className="ticket-poster"
-                    />
-                    <div className="ticket-info">
-                      <h3>{ticket.title}</h3>
-                      <div className="ticket-details">
-                        <p><strong>Sala:</strong> {ticket.hall_name}</p>
-                        <p><strong>Data:</strong> {formatDate(ticket.start_time)}</p>
-                        <p><strong>Posto:</strong> {ticket.seat_number}</p>
-                        <p><strong>Stato:</strong> 
+                    <div className="ticket-header">
+                      <img 
+                        src={ticket.foto_locandina || '/placeholder-movie.jpg'} 
+                        alt={ticket.title}
+                        className="ticket-poster"
+                      />
+                      <div className="ticket-main-info">
+                        <h3>{ticket.title}</h3>
+                        <div className="ticket-status">
                           <span className={`status-${ticket.status}`}>
                             {ticket.status === 'confirmed' ? 'Confermato' : ticket.status}
                           </span>
-                        </p>
-                      </div>
-                      {ticket.qr_code_url && (
-                        <div className="ticket-qr">
-                          <img 
-                            src={`http://localhost:3000${ticket.qr_code_url}`} 
-                            alt="QR Code"
-                            className="qr-code"
-                          />
                         </div>
-                      )}
+                      </div>
+                    </div>
+                    
+                    <div className="ticket-details">
+                      <div className="detail-row">
+                        <span className="detail-label">Sala:</span>
+                        <span className="detail-value">{ticket.hall_name}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Data:</span>
+                        <span className="detail-value">{formatDate(ticket.start_time)}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Posto:</span>
+                        <span className="detail-value">{ticket.seat_number}</span>
+                      </div>
+                    </div>
+
+                    {ticket.qr_code_url && (
+                      <div className="ticket-qr-section">
+                        <p className="qr-label">QR Code</p>
+                        <img 
+                          src={`http://localhost:3000${ticket.qr_code_url}`}
+                          alt="QR Code"
+                          className="qr-code"
+                          onError={(e) => {
+                            console.error('Errore nel caricamento QR code:', ticket.qr_code_url);
+                            e.target.style.display = 'none';
+                            const fallback = document.createElement('div');
+                            fallback.textContent = 'QR Code non disponibile';
+                            fallback.className = 'qr-fallback';
+                            e.target.parentNode.appendChild(fallback);
+                          }}
+                          onLoad={(e) => {
+                            console.log('QR code caricato con successo:', ticket.qr_code_url);
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    <div className="ticket-actions">
+                      <button 
+                        onClick={() => handleCancelTicket(ticket.id)}
+                        className="btn btn-danger btn-small"
+                      >
+                        <Trash2 size={14} />
+                        Cancella Biglietto
+                      </button>
                     </div>
                   </div>
                 ))}

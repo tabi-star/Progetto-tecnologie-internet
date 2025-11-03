@@ -52,7 +52,7 @@ const SeatSelection = () => {
   }
 
   const getSeatPrice = (seat) => {
-    return seat.seat_type === 'premium' ? 15 : 10
+    return seat.seat_type === 'premium' ? 10 : 7.50
   }
 
   const handleSeatClick = (seat) => {
@@ -207,7 +207,7 @@ const SeatSelection = () => {
                           className={`seat ${getSeatStatus(seat)} ${seat.seat_type}`}
                           onClick={() => handleSeatClick(seat)}
                           disabled={seat.status === 'occupied' || seat.status === 'reserved'}
-                          title={`Posto ${seat.seat_number} - ${seat.seat_type === 'premium' ? 'Premium €15' : 'Standard €10'}${seat.status === 'occupied' ? ' - OCCUPATO' : seat.status === 'reserved' ? ' - RISERVATO' : ''}`}
+                          title={`Posto ${seat.seat_number} - ${seat.seat_type === 'premium' ? 'Premium €10' : 'Standard €7.50'}${seat.status === 'occupied' ? ' - OCCUPATO' : seat.status === 'reserved' ? ' - RISERVATO' : ''}`}
                         >
                           {seat.seat_column}
                         </button>
@@ -224,7 +224,7 @@ const SeatSelection = () => {
             <div className="seat-legend">
               <div className="legend-item">
                 <div className="seat available"></div>
-                <span>Disponibile (€10)</span>
+                <span>Standard (€7.50)</span>
               </div>
               <div className="legend-item">
                 <div className="seat selected"></div>
@@ -236,7 +236,7 @@ const SeatSelection = () => {
               </div>
               <div className="legend-item">
                 <div className="seat premium"></div>
-                <span>Premium (€15)</span>
+                <span>Premium (€10)</span>
               </div>
             </div>
           </div>

@@ -65,7 +65,7 @@ export const confirmTicketPayment = async (req, res) => {
     }
 
     // Invia email di conferma
-    await sendConfirmationEmail(req.user.email, tickets, qr_code_url);
+    //await sendConfirmationEmail(req.user.email, tickets, qr_code_url);
 
     res.json({
       message: "Pagamento confermato e biglietti emessi",
