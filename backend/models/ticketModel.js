@@ -78,7 +78,7 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id) => {
        AND reserved_until <= NOW()`,
       [screening_id]
     );
-
+/*
     // Rimuovi prenotazioni personali precedenti
     await connection.execute(
       `DELETE FROM tickets 
@@ -86,13 +86,13 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id) => {
        AND reserved_until <= NOW()`,
       [user_id]
     );
-
+*/
     // Inserisci nuove prenotazioni
-    const reservedUntil = new Date(Date.now() + 15 * 60 * 1000);
+    const reservedUntil = new Date(Date.now() + 2 * 60 * 1000);
     
     for (const seat_number of seat_numbers) {
       const seat = seatDetails.find(s => s.seat_number === seat_number);
-      const price = seat?.seat_type === 'premium' ? 15.00 : 10.00;
+      const price = seat?.seat_type === 'premium' ? 10.00 : 7.50;
       
       await connection.execute(
         `INSERT INTO tickets (screening_id, user_id, seat_number, status, reserved_until, price) 

@@ -33,7 +33,7 @@ const Payment = () => {
 
   // Calcola il prezzo per ogni posto
   const getSeatPrice = (seat) => {
-    return seat.seat_type === 'premium' ? 15 : 10
+    return seat.seat_type === 'premium' ? 10.00 : 7.50
   }
 
   // Calcola il totale base (senza sconto)
