@@ -14,10 +14,12 @@ const ManageHalls = () => {
   const [editingHall, setEditingHall] = useState(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [showDeleteHallModal, setShowDeleteHallModal] = useState(false)
+  const [hallToDelete, setHallToDelete] = useState(null)
 
   const [formData, setFormData] = useState({
     name: '',
-    hall_type: 'Standard',
+    hall_type: ''/*'Standard'*/,
     capacity: ''
   })
 
@@ -67,8 +69,8 @@ const ManageHalls = () => {
     setShowForm(true)
   }
 
-  const handleDelete = async (hallId) => {
-    if (window.confirm('Sei sicuro di voler eliminare questa sala?')) {
+  const handleDelete = /*async*/ (hall) => {
+    /*if (window.confirm('Sei sicuro di voler eliminare questa sala?')) {
       try {
         await axios.delete(`/api/halls/${hallId}`)
         setSuccess('Sala eliminata con successo')
@@ -76,13 +78,32 @@ const ManageHalls = () => {
       } catch (err) {
         setError('Errore nell\'eliminazione della sala')
       }
+    }*/
+    setHallToDelete(hall)
+    setShowDeleteHallModal(true)
+  }
+
+  const confirmDelete = async () => {
+
+    if (!hallToDelete) return
+
+    try {
+      await axios.delete(`/api/halls/${hallToDelete.id}`)
+      setSuccess('Sala eliminata con successo')
+      fetchHalls()
+    } catch (err) {
+      setError('Errore nell\'eliminazione della sala')
+    } finally {
+      setShowDeleteHallModal(false)
+      setHallToDelete(null)
     }
+
   }
 
   const resetForm = () => {
     setFormData({
       name: '',
-      hall_type: 'Standard',
+      hall_type: ''/*'Standard'*/,
       capacity: ''
     })
     setEditingHall(null)
@@ -212,6 +233,19 @@ const ManageHalls = () => {
           </div>
         )}
 
+        {showDeleteHallModal && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h3>Conferma eliminazione</h3>
+              <p>Sei sicuro di voler eliminare <strong>{hallToDelete?.name}</strong>?</p>
+              <div className="modal-actions">
+                <button className="btn btn-primary" onClick={confirmDelete}>Elimina</button>
+                <button className="btn btn-secondary" onClick={() => setShowDeleteHallModal(false)}>Annulla</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="loading">Caricamento sale...</div>
         ) : (
@@ -275,7 +309,7 @@ const ManageHalls = () => {
                     Modifica
                   </button>
                   <button 
-                    onClick={() => handleDelete(hall.id)}
+                    onClick={() => handleDelete(hall)}
                     className="btn-action delete"
                   >
                     <Trash2 size={16} />

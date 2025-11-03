@@ -15,7 +15,7 @@ const ManageMovies = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showDeleteMovieModal, setShowDeleteMovieModal] = useState(false)
   const [movieToDelete, setMovieToDelete] = useState(null)
 
   const [formData, setFormData] = useState({
@@ -102,7 +102,7 @@ const ManageMovies = () => {
       setMovieToDelete(null)
     }*/
     setMovieToDelete(movie)
-    setShowDeleteModal(true)
+    setShowDeleteMovieModal(true)
   }
 
   const confirmDelete = async () => {
@@ -116,7 +116,7 @@ const ManageMovies = () => {
     } catch (err) {
       setError('Errore nell\'eliminazione del film')
     } finally {
-      setShowDeleteModal(false)
+      setShowDeleteMovieModal(false)
       setMovieToDelete(null)
     }
 
@@ -276,14 +276,14 @@ const ManageMovies = () => {
           </div>
         )}
 
-        {showDeleteModal && (
+        {showDeleteMovieModal && (
           <div className="modal-overlay">
             <div className="modal">
               <h3>Conferma eliminazione</h3>
               <p>Sei sicuro di voler eliminare <strong>{movieToDelete?.title}</strong>?</p>
               <div className="modal-actions">
                 <button className="btn btn-primary" onClick={confirmDelete}>Elimina</button>
-                <button className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>Annulla</button>
+                <button className="btn btn-secondary" onClick={() => setShowDeleteMovieModal(false)}>Annulla</button>
               </div>
             </div>
           </div>
