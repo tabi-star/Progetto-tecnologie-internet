@@ -12,7 +12,7 @@ export const generateQRCode = async (ticket_ids) => {
 
     const qrData = {
       ticket_ids: ticket_ids,
-      cinema: "Cinema API",
+      cinema: "🎥 🎬 TRCinema",
       generated_at: new Date().toISOString(),
       type: 'cinema_ticket'
     };

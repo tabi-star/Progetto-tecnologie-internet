@@ -34,7 +34,7 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
 
   const mailOptions = {
     from: {
-      name: 'Cinema API',
+      name: '🎥 🎬 TRCinema',
       address: process.env.EMAIL_USER
     },
     to: userEmail,
@@ -58,7 +58,7 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
       <body>
         <div class="container">
           <div class="header">
-            <h1>🎬 Cinema API</h1>
+            <h1>🎥 🎬 TRCinema</h1>
             <h2>Prenotazione Confermata!</h2>
           </div>
           
@@ -111,7 +111,7 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
           <div class="footer">
             <p>Grazie per aver scelto il nostro cinema! 🍿</p>
             <p>Per assistenza: ${process.env.EMAIL_USER}</p>
-            <p>© ${new Date().getFullYear()} Cinema API - Tutti i diritti riservati</p>
+            <p>© ${new Date().getFullYear()} 🎥 🎬 TRCinema - Tutti i diritti riservati</p>
           </div>
         </div>
       </body>
@@ -137,11 +137,11 @@ export const sendPasswordResetEmail = async (userEmail, userName, resetToken) =>
 
   const mailOptions = {
     from: {
-      name: 'Cinema API - Supporto',
+      name: '🎥 🎬 TRCinema - Supporto',
       address: process.env.EMAIL_USER
     },
     to: userEmail,
-    subject: '🔐 Reimposta la tua password - Cinema API',
+    subject: '🔐 Reimposta la tua password - 🎥 🎬 TRCinema',
     html: `
       <!DOCTYPE html>
       <html>
@@ -159,7 +159,7 @@ export const sendPasswordResetEmail = async (userEmail, userName, resetToken) =>
       <body>
         <div class="container">
           <div class="header">
-            <h1>🎬 Cinema API</h1>
+            <h1>🎥 🎬 TRCinema</h1>
             <h2>Reimposta la tua password</h2>
           </div>
           
@@ -193,7 +193,7 @@ export const sendPasswordResetEmail = async (userEmail, userName, resetToken) =>
           <div class="footer">
             <p>Grazie per aver scelto il nostro cinema! 🍿</p>
             <p>Per assistenza: ${process.env.EMAIL_USER}</p>
-            <p>© ${new Date().getFullYear()} Cinema API - Tutti i diritti riservati</p>
+            <p>© ${new Date().getFullYear()} 🎥 🎬 TRCinema - Tutti i diritti riservati</p>
           </div>
         </div>
       </body>

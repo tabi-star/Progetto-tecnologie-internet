@@ -22,7 +22,7 @@ const Layout = ({ children }) => {
         <div className="container">
           <div className="header-content">
             <Link to="/" className="logo">
-              🎬 CinemaAPI
+              🎥 🎬 TRCinema
             </Link>
             
             <div className="header-actions">
@@ -68,7 +68,7 @@ const Layout = ({ children }) => {
 
       <footer className="footer">
         <div className="container">
-          <p>&copy; 2024 CinemaAPI. Tutti i diritti riservati.</p>
+          <p>&copy; 2024 🎥 🎬 TRCinema. Tutti i diritti riservati.</p>
         </div>
       </footer>
     </div>
