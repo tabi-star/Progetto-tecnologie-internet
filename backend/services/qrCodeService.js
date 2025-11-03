@@ -1,4 +1,5 @@
 // services/qrCodeService.js
+
 import QRCode from 'qrcode';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -16,12 +17,13 @@ export const generateQRCode = async (ticket_ids) => {
       type: 'cinema_ticket'
     };
 
-    const qrFileName = `ticket_${ticket_ids.join('_')}_${Date.now()}.png`;
+    const qrText = `${ticket_ids.join('_')}_${Date.now()}`;
+    const qrFileName = `ticket_${qrText}.png`;
     const qrFilePath = path.join(qrDir, qrFileName);
     const qrCodeUrl = `/qr-codes/${qrFileName}`;
 
     // Genera il QR code come immagine
-    await QRCode.toFile(qrFilePath, JSON.stringify(qrData), {
+    await QRCode.toFile(qrFilePath, qrText, {
       width: 300,
       margin: 2,
       color: {

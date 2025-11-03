@@ -1,12 +1,22 @@
 // src/pages/AdminDashboard.jsx
 
 import { useAuth } from '../contexts/AuthContext'
-import { Link } from 'react-router-dom'
-import { Film, Calendar, Building, Ticket, Settings, Users } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Film, Calendar, Building, Ticket, Settings, Users, RefreshCw } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import './AdminDashboard.css'
 
 const AdminDashboard = () => {
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const [stats, setStats] = useState({
+    activeMovies: 0,
+    todayScreenings: 0,
+    soldTickets: 0
+  })
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   if (!user || user.role !== 'admin') {
     return (
@@ -15,6 +25,30 @@ const AdminDashboard = () => {
       </div>
     )
   }
+
+  const fetchStats = async (showRefresh = false) => {
+    if (showRefresh) {
+      setRefreshing(true)
+    } else {
+      setLoading(true)
+    }
+
+    try {
+      const response = await axios.get('/api/stats/dashboard')
+      if (response.data.success) {
+        setStats(response.data.data)
+      }
+    } catch (error) {
+      console.error('❌ Errore caricamento statistiche:', error)
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchStats()
+  }, [])
 
   const adminFeatures = [
     {
@@ -47,16 +81,13 @@ const AdminDashboard = () => {
     },
     {
       icon: <Users size={32} />,
-      title: 'Gestisci Utenti',
-      description: 'Visualizza e gestisci gli utenti registrati',
-      link: '/admin/users',
+      title: 'Scansiona biglietti',
+      description: 'Verifica e convalida i biglietti con QR code',
+      link: '/admin/qr-scanner',
       color: '#2ecc71'
     },
     {
       icon: <Settings size={32} />,
-      //title: 'Impostazioni',
-      //description: 'Configura le impostazioni del sistema',
-      //link: '/admin/settings',
       title: 'Dati e biglietti',
       description: 'Consulta biglietti prenotati',
       link: '/profile',
@@ -69,29 +100,62 @@ const AdminDashboard = () => {
       <div className="container">
         <div className="admin-header">
           <div className="admin-welcome">
-            <h1>Ciao, Amministratore {user.name}!</h1>
+            <h1>Ciao, collega {user.name}!</h1>
             <p>Gestisci il cinema dalla tua dashboard personale</p>
           </div>
+          
+          <div className="admin-stats-header">
+            <h2>Statistiche in Tempo Reale</h2>
+            <button 
+              className="refresh-btn"
+              onClick={() => fetchStats(true)}
+              disabled={refreshing}
+            >
+              <RefreshCw size={16} className={refreshing ? 'refreshing' : ''} />
+              {refreshing ? 'Aggiornamento...' : 'Aggiorna'}
+            </button>
+          </div>
+
           <div className="admin-stats">
             <div className="stat-card">
               <Film size={24} />
               <div className="stat-info">
-                <span className="stat-number">12</span>
-                <span className="stat-label">Film attivi</span>
+                {loading ? (
+                  <div className="stat-loading">...</div>
+                ) : (
+                  <>
+                    <span className="stat-number">{stats.activeMovies}</span>
+                    <span className="stat-label">Film attivi</span>
+                  </>
+                )}
               </div>
             </div>
+            
             <div className="stat-card">
               <Calendar size={24} />
               <div className="stat-info">
-                <span className="stat-number">24</span>
-                <span className="stat-label">Proiezioni oggi</span>
+                {loading ? (
+                  <div className="stat-loading">...</div>
+                ) : (
+                  <>
+                    <span className="stat-number">{stats.todayScreenings}</span>
+                    <span className="stat-label">Proiezioni oggi</span>
+                  </>
+                )}
               </div>
             </div>
+            
             <div className="stat-card">
               <Ticket size={24} />
               <div className="stat-info">
-                <span className="stat-number">156</span>
-                <span className="stat-label">Biglietti venduti</span>
+                {loading ? (
+                  <div className="stat-loading">...</div>
+                ) : (
+                  <>
+                    <span className="stat-number">{stats.soldTickets}</span>
+                    <span className="stat-label">Biglietti venduti</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -115,28 +179,6 @@ const AdminDashboard = () => {
                 <div className="feature-arrow">→</div>
               </Link>
             ))}
-          </div>
-        </div>
-
-        <div className="admin-quick-actions">
-          <h3>Azioni Rapide</h3>
-          <div className="quick-actions-grid">
-            <button className="quick-action">
-              <Film size={20} />
-              <span>Aggiungi Film</span>
-            </button>
-            <button className="quick-action">
-              <Calendar size={20} />
-              <span>Nuova Proiezione</span>
-            </button>
-            <button className="quick-action">
-              <Ticket size={20} />
-              <span>Genera Codice Sconto</span>
-            </button>
-            <button className="quick-action">
-              <Users size={20} />
-              <span>Visualizza Report</span>
-            </button>
           </div>
         </div>
       </div>

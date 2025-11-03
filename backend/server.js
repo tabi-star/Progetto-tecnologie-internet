@@ -13,6 +13,8 @@ import ticketsRoutes from "./routes/tickets.js";
 import paymentsRoutes from "./routes/payments.js";
 import seatsRoutes from "./routes/seats.js";
 import discountsRoutes from "./routes/discounts.js";
+import qrCodeRoutes from './routes/qrCodeRoutes.js';
+import statsRoutes from './routes/statsRoutes.js';
 
 import db from "./db.js";
 
@@ -23,6 +25,9 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 const app = express();
+
+// Servi file statici dalla cartella public
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors());
 app.use(express.json());
@@ -46,7 +51,9 @@ app.use("/api/tickets", ticketsRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/seats", seatsRoutes);
 app.use("/api/discounts", discountsRoutes);
-
+app.use('/api/qr', qrCodeRoutes);
+app.use('/api/stats', statsRoutes);
+ 
 // Health check
 app.get("/", (req, res) => {
   res.json({ 

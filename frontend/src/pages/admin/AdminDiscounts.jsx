@@ -104,8 +104,8 @@ const AdminDiscounts = () => {
     <div className="admin-discounts">
       <div className="container">
         <div className="page-header">
-          <h1>Codici Sconto Dipendenti</h1>
-          <p>Genera e gestisci i codici sconto per i dipendenti</p>
+          <h1>Generatore dei Codici Sconto</h1>
+          <p>Genera e gestisci i codici sconto per i clienti</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -299,7 +299,7 @@ const AdminDiscounts = () => {
           <div className="no-discounts">
             <Percent size={48} />
             <h3>Nessun codice sconto generato</h3>
-            <p>Genera il primo codice sconto per i dipendenti</p>
+            <p>Genera il primo codice sconto per i clienti</p>
           </div>
         )}
       </div>
