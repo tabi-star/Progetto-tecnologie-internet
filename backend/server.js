@@ -57,7 +57,7 @@ app.use('/api/stats', statsRoutes);
 // Health check
 app.get("/", (req, res) => {
   res.json({ 
-    message: "🎬 Cinema API attiva", 
+    message: "🎥 🎬 TRCinema attiva", 
     version: "1.0.0",
     endpoints: [
       "/api/movies",

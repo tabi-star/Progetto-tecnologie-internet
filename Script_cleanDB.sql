@@ -19,6 +19,7 @@ TRUNCATE TABLE screenings;
 TRUNCATE TABLE seats;
 TRUNCATE TABLE movies;
 TRUNCATE TABLE halls;
+TRUNCATE TABLE password_reset_tokens;
 
 -- 3️⃣ Elimino tutti gli utenti con ruolo "client" ma lascio gli admin
 DELETE FROM users WHERE role = 'client';

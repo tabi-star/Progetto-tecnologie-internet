@@ -40,6 +40,20 @@ const Layout = ({ children }) => {
                 {buttonText}
               </button>
             )}
+            {/*<Link to="/" className="logo">
+              🎥 🎬 TRCinema
+            </Link>
+            
+            <div className="header-actions">
+              {!isHomePage && location.pathname !== '/' && (
+                <button 
+                  onClick={() => navigate(-1)}
+                  className="btn-back"
+                >
+                  <ArrowLeft size={20} />
+                  Torna indietro
+                </button>
+              )}*/}
               
             <Link to="/" className="logo">
               🎥 🎬 CinemaAPI
