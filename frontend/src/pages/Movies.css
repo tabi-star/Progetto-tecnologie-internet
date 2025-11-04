@@ -221,12 +221,14 @@
 
 .movie-btn-secondary {
   background: #34495e;
+  /*background: linear-gradient(135deg, #e74c3c, #c0392b);*/
   color: white;
 }
 
 .movie-btn-secondary:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(52, 73, 94, 0.4);
+  /*box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);*/
 }
 
 .movie-info {
