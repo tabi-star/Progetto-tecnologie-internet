@@ -70,6 +70,7 @@
   text-decoration: none;
   border-radius: 6px;
   transition: background 0.3s ease;
+  /*width: 100%;*/
 }
 
 .user-link:hover {
@@ -78,6 +79,8 @@
 
 .user-dropdown {
   position: relative;
+  display: inline-flex; /*cambiamento temporaneo*/
+  width: fit-content;
 }
 
 .user-dropdown:hover .dropdown-content {
@@ -89,35 +92,47 @@
 .dropdown-content {
   position: absolute;
   top: 100%;
-  right: 0;
-  background: #2c3e50;
+  /*right: 0;*/
+  left: 0; /* ^ cambiamento temporaneo*/
+  background: #34495e/*#2c3e50*/;
   border-radius: 6px;
-  padding: 8px;
+  padding: 0.75rem 0; /* 0 cambiamento temporaneo: 8px;*/
   margin-top: 8px;
-  min-width: 100%; /*150px*/
+  /*min-width: 100%;*/ /*cambiamento temporaneo*/ /*150px*/
+  width: 100%;
+  min-width: max-content;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);
   transition: all 0.3s ease;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box; /*cambiamento temporaneo*/
+  /*z-index: 10;*/
+}
+
+.dropdown-content:hover {
+  background: #2c3e50;
 }
 
 .dropdown-item {
   width: 100%;
-  background: none;
+  background: #34495e; /*none;*/ /*cambiamento temporaneo*/
   border: none;
   color: white;
-  padding: 12px;
+  padding: auto;/*8px 16px;*//*12px;*/ /*cambiamento temporaneo*/
+  font-size: inherit;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center; /*aggiunto il 05-11-2025, modifica temporanea*/ /*cambiamento temporaneo*/
   gap: 8px;
-  border-radius: 4px;
+  border-radius: 6px;/*4px;*/ /*cambiamento temporaneo*/
   transition: background 0.3s ease;
+  box-sizing: border-box; /*cambiamento temporaneo*/
 }
 
-.dropdown-item:hover {
-  background: #34495e;
+.dropdown-content:hover .dropdown-item {
+  background: #2c3e50/*#34495e*/;
 }
 
 .main-content {

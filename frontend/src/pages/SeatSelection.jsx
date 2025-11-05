@@ -346,7 +346,7 @@ const SeatSelection = () => {
             </button>
 
             <p className="security-note">
-              🛡️ I tuoi posti saranno riservati per 15 minuti
+              🛡️ I tuoi posti saranno riservati per 2 minuti
             </p>
           </div>
         </div>

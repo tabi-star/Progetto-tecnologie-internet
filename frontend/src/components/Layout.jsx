@@ -56,7 +56,7 @@ const Layout = ({ children }) => {
               )}*/}
               
             <Link to="/" className="logo">
-              🎥 🎬 CinemaAPI
+              🎥 🎬 TRCinema{/*CinemaAPI*/}
             </Link>
 
             <div className="user-menu">
