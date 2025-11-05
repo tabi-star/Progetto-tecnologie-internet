@@ -396,6 +396,12 @@
   background: linear-gradient(135deg, #e74c3c, #c0392b);
 }
 
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
 .no-tickets {
   text-align: center;
   padding: 3rem 2rem;

@@ -84,7 +84,7 @@ const AdminDashboard = () => {
       title: 'Scansiona biglietti',
       description: 'Verifica e convalida i biglietti con QR code',
       link: '/admin/qr-scanner',
-      color: '#9b59b6'
+      color: '#7a68c9' /*'#9b59b6'*/
     },
     {
       icon: <Settings size={32} />,
