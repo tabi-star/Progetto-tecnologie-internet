@@ -22,15 +22,23 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
   const transporter = createTransporter();
   
   // Genera QR code URL per ogni ticket
-  const qrCodesHtml = 
-  `
-    <div style="text-align: center; margin: 15px; display: inline-block;">
-      <p><strong>Sono inclusi tutti i posti prenotati</strong></p>
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CINEMA-TICKET-${t.id}-${t.seat_number}-${t.screening_id}" 
-           alt="QR Code Posto ${t.seat_number}" 
-           style="max-width: 150px; border: 2px solid #333; padding: 10px; background: white;" />
+  // Genera QR code URL solo per il primo ticket con messaggio
+  const qrCodesHtml = `
+    <div style="text-align: center; margin: 20px 0;">
+      <p style="color: #666; font-style: italic; margin-bottom: 15px;">
+        <strong>Nota:</strong> Nel codice QR sono inclusi tutti i posti prenotati
+      </p>
+      <div style="display: inline-block; background: white; padding: 15px; border-radius: 8px; border: 2px solid #333;">
+        <p style="margin: 0 0 10px 0; font-weight: bold;">QR Code Prenotazione</p>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CINEMA-TICKET-${tickets[0].id}-${tickets.map(t => t.seat_number).join(',')}-${tickets[0].screening_id}" 
+            alt="QR Code Prenotazione" 
+            style="max-width: 150px;" />
+        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">
+          Posti: ${tickets.map(t => t.seat_number).join(', ')}
+        </p>
+      </div>
     </div>
-  `
+  `;
 
   const mailOptions = {
     from: {
@@ -93,7 +101,7 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
                 ${qrCodesHtml}
               </div>
               <p style="font-size: 12px; color: #666; margin-top: 15px;">
-                Presenta questo QR code all'ingresso del cinema
+                Presenta questo QR code all'ingresso della sala
               </p>
             </div>
 
