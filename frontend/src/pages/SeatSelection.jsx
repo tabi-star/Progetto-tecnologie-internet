@@ -109,8 +109,6 @@ const SeatSelection = () => {
     return baseTotal - discountAmount
   }
 
-  
-
   const proceedToPayment = async () => {
     if (selectedSeats.length === 0) {
         setError('Seleziona almeno un posto')
