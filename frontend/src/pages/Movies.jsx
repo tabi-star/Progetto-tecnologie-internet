@@ -74,7 +74,7 @@ const Movies = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Se il click NON avviene dentro .date-buttons
-      if (!event.target.closest('.date-buttons')) {
+      if (!event.target.closest('.date-buttons') && !event.target.closest('.left-arrow-btn') && !event.target.closest('.right-arrow-btn')) {
         setSelectedDate('');
       }
     };
@@ -138,7 +138,7 @@ const Movies = () => {
         {/* Date Selector */}
         <div className="date-selector">
           <h3>
-            <Calendar size={20} />
+            <Calendar size={24} />
             Seleziona la data
           </h3>
 
@@ -187,14 +187,14 @@ const Movies = () => {
                     }}
                   />
                   <div className="movie-overlay">
-                    <Link to={`/movie/${movie.id}`} className="btn btn-primary">
+                    <Link to={`/movie/${movie.id}`} className="btn movie-btn-primary">
                       Dettagli
                     </Link>
                     <Link 
                       to={`/screening/${movie.id}?date=${selectedDate}`} 
-                      className="btn btn-secondary"
+                      className="btn movie-btn-secondary"
                     >
-                      <Clock size={22} />
+                      <Clock /*size={22}*/ />
                       Orari
                     </Link>
                   </div>
@@ -211,7 +211,12 @@ const Movies = () => {
               </div> 
 
               <div className="movie-description">
-                <p> {movie?.description || null} </p>
+                <p> {movie?.description
+                      .split(' ')
+                      .slice(0, 30)
+                      .join(' ') + (movie.description.split(' ').length > 30 ? '...' : '') || null}
+                    {/*{movie?.description || null}*/}
+                </p>
               </div>
 
               {/*<div className="movie-info">

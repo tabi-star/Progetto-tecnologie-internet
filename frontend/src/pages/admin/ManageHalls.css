@@ -148,7 +148,7 @@
 .hall-icon {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  background: linear-gradient(135deg, #2ecc71, #27ae60/*#e74c3c, #c0392b*/);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -345,3 +345,24 @@
     flex-direction: column;
   }
 }
+
+/*.delete-btn-primary {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+}
+
+.delete-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+}
+
+.delete-btn-secondary {
+  background: #34495e;
+  color: white;
+}
+
+.delete-btn-secondary:hover {*/
+  /*background: #2c3e50;*/
+  /*transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(52, 73, 94, 0.4);
+}*/

@@ -18,6 +18,10 @@ const UserProfile = () => {
   })
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [showDeleteTicketModal, setShowDeleteTicketModal] = useState(false)
+  const [ticketToDelete, setTicketToDelete] = useState(null)
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false)
+  /*const [accountToDelete, setAccountToDelete] = useState(null)*/
 
   useEffect(() => {
     if (user) {
@@ -79,8 +83,8 @@ const UserProfile = () => {
     setMessage('')
   }
 
-  const handleCancelTicket = async (ticketId) => {
-    if (window.confirm('Sei sicuro di voler cancellare questo biglietto?')) {
+  const handleCancelTicket = (ticket) => {
+    /*if (window.confirm('Sei sicuro di voler cancellare questo biglietto?')) {
       try {
         await axios.delete(`/api/tickets/${ticketId}/cancel`)
         setMessage('Biglietto cancellato con successo')
@@ -89,7 +93,26 @@ const UserProfile = () => {
       } catch (err) {
         setError('Errore nella cancellazione del biglietto')
       }
+    }*/
+    setTicketToDelete(ticket)
+    setShowDeleteTicketModal(true)
+  }
+
+  const confirmCancelTicket = async () => {
+
+    if (!ticketToDelete) return
+
+    try {
+      await axios.delete(`/api/tickets/${ticketToDelete.id}/cancel`)
+      setMessage('Biglietto cancellato con successo');
+      fetchUserTickets();
+    } catch (err) {
+      setError('Errore nella cancellazione del biglietto')
+    } finally {
+      setShowDeleteTicketModal(false);
+      setTicketToDelete(null);
     }
+
   }
 
   const formatDate = (dateString) => {
@@ -103,14 +126,24 @@ const UserProfile = () => {
     })
   }
 
-  const handleDeleteAccount = async () => {
-    if (window.confirm('Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.')) {
+  const handleDeleteAccount = /*async*/ () => {
+    /*if (window.confirm('Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.')) {
       try {
         await axios.delete('/api/users/account')
         logout()
       } catch (err) {
         setError('Errore nell\'eliminazione dell\'account')
       }
+    }*/
+    setShowDeleteAccountModal(true)
+  }
+
+  const confirmDeleteAccount = async () => {
+    try {
+      await axios.delete('/api/users/account')
+      logout()
+    } catch (err) {
+      setError('Errore nell\'eliminazioe dell\'account')
     }
   }
 
@@ -243,74 +276,102 @@ const UserProfile = () => {
             {loading ? (
               <div className="loading">Caricamento biglietti...</div>
             ) : tickets.length > 0 ? (
-              <div className="tickets-grid">
-                {tickets.map(ticket => (
-                  <div key={ticket.id} className="ticket-card">
-                    <div className="ticket-header">
-                      <img 
-                        src={ticket.foto_locandina || '/placeholder-movie.jpg'} 
-                        alt={ticket.title}
-                        className="ticket-poster"
-                      />
-                      <div className="ticket-main-info">
-                        <h3>{ticket.title}</h3>
-                        <div className="ticket-status">
-                          <span className={`status-${ticket.status}`}>
-                            {ticket.status === 'confirmed' ? 'Confermato' : ticket.status}
-                          </span>
+              <>
+                <div className="tickets-grid">
+                  {tickets.map(ticket => {
+                    // ✅ Calcoli JS qui dentro (fuori dal JSX)
+                    const screeningTime = new Date(ticket.start_time);
+                    const now = new Date();
+                    const timeDiff = screeningTime - now; // differenza in millisecondi
+                    const twoHours = 2 * 60 * 60 * 1000; // 2 ore in ms
+                    const canCancel = timeDiff > twoHours; // true se mancano più di 2 ore
+
+                    return (
+                      <div key={ticket.id} className="ticket-card">
+                        <div className="ticket-header">
+                          <img 
+                            src={ticket.foto_locandina || '/placeholder-movie.jpg'} 
+                            alt={ticket.title}
+                            className="ticket-poster"
+                          />
+                          <div className="ticket-main-info">
+                            <h3>{ticket.title}</h3>
+                            <div className="ticket-status">
+                              <span className={`status-${ticket.status}`}>
+                                {ticket.status === 'confirmed' ? 'Confermato' : ticket.status}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                    
+                        <div className="ticket-details">
+                          <div className="detail-row">
+                            <span className="detail-label">Sala:</span>
+                            <span className="detail-value">{ticket.hall_name}</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="detail-label">Data:</span>
+                            <span className="detail-value">{formatDate(ticket.start_time)}</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="detail-label">Posto:</span>
+                            <span className="detail-value">{ticket.seat_number}</span>
+                          </div>
+                        </div>
+
+                        <div className="ticket-card-bottom">
+                          {ticket.qr_code_url && (
+                            <div className="ticket-qr-section">
+                              <p className="qr-label">QR Code</p>
+                              <img 
+                                src={`http://localhost:3000${ticket.qr_code_url}`}
+                                alt="QR Code"
+                                className="qr-code"
+                                onError={(e) => {
+                                  console.error('Errore nel caricamento QR code:', ticket.qr_code_url);
+                                  e.target.style.display = 'none';
+                                  const fallback = document.createElement('div');
+                                  fallback.textContent = 'QR Code non disponibile';
+                                  fallback.className = 'qr-fallback';
+                                  e.target.parentNode.appendChild(fallback);
+                                }}
+                                onLoad={(e) => {
+                                  console.log('QR code caricato con successo:', ticket.qr_code_url);
+                                }}
+                              />
+                            </div>
+                          )}
+
+                          <div className="ticket-actions">
+                            <button 
+                              onClick={() => handleCancelTicket(ticket)}
+                              className="btn btn-danger btn-small"
+                              disabled={!canCancel} 
+                              title={!canCancel ? "Non puoi più cancellare questo biglietto" : ""}
+                            >
+                              <Trash2 size={14} />
+                              Cancella Biglietto
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="ticket-details">
-                      <div className="detail-row">
-                        <span className="detail-label">Sala:</span>
-                        <span className="detail-value">{ticket.hall_name}</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="detail-label">Data:</span>
-                        <span className="detail-value">{formatDate(ticket.start_time)}</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="detail-label">Posto:</span>
-                        <span className="detail-value">{ticket.seat_number}</span>
-                      </div>
-                    </div>
+                    );
+                  })}
+                </div>
 
-                    {ticket.qr_code_url && (
-                      <div className="ticket-qr-section">
-                        <p className="qr-label">QR Code</p>
-                        <img 
-                          src={`http://localhost:3000${ticket.qr_code_url}`}
-                          alt="QR Code"
-                          className="qr-code"
-                          onError={(e) => {
-                            console.error('Errore nel caricamento QR code:', ticket.qr_code_url);
-                            e.target.style.display = 'none';
-                            const fallback = document.createElement('div');
-                            fallback.textContent = 'QR Code non disponibile';
-                            fallback.className = 'qr-fallback';
-                            e.target.parentNode.appendChild(fallback);
-                          }}
-                          onLoad={(e) => {
-                            console.log('QR code caricato con successo:', ticket.qr_code_url);
-                          }}
-                        />
+                {showDeleteTicketModal && (
+                  <div className="modal-overlay">
+                    <div className="modal">
+                      <h3>Conferma eliminazione</h3>
+                      <p>Sei sicuro di voler eliminare il biglietto?</p>
+                      <div className="modal-actions">
+                        <button className="btn btn-primary-cancel" onClick={confirmCancelTicket}>Elimina</button>
+                        <button className="btn btn-secondary-cancel" onClick={() => setShowDeleteTicketModal(false)}>Annulla</button>
                       </div>
-                    )}
-
-                    <div className="ticket-actions">
-                      <button 
-                        onClick={() => handleCancelTicket(ticket.id)}
-                        className="btn btn-danger btn-small"
-                      >
-                        <Trash2 size={14} />
-                        Cancella Biglietto
-                      </button>
                     </div>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             ) : (
               <div className="no-tickets">
                 <Ticket size={48} />
@@ -341,6 +402,20 @@ const UserProfile = () => {
             <div className="security-notice">
               <p>🛡️ <strong>Sicurezza:</strong> Il tuo account è protetto con crittografia avanzata.</p>
             </div>
+
+            {showDeleteAccountModal && (
+              <div className="modal-overlay">
+                <div className="modal">
+                  <h3>Conferma eliminazione</h3>
+                  <p>Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.</p>
+                    <div className="modal-actions">
+                      <button className="btn btn-primary-cancel" onClick={confirmDeleteAccount}>Elimina</button>
+                      <button className="btn btn-secondary-cancel" onClick={() => setShowDeleteAccountModal(false)}>Annulla</button>
+                    </div>
+                </div>
+              </div>
+            )}
+
           </section>
         </div>
       </div>

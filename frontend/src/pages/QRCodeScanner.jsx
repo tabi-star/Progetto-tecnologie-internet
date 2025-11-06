@@ -126,7 +126,7 @@ const QRCodeScanner = () => {
             <div className="form-actions">
               <button 
                 type="submit" 
-                className="btn btn-primary"
+                className="btn btn-primary-qr-check"
                 disabled={loading || !qrText || user?.role !== 'admin'}
               >
                 {loading ? 'Verifica in corso...' : 'Verifica QR Code'}
@@ -136,7 +136,7 @@ const QRCodeScanner = () => {
                 <button 
                   type="button" 
                   onClick={resetForm}
-                  className="btn btn-secondary"
+                  className="btn btn-secondary-qr-check"
                 >
                   Nuova Scansione
                 </button>
@@ -195,8 +195,8 @@ const QRCodeScanner = () => {
                   <h4>Dettagli Biglietti</h4>
                   <div className="tickets-grid">
                     {result.tickets.map(ticket => (
-                      <div key={ticket.id} className={`ticket-card ${ticket.status}`}>
-                        <div className="ticket-header">
+                      <div key={ticket.id} className={`qr-scanner-ticket-card ${ticket.status}`}>
+                        <div className="qr-scanner-ticket-header">
                           <span className="ticket-id">Biglietto #{ticket.id}</span>
                           <span className={`status-badge ${ticket.status}`}>
                             {ticket.status === 'reserved' ? 'Prenotato' : 

@@ -15,13 +15,15 @@ const ManageMovies = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [showDeleteMovieModal, setShowDeleteMovieModal] = useState(false)
+  const [movieToDelete, setMovieToDelete] = useState(null)
 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     duration_minutes: '',
     release_date: '',
-    language: 'Italiano',
+    language: ''/*'Italiano'*/,
     foto_locandina: '',
     banner_image: '',
   })
@@ -68,7 +70,7 @@ const ManageMovies = () => {
       title: movie.title,
       description: movie.description,
       duration_minutes: movie.duration_minutes,
-      release_date: movie.release_date,
+      release_date: movie.release_date ? new Date(movie.release_date).toISOString().split('T')[0] : '',
       language: movie.language,
       foto_locandina: movie.foto_locandina || '',
       banner_image: movie.banner_image || ''
@@ -76,8 +78,9 @@ const ManageMovies = () => {
     setShowForm(true)
   }
 
-  const handleDelete = async (movieId) => {
-    if (window.confirm('Sei sicuro di voler eliminare questo film?')) {
+  const handleDelete = /*async*/ (/*movieId*/movie) => {
+    /*setMovieToDelete(movie)*/
+    /*if (window.confirm('Sei sicuro di voler eliminare questo film?')) {
       try {
         await axios.delete(`/api/movies/${movieId}`)
         setSuccess('Film eliminato con successo')
@@ -85,7 +88,38 @@ const ManageMovies = () => {
       } catch (err) {
         setError('Errore nell\'eliminazione del film')
       }
+    }*/
+    /*if (!movieToDelete) return
+
+    try {
+      await axios.delete(`/api/movies/${movie.id*//*movieToDelete.id*//*}`)
+      setSuccess('Film eliminato con successo')
+      fetchMovies()
+    } catch (err) {
+    setError('Errore nell\'eliminazione del film')
+    } finally {
+      setShowDeleteModal(false)
+      setMovieToDelete(null)
+    }*/
+    setMovieToDelete(movie)
+    setShowDeleteMovieModal(true)
+  }
+
+  const confirmDelete = async () => {
+
+    if (!movieToDelete) return
+
+    try {
+      await axios.delete(`/api/movies/${movieToDelete.id}`)
+      setSuccess('Film eliminato con successo')
+      fetchMovies()
+    } catch (err) {
+      setError('Errore nell\'eliminazione del film')
+    } finally {
+      setShowDeleteMovieModal(false)
+      setMovieToDelete(null)
     }
+
   }
 
   const resetForm = () => {
@@ -94,7 +128,7 @@ const ManageMovies = () => {
       description: '',
       duration_minutes: '',
       release_date: '',
-      language: 'Italiano',
+      language: '',/*'Italiano',*/
       foto_locandina: '',
       banner_image: ''
     })
@@ -111,6 +145,7 @@ const ManageMovies = () => {
     return <div className="error">Accesso negato</div>
   }
 
+  {/*I btn-primary|secondary sono nel file index.css*/}
   return (
     <div className="manage-movies">
       <div className="container">
@@ -241,53 +276,85 @@ const ManageMovies = () => {
           </div>
         )}
 
+        {showDeleteMovieModal && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h3>Conferma eliminazione</h3>
+              <p>Sei sicuro di voler eliminare <strong>{movieToDelete?.title}</strong>?</p>
+              <div className="modal-actions">
+                <button className="btn btn-primary" onClick={confirmDelete}>Elimina</button>
+                <button className="btn btn-secondary" onClick={() => setShowDeleteMovieModal(false)}>Annulla</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="loading">Caricamento film...</div>
         ) : (
-          <div className="movies-grid">
+          <div className="manage-movies-grid">
             {filteredMovies.map(movie => (
-              <div key={movie.id} className="movie-card">
-                <div className="movie-poster">
-                  <img 
-                    src={movie.foto_locandina || '/placeholder-movie.jpg'}
-                    alt={movie.title}
-                  />
-                  <div className="movie-actions">
-                    <button 
-                      onClick={() => handleEdit(movie)}
-                      className="btn-action edit"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(movie.id)}
-                      className="btn-action delete"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
+              <div key={movie.id} className="manage-movie-card">
+                
+                <div className="movie-head-data">
 
-                <div className="movie-info">
-                  <h3>{movie.title}</h3>
-                  <p className="movie-description">
-                    {movie.description?.substring(0, 100)}...
-                  </p>
-                  
-                  <div className="movie-meta">
-                    <span className="duration">
-                      {Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m
-                    </span>
-                    <span className="language">{movie.language}</span>
-                    <span className="release-date">
-                      {new Date(movie.release_date).toLocaleDateString('it-IT')}
-                    </span>
+                  <div className="movie-poster">
+                    <img 
+                      src={movie.foto_locandina || '/placeholder-movie.jpg'}
+                      alt={movie.title}
+                      onError={(e) => {
+                        e.target.src = '/placeholder-movie.jpg'
+                      }}
+                    />
                   </div>
+
+                  <div className="manage-movie-info">
+                    <h3>{movie.title}</h3>
+                  
+                    <div className="manage-movie-meta">
+                      <span className="duration">
+                        {Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m
+                      </span>
+                      <span className="language">{movie.language}</span>
+                      <span className="release-date">
+                        {new Date(movie.release_date).toLocaleDateString('it-IT')}
+                      </span>
+                    </div>
+                  </div>
+                
+                </div>
+                    
+                <div className="manage-movie-description-bottom">
+                  
+                  <p> {/*className="manage-movie-description"*/}
+                    {movie?.description || null}
+                  </p>
 
                   <div className="movie-stats">
                     <span>Aggiunto il: {new Date(movie.createdAt).toLocaleDateString('it-IT')}</span>
                   </div>
+
                 </div>
+
+                <div className="movie-actions">
+                  <button 
+                    onClick={() => handleEdit(movie)}
+                    className="manage-btn-action edit"
+                  >
+                    <Edit2 size={20} />
+                  </button>
+                  <button 
+                    onClick={() => {
+                      handleDelete(movie)
+                      {/*handleDelete(movie)
+                      setShowDeleteModal(true)*/}
+                    }}
+                    className="manage-btn-action delete"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+
               </div>
             ))}
           </div>

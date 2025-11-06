@@ -185,10 +185,10 @@ const Home = () => {
                 {upcomingMovies.length > 1 && (
                   <>
                     <button className="banner-nav banner-nav-prev" onClick={prevSlide}>
-                      <ChevronLeft size={24} />
+                      <ChevronLeft size={28} className="nav-icon"/>
                     </button>
                     <button className="banner-nav banner-nav-next" onClick={nextSlide}>
-                      <ChevronRight size={24} />
+                      <ChevronRight size={28} className="nav-icon"/>
                     </button>
                     {/* Progress bar */}
                     <div className="banner-progress">
