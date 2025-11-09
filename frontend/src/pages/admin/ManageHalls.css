@@ -53,7 +53,7 @@
   background: #1a1a1a;
   padding: 2rem;
   border-radius: 12px;
-  border: 1px solid #333;
+  border: 1px solid #e74c3c;
   max-width: 500px;
   width: 100%;
 }
@@ -141,6 +141,7 @@
 .hall-header {
   display: flex;
   align-items: center;
+  /*justify-content: center;*/
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -201,11 +202,26 @@
 .detail-item svg {
   color: #e74c3c;
   flex-shrink: 0;
+  margin-right: 1rem;
 }
 
-.detail-info {
+.detail-info-capacity {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.detail-info-layout {
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-info-screenings {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   gap: 0.25rem;
 }
 
@@ -220,17 +236,24 @@
   font-size: 0.9rem;
   color: #fff;
   font-weight: 600;
+  /*text-align: left;*/
 }
 
-.hall-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/*.hall-stats {
+  display: flex;
+  align-items: center;
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
   background: #2c3e50;
   border-radius: 8px;
   border: 1px solid #34495e;
+}
+
+.hall-stats svg{
+  color: #e74c3c;
+  flex-shrink: 0;
+  margin-right: 1rem;
 }
 
 .stat {
@@ -252,6 +275,12 @@
   letter-spacing: 0.5px;
 }
 
+stat-screenings-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}*/
+
 .hall-actions {
   display: flex;
   gap: 0.5rem;
@@ -265,13 +294,14 @@
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   flex: 1;
   justify-content: center;
-  min-width: 120px;
+  min-width: 7.5rem;
+  height: 3rem;
 }
 
 .btn-action.generate {

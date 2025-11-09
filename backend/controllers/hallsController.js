@@ -19,9 +19,10 @@ export const getHall = (req, res) => {
 };
 
 export const addHall = (req, res) => {
-  const { name, hall_type, capacity } = req.body;
+  const { id, name, hall_type, capacity } = req.body;
 
   const newHall = {
+    id,
     name,
     hall_type: hall_type || "Standard",
     capacity,

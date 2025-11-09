@@ -22,6 +22,20 @@ export const getScreeningById = (id, cb) => {
   `, [id], cb);
 };
 
+export const countScreeningsTodayByHall = (hall_id, callback) => {
+  const query = `
+    SELECT COUNT(*) as screenings_today
+    FROM screenings
+    WHERE hall_id = ? 
+      AND DATE(start_time) = CURDATE()
+  `;
+
+  db.query(query, [hall_id], (err, results) => {
+    if (err) return callback(err);
+    callback(null, results[0]);
+  });
+};
+
 export const insertScreening = (screening, cb) => {
   db.query("INSERT INTO screenings SET ?", screening, cb);
 };

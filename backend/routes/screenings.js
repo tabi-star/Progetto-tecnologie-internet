@@ -1,6 +1,6 @@
 // routes/screenings.js
 import { Router } from "express";
-import { getScreenings, getScreening, /*getScreeningsByDate, (si lascia o si toglie?)*/ getScreeningsByMovieAndDate, addScreening, modifyScreening, removeScreening, checkScreeningOverlap } from "../controllers/screeningsController.js";
+import { getScreenings, getScreening, /*getScreeningsByDate, (si lascia o si toglie?)*/ getScreeningsByMovieAndDate, addScreening, modifyScreening, removeScreening, checkScreeningOverlap, getScreeningsCountToday } from "../controllers/screeningsController.js";
 import { authenticateToken, requireAdmin } from "../middleware/auth.js";
 import { validateScreening } from "../middleware/validation.js";
 
@@ -14,5 +14,6 @@ router.post("/", authenticateToken, requireAdmin, validateScreening, addScreenin
 router.post("/check-overlap", authenticateToken, requireAdmin, checkScreeningOverlap);
 router.put("/:id", authenticateToken, requireAdmin, validateScreening, modifyScreening);
 router.delete("/:id", authenticateToken, requireAdmin, removeScreening);
+router.get("/count/:hall_id", getScreeningsCountToday);
 
 export default router;

@@ -1,5 +1,5 @@
 // controllers/screeningsController.js
-import { getAllScreenings, getScreeningById, insertScreening, updateScreening, deleteScreening } from "../models/screeningModel.js";
+import { getAllScreenings, getScreeningById, insertScreening, updateScreening, deleteScreening, countScreeningsTodayByHall } from "../models/screeningModel.js";
 import db from "../db.js";
 
 export const getScreenings = (req, res) => {
@@ -54,6 +54,16 @@ export const getScreening = (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     if (results.length === 0) return res.status(404).json({ error: "Proiezione non trovata" });
     res.json(results[0]);
+  });
+};
+
+export const getScreeningsCountToday = (req, res) => {
+  const { hall_id } = req.params;
+
+  countScreeningsTodayByHall(hall_id, (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    /*res.json(result);*/
+    res.json({ count: result.screenings_today })
   });
 };
 
