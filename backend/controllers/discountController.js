@@ -1,5 +1,5 @@
 // controllers/discountController.js
-import { createDiscountCode, getAdminDiscountCodes, getValidDiscountCode, markDiscountAsUsed } from "../models/discountModel.js";
+import { createDiscountCode, deleteDiscountCode, getAdminDiscountCodes, getValidDiscountCode, markDiscountAsUsed } from "../models/discountModel.js";
 
 export const generateDiscountCode = (req, res) => {
   const { code, discount_percent, valid_until } = req.body;
@@ -22,6 +22,20 @@ export const generateDiscountCode = (req, res) => {
     }
     discountCode.id = result.insertId;
     res.status(201).json({ message: "Codice sconto generato", discount: discountCode });
+  });
+};
+
+export const removeDiscountCode = (req, res) => {
+  const { id } = req.params;
+
+  deleteDiscountCode(id, (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Codice sconto non trovato" });
+    }
+
+    res.json({ message: "Codice sconto eliminato con successo" });
   });
 };
 

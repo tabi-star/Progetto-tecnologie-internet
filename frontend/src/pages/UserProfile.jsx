@@ -253,10 +253,12 @@ const UserProfile = () => {
                   <strong>Email:</strong>
                   <span>{user.email}</span>
                 </div>
-                <div className="data-item">
-                  <strong>Ruolo:</strong>
-                  <span className="role-badge">{user.role}</span>
-                </div>
+                {user.role === "admin" ?
+                  <div className="data-item">
+                    <strong>Ruolo:</strong>
+                    <span className="role-badge">{user.role}</span>
+                  </div>
+                : null}
               </div>
             )}
           </section>

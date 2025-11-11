@@ -3,7 +3,7 @@ import db from "../db.js";
 
 export const getAllScreenings = (cb) => {
   db.query(`
-    SELECT s.*, m.title, m.duration_minutes, m.foto_locandina, h.name as hall_name, h.capacity
+    SELECT s.*, m.title, m.duration_minutes, m.foto_locandina, h.name as hall_name, h.hall_type as hall_type, h.capacity
     FROM screenings s
     JOIN movies m ON s.movie_id = m.id
     JOIN halls h ON s.hall_id = h.id

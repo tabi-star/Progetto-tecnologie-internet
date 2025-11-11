@@ -5,6 +5,15 @@ export const createDiscountCode = (discount, cb) => {
   db.query("INSERT INTO discount_codes SET ?", discount, cb);
 };
 
+export const deleteDiscountCode = (id, callback) => {
+  const query = "DELETE FROM discount_codes WHERE id = ?";
+  
+  db.query(query, [id], (err, result) => {
+    if (err) return callback(err);
+    callback(null, result);
+  });
+};
+
 export const getAdminDiscountCodes = (admin_id, cb) => {
   db.query("SELECT * FROM discount_codes WHERE created_by = ? ORDER BY created_at DESC", [admin_id], cb);
 };

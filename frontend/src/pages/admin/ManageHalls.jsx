@@ -19,6 +19,7 @@ const ManageHalls = () => {
   const [showSeatModal, setShowSeatModal] = useState(false)
   const [hallLayouts, setHallLayouts] = useState({});
   const [screeningsCount, setScreeningsCount] = useState({});
+  const [seatError, setSeatError] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -47,6 +48,21 @@ const ManageHalls = () => {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    const rows = parseInt(seatConfig.rows);
+    const columns = parseInt(seatConfig.columns);
+
+    /*if (!rows || !columns) {
+      setSeatError('Inserisci entrambi i valori');
+    } else */if (isNaN(rows) || isNaN(columns) || rows <= 0 || columns <= 0) {
+      setSeatError('Inserisci numeri interi per file e posti');
+    } else if (rows > 20 || columns > 30) {
+      setSeatError('Numero di file o colonne troppo elevato'); /*(max: 20 file, 30 posti per fila)*/
+    } else {
+      setSeatError(''); // nessun errore → input valido
+    }
+}, [seatConfig.rows, seatConfig.columns]);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -114,11 +130,21 @@ const ManageHalls = () => {
     
     if (isNaN(numRows) || isNaN(numColumns) || numRows <= 0 || numColumns <= 0) {
       setError('Inserisci numeri validi per file e colonne');
+      /*await axios.delete(`/api/halls/${hallId}`)
+      setShowSeatModal(false);
+      setSeatConfig({ hallId: null, hallName: '', rows: '', columns: '' })
+      resetForm();*/
+      //cancelWrongHall()
       return;
     }
 
     if (numRows > 20 || numColumns > 30) {
       setError('Numero di file o colonne troppo elevato (max: 20 file, 30 posti per fila)');
+      /*await axios.delete(`/api/halls/${hallId}`)
+      setShowSeatModal(false);
+      setSeatConfig({ hallId: null, hallName: '', rows: '', columns: '' })
+      resetForm();*/
+      //cancelWrongHall()
       return;
     }
     
@@ -150,10 +176,12 @@ const ManageHalls = () => {
     } catch (err) {
       console.error('Errore generazione posti:', err);
       setError(err.response?.data?.error || 'Errore nella generazione dei posti');
+      /*setShowSeatModal(false);*/
     } finally {
         setShowSeatModal(false)
         setSeatConfig({ hallId: null, hallName: '', rows: '', columns: '' })
         resetForm()
+        fetchHalls()
     }
 
   }
@@ -197,6 +225,18 @@ const ManageHalls = () => {
       setHallToDelete(null)
     }
 
+  }
+
+  const cancelWrongHall = async () => {
+    const { hallId, hallName, rows, columns } = seatConfig
+    /*if (isNaN(rows) || isNaN(columns) || rows <= 0 || columns <= 0 || rows > 20 || columns > 30) {
+      await axios.delete(`/api/halls/${hallId}`)
+    }*/
+    axios.delete(`/api/halls/${hallId}`)
+    setShowSeatModal(false);
+    setSeatConfig({ hallId: null, hallName: '', rows: '', columns: '' })
+    resetForm();
+    fetchHalls();
   }
 
   const resetForm = () => {
@@ -354,7 +394,7 @@ const ManageHalls = () => {
                     type="number"
                     value={seatConfig.rows}
                     onChange={(e) => setSeatConfig(prev => ({ ...prev, rows: e.target.value }))}
-                    placeholder="Es: 10"
+                    placeholder="Massimo 20 file" //"Es: 10"
                   />
                 </div>
 
@@ -364,19 +404,26 @@ const ManageHalls = () => {
                     type="number"
                     value={seatConfig.columns}
                     onChange={(e) => setSeatConfig(prev => ({ ...prev, columns: e.target.value }))}
-                    placeholder="Es: 15"
+                    placeholder="Massimo 30 posti per fila" //"Es: 15"
                   />
                 </div>
               </div>
 
+              {/* 🔴 Mostra messaggio d'errore se presente */}
+              {seatError && <p className="error-message">{seatError}</p>}
+
               <div className="modal-actions">
-                <button className="btn btn-primary" onClick={generateSeats}>
+                <button
+                  className="btn btn-primary"
+                  onClick={generateSeats}
+                  disabled={!!seatError}
+                  >
                   {/*Genera posti*/}
                   {editingHall ? 'Aggiorna Sala' : 'Crea Sala'}
                 </button>
-                <button className="btn btn-secondary" onClick={() => setShowSeatModal(false)}>
+                {editingHall ? <button className="btn btn-secondary" onClick={() => setShowSeatModal(false)}>
                   Annulla
-                </button>
+                </button> : null} {/*editingHall ? setShowDeleteHallModal(false) : cancelWrongHall()*/}
               </div>
             </div>
           </div>

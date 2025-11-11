@@ -33,8 +33,9 @@ export const getScreenings = (req, res) => {
 export const getScreeningsByMovieAndDate = (req, res) => {
   const { movie_id, date } = req.params;
   
+  /*Vedi se tenere m.title nella SELECT della query*/
   const query = `
-    SELECT s.*, h.name as hall_name, h.hall_type, m.duration_minutes
+    SELECT s.*, h.name as hall_name, h.hall_type, m.title, m.duration_minutes
     FROM screenings s
     JOIN halls h ON s.hall_id = h.id
     JOIN movies m ON s.movie_id = m.id
@@ -70,22 +71,37 @@ export const getScreeningsCountToday = (req, res) => {
 export const addScreening = (req, res) => {
   const { movie_id, hall_id, start_time } = req.body;
 
-  const newScreening = {
-    movie_id,
-    hall_id,
-    start_time,
-    createdAt: new Date()
-  };
-
-  insertScreening(newScreening, (err, result) => {
+  // Controlla la data di uscita del film
+  db.query("SELECT release_date FROM movies WHERE id = ?", [movie_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
-    newScreening.id = result.insertId;
-    res.status(201).json({ message: "Proiezione aggiunta con successo", screening: newScreening });
+    if (results.length === 0) return res.status(404).json({ error: "Film non trovato" });
+
+    const releaseDate = new Date(results[0].release_date);
+    const screeningStart = new Date(start_time);
+
+    if (screeningStart < releaseDate) {
+      return res.status(400).json({ 
+        error: "Non è possibile creare una proiezione prima della data di uscita del film." 
+      });
+    }
+
+    const newScreening = {
+      movie_id,
+      hall_id,
+      start_time,
+      createdAt: new Date()
+    };
+
+    insertScreening(newScreening, (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      newScreening.id = result.insertId;
+      res.status(201).json({ message: "Proiezione aggiunta con successo", screening: newScreening });
+    });
   });
 };
 
 export const checkScreeningOverlap = (req, res) => {
-  const { hall_id, start_time, movie_id } = req.body;
+  const { hall_id, start_time, movie_id, screening_id } = req.body;
   
   const query = `
     SELECT s.*, m.title as movie_title, m.duration_minutes,
@@ -93,9 +109,12 @@ export const checkScreeningOverlap = (req, res) => {
     FROM screenings s
     JOIN movies m ON s.movie_id = m.id
     WHERE s.hall_id = ? AND s.start_time BETWEEN DATE_SUB(?, INTERVAL 4 HOUR) AND DATE_ADD(?, INTERVAL 4 HOUR)
+    ${screening_id ? "AND s.id <> ?" : ""}
   `;
+
+  const queryParams = screening_id ? [hall_id, start_time, start_time, screening_id] : [hall_id, start_time, start_time];
   
-  db.query(query, [hall_id, start_time, start_time], (err, results) => {
+  db.query(query, queryParams/*[hall_id, start_time, start_time]*/, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     
     const newScreeningStart = new Date(start_time);
@@ -144,16 +163,32 @@ export const modifyScreening = (req, res) => {
   const { id } = req.params;
   const { movie_id, hall_id, start_time } = req.body;
 
-  const updatedScreening = {
-    movie_id,
-    hall_id,
-    start_time
-  };
 
-  updateScreening(id, updatedScreening, (err, result) => {
+  // Controlla la data di uscita del film
+  db.query("SELECT release_date FROM movies WHERE id = ?", [movie_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
-    if (result.affectedRows === 0) return res.status(404).json({ error: "Proiezione non trovata" });
-    res.json({ message: "Proiezione aggiornata con successo", screening: updatedScreening });
+    if (results.length === 0) return res.status(404).json({ error: "Film non trovato" });
+
+    const releaseDate = new Date(results[0].release_date);
+    const screeningStart = new Date(start_time);
+
+    if (screeningStart < releaseDate) {
+      return res.status(400).json({ 
+        error: "Non è possibile modificare una proiezione con data precedente all’uscita del film." 
+      });
+    }
+
+    const updatedScreening = {
+      movie_id,
+      hall_id,
+      start_time
+    };
+
+    updateScreening(id, updatedScreening, (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (result.affectedRows === 0) return res.status(404).json({ error: "Proiezione non trovata" });
+      res.json({ message: "Proiezione aggiornata con successo", screening: updatedScreening });
+    });
   });
 };
 
