@@ -351,17 +351,17 @@ const ManageScreenings = () => {
                   </div>
                 </div>
 
-                <div className="screening-actions">
+                <div className="manage-screening-actions">
                   <button 
                     onClick={() => handleEdit(screening)}
-                    className="screening-btn-action edit"
+                    className="manage-screening-btn-action edit"
                   >
                     <Edit2 size={16} />
                     Modifica
                   </button>
                   <button 
                     onClick={() => handleDelete(screening)}
-                    className="screening-btn-action delete"
+                    className="manage-screening-btn-action delete"
                   >
                     <Trash2 size={16} />
                     Elimina

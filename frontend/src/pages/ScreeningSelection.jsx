@@ -17,6 +17,8 @@ const ScreeningSelection = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const scrollRef = useRef(null)
+  const [availableSeats, setAvailableSeats] = useState({});
+  const dateSectionRef = useRef(null);
 
   const fetchMovie = async () => {
     try {
@@ -60,6 +62,31 @@ const ScreeningSelection = () => {
     }
   }
 
+  const getAvailableSeats = async (screeningId) => {
+    try {
+      const response = await axios.get(`/api/seats/screening/${screeningId}`);
+      const seats = response.data;
+      const availableCount = seats.filter(seat => seat.status === 'available').length;
+
+      setAvailableSeats(prev => ({
+        ...prev,
+        [screeningId]: availableCount
+      }));
+    } catch (err) {
+      console.error(`Errore nel caricamento dei posti per la proiezione ${screeningId}:`, err);
+    }
+  };
+
+  useEffect(() => {
+    if (screenings.length > 0) {
+      (async () => {
+        for (const screening of screenings) {
+          await getAvailableSeats(screening.id);
+        }
+      })();
+    }
+  }, [screenings]);
+
   useEffect(() => {
     if (selectedDate && movieId) {
       fetchScreenings()
@@ -67,8 +94,10 @@ const ScreeningSelection = () => {
   }, [selectedDate, movieId])
 
   /*Bisogna ripartire da qui e capire cosa fa l'useEffect di sopra*/
+  /*SENTI CON TABI SE LASCIARLO O TOGLIERLO!!!*/
   useEffect(() => {
     const handleClickOutside = (event) => {
+      if (!dateSectionRef.current?.contains(event.target)) return;
       // Se il click NON avviene dentro .date-buttons
       if (!event.target.closest('.date-buttons') && !event.target.closest('.left-arrow-btn') && !event.target.closest('.right-arrow-btn')) {
         setSelectedDate('');
@@ -173,8 +202,8 @@ const ScreeningSelection = () => {
               <div className="movie-mini-info">
                 <h1>{movie.title}</h1>
                 <div className="movie-mini-meta">
-                  <span1>{Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m</span1>
-                  <span2>{movie.language}</span2>
+                  <span>{Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m</span>
+                  <span>{movie.language}</span>
                 </div>
                 <p>Scegli la proiezione</p>
               </div>
@@ -183,7 +212,7 @@ const ScreeningSelection = () => {
         </div>
 
         {/* Date Selector */}
-        <section className="date-section">
+        <section className="date-section" ref={dateSectionRef}>
           <h2>
             <Calendar size={24} />
             Seleziona la data
@@ -249,17 +278,41 @@ const ScreeningSelection = () => {
                       <span className="hall-type">{screening.hall_type}</span>
                     </div>
                     <div className="screening-meta">
-                      <span className="capacity">Posti disponibili: {screening.capacity}</span>
+                      {/*<span className="capacity">Posti disponibili: {screening.capacity}</span>*/}
+                      {availableSeats[screening.id] === 0 ? (
+                        <span className="capacity soldout">Posti esauriti</span>
+                      ) : (
+                        <span className="capacity">
+                          Posti disponibili: {availableSeats[screening.id] ?? '...'}
+                        </span>
+                      )}
                     </div>
                   </div>
 
                   <div className="screening-actions">
-                    <Link 
-                      to={`/seats/${screening.id}`}
-                      className="btn btn-primary btn-large"
-                    >
+                    {/*{availableSeats[screening.id] === 0 ? (
+                      <button className="btn btn-disabled" disabled>
+                        <Ticket size={16} />
+                          Posti esauriti
+                      </button>
+                    ) : (
+                      <Link 
+                        to={`/seats/${screening.id}`}
+                        className="btn btn-primary"
+                      >
                       <Ticket size={16} />
                       Scegli i posti
+                      </Link>
+                    )}*/}
+                    <Link 
+                      to={`/seats/${screening.id}`}
+                      className={`btn btn-primary ${availableSeats[screening.id] === 0 ? 'disabled' : ''}`}
+                      onClick={(e) => {
+                       if (availableSeats[screening.id] === 0) e.preventDefault();
+                      }}
+                    >
+                      <Ticket size={16} />
+                      {availableSeats[screening.id] === 0 ? 'Non disponibile' : 'Prenota i posti'}
                     </Link>
                   </div>
                 </div>

@@ -14,6 +14,7 @@ const Movies = () => {
   const [selectedDate, setSelectedDate] = useState('')
   const [startDate, setStartDate] = useState(new Date()) // giorno iniziale visibile
   const scrollRef = useRef(null)
+  const dateSelectorRef = useRef(null);
 
   const fetchMovies = async () => {
     try {
@@ -71,8 +72,10 @@ const Movies = () => {
     }
   }, [selectedDate])
 
+  /*SENTI CON TABI SE LASCIARLO O TOGLIERLO!!!*/
   useEffect(() => {
     const handleClickOutside = (event) => {
+      if (!dateSelectorRef.current?.contains(event.target)) return;
       // Se il click NON avviene dentro .date-buttons
       if (!event.target.closest('.date-buttons') && !event.target.closest('.left-arrow-btn') && !event.target.closest('.right-arrow-btn')) {
         setSelectedDate('');
@@ -136,7 +139,7 @@ const Movies = () => {
         </div>
 
         {/* Date Selector */}
-        <div className="date-selector">
+        <div className="date-selector" ref={dateSelectorRef}>
           <h3>
             <Calendar size={24} />
             Seleziona la data
@@ -156,7 +159,10 @@ const Movies = () => {
                 <button
                   key={date}
                   className={`date-btn ${selectedDate === date ? 'active' : ''}`}
-                  onClick={() => setSelectedDate(selectedDate === date ? '' : date)} /*non funziona (forse)*/
+                  onClick={() => {
+                    setSelectedDate(selectedDate === date ? '' : date) /*non funziona (forse)*/
+                    localStorage.setItem("selectedDate", date);
+                  }}
                 >
                   {label}
                 </button>
