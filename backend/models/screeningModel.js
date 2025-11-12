@@ -7,10 +7,9 @@ export const getAllScreenings = (cb) => {
     FROM screenings s
     JOIN movies m ON s.movie_id = m.id
     JOIN halls h ON s.hall_id = h.id
-    WHERE s.start_time > NOW()
     ORDER BY s.start_time ASC
   `, cb);
-};
+}; //WHERE s.start_time > NOW() Se vuoi cambiare l'ordine con cui vengono mostrati i film e i biglietti, penso si debba cambiare questo: "ORDER BY s.start_time ASC"
 
 export const getScreeningById = (id, cb) => {
   db.query(`

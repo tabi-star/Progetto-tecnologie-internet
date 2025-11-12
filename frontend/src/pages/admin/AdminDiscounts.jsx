@@ -96,7 +96,12 @@ const AdminDiscounts = () => {
   }
 
   const isExpired = (validUntil) => {
-    return new Date(validUntil) < new Date()
+    //return new Date(validUntil) < new Date()
+    // il codice è valido fino alla fine del giorno della data valid_until
+    const expiry = new Date(validUntil)
+    const endOfDay = new Date(expiry)
+    endOfDay.setHours(23, 59, 59, 999)
+    return new Date() > endOfDay
   }
 
   const fetchUserEmail = async (userId) => {
@@ -271,6 +276,7 @@ const AdminDiscounts = () => {
           <div className="discounts-grid">
             {discounts.map(discount => (
               <div key={discount.id} className={`discount-card ${discount.used ? 'used' : ''} ${isExpired(discount.valid_until) ? 'expired' : ''}`}>
+                <>
                 <div className="discount-header">
                   <div className="discount-code">
                     <h3>{discount.code}</h3>
@@ -372,7 +378,7 @@ const AdminDiscounts = () => {
                     <span className="status-badge active">Attivo</span>
                   )}
                 </div>
-
+                </>
                 <div className="delete-discount-action">
                   <button className="delete-discount-btn"
                     onClick={() => { handleDelete(discount) }}

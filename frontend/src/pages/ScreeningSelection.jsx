@@ -13,7 +13,9 @@ const ScreeningSelection = () => {
   const [movie, setMovie] = useState(null)
   const [screenings, setScreenings] = useState([])
   const [selectedDate, setSelectedDate] = useState('')
-  const [startDate, setStartDate] = useState(new Date())
+  //const [startDate, setStartDate] = useState(new Date())
+  const storedDate = localStorage.getItem("selectedDate")
+  const [startDate, setStartDate] = useState(storedDate ? new Date(storedDate) : new Date())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const scrollRef = useRef(null)
@@ -39,15 +41,41 @@ const ScreeningSelection = () => {
   }, [movieId])
 
   useEffect(() => {
+    //const storedDate = localStorage.getItem("selectedDate") //OCCHIO AD ELIMINARLO!!!
     const dateFromParams = searchParams.get('date')
     if (dateFromParams) {
       setSelectedDate(dateFromParams)
+    } else if (storedDate) {
+      setSelectedDate(storedDate)
     } else {
       const today = new Date().toISOString().split('T')[0]
       setSelectedDate(today)
     }
     fetchMovie()
+
+    return () => {
+      localStorage.removeItem("selectedDate");
+      setSelectedDate('');
+    };
   }, [movieId, searchParams])
+  
+  /*useEffect(() => {
+    const storedDate = sessionStorage.getItem('selectedDate')
+    if (storedDate) {
+      setSelectedDate(storedDate)
+      setStartDate(new Date(storedDate))
+    } else {
+      const today = new Date()
+      setSelectedDate(today.toISOString().split('T')[0])
+      setStartDate(today)
+    }
+
+    // pulizia alla chiusura pagina
+    return () => {
+      sessionStorage.removeItem('selectedDate')
+      setSelectedDate('')
+    }
+  }, [])*/
 
   const fetchScreenings = async () => {
     try {
@@ -230,7 +258,10 @@ const ScreeningSelection = () => {
                   <button
                     key={date}
                     className={`date-btn ${selectedDate === date ? 'active' : ''}`}
-                    onClick={() => setSelectedDate(selectedDate === date ? '' : date)}
+                    onClick={() => {
+                      setSelectedDate(selectedDate === date ? '' : date)
+                      //localStorage.setItem("selectedDate", date)
+                    }}
                   >
                     {label}
                   </button>

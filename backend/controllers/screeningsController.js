@@ -39,7 +39,7 @@ export const getScreeningsByMovieAndDate = (req, res) => {
     FROM screenings s
     JOIN halls h ON s.hall_id = h.id
     JOIN movies m ON s.movie_id = m.id
-    WHERE s.movie_id = ? AND DATE(s.start_time) = ?
+    WHERE s.movie_id = ? AND DATE(s.start_time) = ? AND s.start_time >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
     ORDER BY s.start_time ASC
   `;
   
@@ -47,7 +47,7 @@ export const getScreeningsByMovieAndDate = (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });
-};
+}; // Se vuoi cambiare l'ordine con cui vengono mostrati i film e i biglietti, penso si debba cambiare questo: "ORDER BY s.start_time ASC"
 
 export const getScreening = (req, res) => {
   const { id } = req.params;

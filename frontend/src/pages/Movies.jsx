@@ -1,7 +1,7 @@
 // src/pages/Movies.jsx
 
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import { Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react'
 import './Movies.css'
@@ -11,6 +11,7 @@ const Movies = () => {
   /*const [screenings, setScreenings] = useState([])*/ /*Non sicuro di metterlo*/
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [searchParams] = useSearchParams()
   const [selectedDate, setSelectedDate] = useState('')
   const [startDate, setStartDate] = useState(new Date()) // giorno iniziale visibile
   const scrollRef = useRef(null)
@@ -71,6 +72,21 @@ const Movies = () => {
       fetchMoviesByScreeningsByDate(selectedDate)
     }
   }, [selectedDate])
+
+  useEffect(() => {
+    //const storedDate = localStorage.getItem("selectedDate")
+    const dateFromParams = searchParams.get('date')
+    if (dateFromParams) {
+      setSelectedDate(dateFromParams)
+      fetchMoviesByScreeningsByDate(dateFromParams)
+    } /*else if (storedDate) {
+      setSelectedDate(storedDate)
+    }*/ else {
+      setSelectedDate('')
+      //fetchMovies()
+    }
+    fetchMovies()
+  }, [searchParams])
 
   /*SENTI CON TABI SE LASCIARLO O TOGLIERLO!!!*/
   useEffect(() => {
@@ -161,7 +177,9 @@ const Movies = () => {
                   className={`date-btn ${selectedDate === date ? 'active' : ''}`}
                   onClick={() => {
                     setSelectedDate(selectedDate === date ? '' : date) /*non funziona (forse)*/
+                    //sessionStorage.setItem("selectedDate", date);
                     localStorage.setItem("selectedDate", date);
+                    //localStorage.setItem("selectedDateDetail", date);
                   }}
                 >
                   {label}

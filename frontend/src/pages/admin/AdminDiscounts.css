@@ -205,6 +205,9 @@
 }
 
 .discount-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   /*display: flex;
   justify-content: center;
   align-items: center;
@@ -240,6 +243,7 @@
 }
 
 .discount-card:hover {
+  border-color: #e74c3c;
   transform: translateY(-4px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
@@ -248,6 +252,20 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  /*margin-bottom: 1.5rem;*/
+}
+
+/*.discount-card.expired .discount-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}*/
+
+.discount-card.used .discount-header {
+  /*display: flex;
+  justify-content: space-between;
+  align-items: flex-start;*/
   margin-bottom: 1.5rem;
 }
 
@@ -297,6 +315,20 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  /*margin-bottom: 1.5rem;*/
+}
+
+/*.discount-card.expired .discount-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}*/
+
+.discount-card.used .discount-details {
+  /*display: flex;
+  flex-direction: column;
+  gap: 1rem;*/
   margin-bottom: 1.5rem;
 }
 
@@ -393,11 +425,15 @@
   align-items: center;
   justify-content: center;
   gap: 2.5rem;
-  margin-bottom: 1.5rem;
+  /*margin-bottom: 1.5rem;*/
   padding: 1rem;
   background: #2c3e50;
   border-radius: 8px;
   border: 1px solid #34495e;
+}
+
+.discount-card.used .discount-stats {
+  margin-bottom: 1.5rem;
 }
 
 .stat {
