@@ -21,11 +21,15 @@ import ResetPassword from './pages/ResetPassword'
 import QRCodeScanner from './pages/QRCodeScanner'
 import ProtectedRoute from './components/ProtectedRoute'
 import './components/ProtectedRoute.css'
+import ScrollToTop from './components/ScrollToTop'
+
 
 function App() {
   return (
     <AuthProvider>
+
       <Layout>
+        <ScrollToTop />
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Home />} />
