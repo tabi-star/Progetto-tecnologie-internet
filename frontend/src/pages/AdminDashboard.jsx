@@ -59,7 +59,7 @@ const AdminDashboard = () => {
       color: '#e74c3c'
     },
     {
-      icon: <Calendar/*Video*/ size={32} />,
+      icon: <Video/*Calendar*/ size={32} />,
       title: 'Gestisci Proiezioni',
       description: 'Programma le proiezioni e gestisci gli orari',
       link: '/admin/screenings',
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
               </div>
             
               <div className="stat-card">
-                <Calendar /*Video*/ size={24} />
+                <Video /*Calendar*/ size={24} />
                 <div className="stat-info">
                   {loading ? (
                     <div className="stat-loading">...</div>
