@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS tickets (
   screening_id INT NOT NULL,
   user_id INT NOT NULL,
   seat_number VARCHAR(10) NOT NULL,
-  status ENUM('reserved', 'confirmed', 'cancelled') DEFAULT 'reserved',
+  status ENUM('reserved', 'confirmed', 'validated', 'cancelled') DEFAULT 'reserved',
   qr_code_url VARCHAR(500),
   price DECIMAL(8,2) DEFAULT 10.00,
   payment_id VARCHAR(100),

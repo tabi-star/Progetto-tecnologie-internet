@@ -1,4 +1,5 @@
 // services/emailService.js
+
 import nodemailer from 'nodemailer';
 
 const createTransporter = () => {
@@ -21,8 +22,7 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
   
   const transporter = createTransporter();
   
-  // Genera QR code URL per ogni ticket
-  // Genera QR code URL solo per il primo ticket con messaggio
+  // Genera QR code URL solo per il ticket con le relative informazioni
   const qrCodesHtml = `
     <div style="text-align: center; margin: 20px 0;">
       <p style="color: #666; font-style: italic; margin-bottom: 15px;">
@@ -30,7 +30,7 @@ export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => 
       </p>
       <div style="display: inline-block; background: white; padding: 15px; border-radius: 8px; border: 2px solid #333;">
         <p style="margin: 0 0 10px 0; font-weight: bold;">QR Code Prenotazione</p>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CINEMA-TICKET-${tickets[0].id}-${tickets.map(t => t.seat_number).join(',')}-${tickets[0].screening_id}" 
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${tickets[0].qr_code_url}" 
             alt="QR Code Prenotazione" 
             style="max-width: 150px;" />
         <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">

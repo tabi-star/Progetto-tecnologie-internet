@@ -19,7 +19,7 @@ export const getAdminStats = async () => {
     // Biglietti venduti (tutti i biglietti, non solo dell'admin)
     const [ticketsResult] = await promisePool.execute(
       `SELECT COUNT(*) as count FROM tickets 
-       WHERE status IN ('reserved', 'confirmed')`
+       WHERE status IN ('validated', 'confirmed')`
     );
 
     return {
@@ -57,7 +57,7 @@ export const getDetailedStats = async () => {
       `SELECT 
         COUNT(*) as total,
         COUNT(CASE WHEN status = 'reserved' THEN 1 END) as reserved,
-        COUNT(CASE WHEN status = 'confirmed' THEN 1 END) as confirmed,
+        COUNT(CASE WHEN status = 'confirmed' OR status = 'validated' THEN 1 END) as confirmed,
         COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled
        FROM tickets`
     );
@@ -66,7 +66,7 @@ export const getDetailedStats = async () => {
       `SELECT 
         COALESCE(SUM(price), 0) as total_revenue
        FROM tickets 
-       WHERE status IN ('reserved', 'confirmed')`
+       WHERE status IN ('validated', 'confirmed')`
     );
 
     return {

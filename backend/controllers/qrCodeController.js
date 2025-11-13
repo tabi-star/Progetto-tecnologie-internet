@@ -101,7 +101,7 @@ export const getTicketStats = async (req, res) => {
       SELECT 
         COUNT(*) as total_tickets,
         SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END) as used_tickets,
-        SUM(CASE WHEN status = 'reserved' THEN 1 ELSE 0 END) as reserved_tickets,
+        SUM(CASE WHEN status = 'reserved' OR status = 'validated' THEN 1 ELSE 0 END) as reserved_tickets,
         SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_tickets,
         DATE(bookedAt) as booking_date
       FROM tickets 

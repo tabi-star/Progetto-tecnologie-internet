@@ -241,7 +241,7 @@ export const getTicketDetails = async (ticket_ids) => {
 export const markTicketAsUsed = async (ticket_id) => {
   try {
     const [result] = await promisePool.execute(
-      "UPDATE tickets SET status = 'confirmed' WHERE id = ? AND status = 'reserved'",
+      "UPDATE tickets SET status = 'validated' WHERE id = ? AND status = 'confirmed'",
       [ticket_id]
     );
 

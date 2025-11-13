@@ -3,6 +3,24 @@ import db from "../db.js";
 import { promisePool } from "../db.js";
 import { sendConfirmationEmail } from '../services/emailService.js';
 
+// FUNZIONE MANCANTE AGGIUNTA
+export const checkTicketsStatus = async (ticket_ids) => {
+  if (!ticket_ids || ticket_ids.length === 0) {
+    return [];
+  }
+  
+  const placeholders = ticket_ids.map(() => '?').join(', ');
+  
+  const [tickets] = await promisePool.execute(
+    `SELECT id, status, reserved_until 
+     FROM tickets 
+     WHERE id IN (${placeholders})`,
+    ticket_ids
+  );
+  
+  return tickets;
+};
+
 export const getAllTickets = (cb) => {
   db.query(`
     SELECT t.*, m.title, s.start_time, h.name as hall_name, u.name as user_name
@@ -26,7 +44,7 @@ export const getTicketsByUser = async (user_id) => {
      JOIN screenings s ON t.screening_id = s.id
      JOIN movies m ON s.movie_id = m.id
      JOIN halls h ON s.hall_id = h.id
-     WHERE t.user_id = ? AND t.status = 'confirmed'
+     WHERE t.user_id = ? AND t.status = 'confirmed' OR t.status = 'validated' 
      ORDER BY s.start_time DESC`,
     [user_id]
   );
@@ -62,7 +80,7 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id) => {
     const [availableSeats] = await connection.execute(
       `SELECT seat_number FROM tickets 
        WHERE screening_id = ? AND seat_number IN (${placeholders}) 
-       AND status = 'confirmed' 
+       AND status = 'confirmed' OR status = 'validated'  
        AND (reserved_until IS NULL OR reserved_until > NOW())`,
       [screening_id, ...seat_numbers]
     );
@@ -78,15 +96,7 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id) => {
        AND reserved_until <= NOW()`,
       [screening_id]
     );
-/*
-    // Rimuovi prenotazioni personali precedenti
-    await connection.execute(
-      `DELETE FROM tickets 
-       WHERE user_id = ? AND status = 'reserved' 
-       AND reserved_until <= NOW()`,
-      [user_id]
-    );
-*/
+
     // Inserisci nuove prenotazioni
     const reservedUntil = new Date(Date.now() + 2 * 60 * 1000);
     
@@ -175,7 +185,7 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
 
     // Prepara i dati per l'update - gestisci valori undefined
     const paymentId = payment_data.payment_id || null;
-    const qrCodeUrl = payment_data.qr_code_url || `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TICKET-${Date.now()}-${validTicketIds.join('-')}`;
+    const qrCodeUrl = payment_data.qr_code_url || null; 
     const paypalOrderId = payment_data.paypal_order_id || null;
 
     // AGGIORNA i biglietti a confermati
@@ -226,25 +236,26 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
 
     await connection.commit();
 
-    // INVIA EMAIL DI CONFERMA
+    // ✅ INVIA EMAIL CON IL QR CODE CORRETTO
     try {
-      // Calcola il totale in modo sicuro
       const totalAmount = updatedTickets.reduce((sum, ticket) => {
         return sum + Number(ticket.price || 0);
       }, 0);
       
-      await sendConfirmationEmail(updatedTickets[0].user_email, updatedTickets, totalAmount);
+      await sendConfirmationEmail(
+        updatedTickets[0].user_email, 
+        updatedTickets, 
+        totalAmount, 
+        qrCodeUrl // ✅ PASSIAMO IL QR CODE URL
+      );
     } catch (emailError) {
       console.error('⚠️ Errore invio email, ma pagamento confermato:', emailError);
-      // Non blocchiamo il processo se l'email fallisce
     }
     
-    console.log(`Confermati ${updatedTickets.length} ticket`);
     return updatedTickets;
 
   } catch (error) {
     await connection.rollback();
-    console.error('Errore nella conferma dei ticket:', error);
     throw error;
   } finally {
     connection.release();
@@ -276,7 +287,7 @@ export const cancelTicket = async (ticket_id, user_id) => {
 export const getOccupiedSeats = async (screening_id) => {
   const [rows] = await promisePool.execute(
     `SELECT seat_number FROM tickets 
-     WHERE screening_id = ? AND status = 'confirmed' 
+     WHERE screening_id = ? AND status = 'confirmed' OR status = 'validated'  
      AND (reserved_until IS NULL OR reserved_until > NOW())`,
     [screening_id]
   );

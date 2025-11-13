@@ -1,7 +1,6 @@
 // controllers/ticketsController.js
 import { getAllTickets, getTicketsByUser, reserveSeats, confirmTickets, cancelTicket, insertTicket } from "../models/ticketModel.js";
 import { generateQRCode } from "../services/qrCodeService.js";
-import { sendConfirmationEmail } from "../services/emailService.js";
 
 export const getTickets = (req, res) => {
   getAllTickets((err, results) => {
@@ -41,31 +40,26 @@ export const reserveTicketSeats = async (req, res) => {
 
 export const confirmTicketPayment = async (req, res) => {
   try {
-    const { ticket_ids, discount_id } = req.body;
+    const { ticket_ids, discount_id, paypal_order_id} = req.body;
     const user_id = req.user.id;
 
     if (!ticket_ids || !Array.isArray(ticket_ids)) {
       return res.status(400).json({ error: "Lista ticket IDs è obbligatoria" });
     }
 
-    // Genera QR Code
+    // ✅ GENERA IL QR CODE PRIMA
     const qr_code_url = await generateQRCode(ticket_ids);
 
     const payment_data = {
       payment_id: `pay_${Date.now()}`,
-      qr_code_url
+      qr_code_url,
+      paypal_order_id,
+      user_id,
+      discount_id
     };
 
+    // ✅ CONFERMA I TICKET (questo gestirà anche l'email)
     const tickets = await confirmTickets(ticket_ids, payment_data);
-    
-    // Applica sconto se presente
-    if (discount_id) {
-      // Qui puoi integrare la logica per applicare lo sconto
-      console.log(`Sconto applicato: ${discount_id}`);
-    }
-
-    // Invia email di conferma
-    //await sendConfirmationEmail(req.user.email, tickets, qr_code_url);
 
     res.json({
       message: "Pagamento confermato e biglietti emessi",

@@ -1,4 +1,5 @@
 // controllers/seatsController.js
+
 import { getAvailableSeats, getSeatsByHall } from "../models/seatModel.js";
 
 export const getHallSeats = async (req, res) => {
@@ -14,9 +15,14 @@ export const getHallSeats = async (req, res) => {
 export const getScreeningSeats = async (req, res) => {
   try {
     const { screening_id } = req.params;
-    const seats = await getAvailableSeats(screening_id);
+    const user_id = req.user?.id || null; // ✅ funziona con optionalAuth
+    
+    console.log('🎯 Recupero posti per screening:', screening_id, 'Utente:', user_id);
+    
+    const seats = await getAvailableSeats(screening_id, user_id);
     res.json(seats);
   } catch (error) {
+    console.error('❌ Errore recupero posti:', error);
     res.status(500).json({ error: error.message });
   }
 };
