@@ -211,11 +211,12 @@ const Movies = () => {
                     }}
                   />
                   <div className="movie-overlay">
-                    <Link to={`/movie/${movie.id}`} className="btn movie-btn-primary">
+                    <Link to={`/movie/${movie.id}`} state={{ from: location.pathname }} className="btn movie-btn-primary">
                       Dettagli
                     </Link>
                     <Link 
-                      to={`/screening/${movie.id}?date=${selectedDate}`} 
+                      to={`/screening/${movie.id}?date=${selectedDate}`}
+                      state={{ from: location.pathname }} 
                       className="btn movie-btn-secondary"
                     >
                       <Clock /*size={22}*/ />

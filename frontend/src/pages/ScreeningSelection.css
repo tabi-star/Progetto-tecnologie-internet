@@ -57,6 +57,7 @@
 .movie-mini-info h1 {
   font-size: 3rem;
   /*margin-bottom: 0.25rem;*/
+  text-align: center;
   color: #e74c3c;
 }
 

@@ -66,8 +66,8 @@
   flex-grow: 1;
 }
 
-.form-group label{
-  font-size: 1.25rem;
+.form-group label {
+  font-size: 1.5rem;
 }
 
 .qr-input-form {
@@ -206,7 +206,7 @@
   gap: 0.75rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #e1e5e9;
+  border-bottom: 2px solid #2c3e50;
 }
 
 .result-header.success {
@@ -288,7 +288,7 @@
 }
 
 .qr-scanner-ticket-card {
-  border: 2px solid #e1e5e9;
+  /*border: 2px solid #e1e5e9;*/
   border-radius: 8px;
   padding: 1rem;
   background: #f8f9fa;
@@ -300,16 +300,21 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.qr-ticket-card.reserved {
+/*.qr-ticket-card.reserved {
   border-left: 4px solid #17a2b8;
+}*/
+
+.qr-scanner-ticket-card.confirmed {
+  border: 3px solid #28a745;
 }
 
-.qr-scannerticket-card.confirmed {
-  border-left: 4px solid #28a745;
+.qr-scanner-ticket-card.validated {
+  border: 3px solid #17a2b8;
 }
 
 .qr-scanner-ticket-card.cancelled {
-  border-left: 4px solid #dc3545;
+  /*border-left: 4px solid #dc3545;*/
+  border: 3px solid #dc3545;
   opacity: 0.6;
 }
 
@@ -334,10 +339,10 @@
   text-transform: uppercase;
 }
 
-.status-badge.reserved {
+/*.status-badge.reserved {
   background: #17a2b8;
   color: white;
-}
+}*/
 
 .status-badge.confirmed {
   background: #28a745;
@@ -346,6 +351,11 @@
 
 .status-badge.cancelled {
   background: #dc3545;
+  color: white;
+}
+
+.status-badge.reserved {
+  background: #17a2b8;
   color: white;
 }
 
@@ -364,7 +374,7 @@
   text-align: center;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 2px solid #e1e5e9;
+  border-top: 2px solid #2c3e50;
 }
 
 .already-used-message {

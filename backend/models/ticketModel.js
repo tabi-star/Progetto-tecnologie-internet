@@ -44,7 +44,7 @@ export const getTicketsByUser = async (user_id) => {
      JOIN screenings s ON t.screening_id = s.id
      JOIN movies m ON s.movie_id = m.id
      JOIN halls h ON s.hall_id = h.id
-     WHERE t.user_id = ? AND t.status = 'confirmed' OR t.status = 'validated' 
+     WHERE t.user_id = ? AND (t.status = 'confirmed' OR t.status = 'validated')
      ORDER BY s.start_time DESC`,
     [user_id]
   );
@@ -80,7 +80,7 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id) => {
     const [availableSeats] = await connection.execute(
       `SELECT seat_number FROM tickets 
        WHERE screening_id = ? AND seat_number IN (${placeholders}) 
-       AND status = 'confirmed' OR status = 'validated'  
+       AND (status = 'confirmed' OR status = 'validated') 
        AND (reserved_until IS NULL OR reserved_until > NOW())`,
       [screening_id, ...seat_numbers]
     );
@@ -287,7 +287,7 @@ export const cancelTicket = async (ticket_id, user_id) => {
 export const getOccupiedSeats = async (screening_id) => {
   const [rows] = await promisePool.execute(
     `SELECT seat_number FROM tickets 
-     WHERE screening_id = ? AND status = 'confirmed' OR status = 'validated'  
+     WHERE screening_id = ? AND (status = 'confirmed' OR status = 'validated')  
      AND (reserved_until IS NULL OR reserved_until > NOW())`,
     [screening_id]
   );

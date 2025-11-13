@@ -2,7 +2,7 @@
 
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
-import { Film, Calendar, Building, Ticket, Settings, Users, RefreshCw } from 'lucide-react'
+import { Film, Calendar, Video, Building, Ticket, Settings, Users, RefreshCw } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './AdminDashboard.css'
@@ -59,7 +59,7 @@ const AdminDashboard = () => {
       color: '#e74c3c'
     },
     {
-      icon: <Calendar size={32} />,
+      icon: <Calendar/*Video*/ size={32} />,
       title: 'Gestisci Proiezioni',
       description: 'Programma le proiezioni e gestisci gli orari',
       link: '/admin/screenings',
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
               </div>
             
               <div className="stat-card">
-                <Calendar size={24} />
+                <Calendar /*Video*/ size={24} />
                 <div className="stat-info">
                   {loading ? (
                     <div className="stat-loading">...</div>
@@ -146,7 +146,7 @@ const AdminDashboard = () => {
                   ) : (
                     <>
                       <span className="stat-number">{stats.soldTickets}</span>
-                      <span className="stat-label">Biglietti venduti</span>
+                      <span className="stat-label">Biglietti venduti oggi</span>
                     </>
                   )}
                 </div>

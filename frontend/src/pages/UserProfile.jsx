@@ -286,7 +286,7 @@ const UserProfile = () => {
                     const now = new Date();
                     const timeDiff = screeningTime - now; // differenza in millisecondi
                     const twoHours = 2 * 60 * 60 * 1000; // 2 ore in ms
-                    const canCancel = timeDiff > twoHours; // true se mancano più di 2 ore
+                    const canCancel = (ticket.status === 'confirmed') && (timeDiff > twoHours); // true se mancano più di 2 ore
 
                     return (
                       <div key={ticket.id} className="ticket-card">
@@ -300,7 +300,8 @@ const UserProfile = () => {
                             <h3>{ticket.title}</h3>
                             <div className="ticket-status">
                               <span className={`status-${ticket.status}`}>
-                                {ticket.status === 'confirmed' ? 'Confermato' : ticket.status}
+                                {ticket.status === 'confirmed' ? 'Confermato' : 
+                                 ticket.status === 'validated'? 'Convalidato' : ticket.status}
                               </span>
                             </div>
                           </div>
@@ -349,7 +350,7 @@ const UserProfile = () => {
                               onClick={() => handleCancelTicket(ticket)}
                               className="btn btn-danger btn-small"
                               disabled={!canCancel} 
-                              title={!canCancel ? "Non puoi più cancellare questo biglietto" : ""}
+                              /*title={!canCancel ? "Non puoi più cancellare questo biglietto" : ""}*/
                             >
                               <Trash2 size={14} />
                               Cancella Biglietto

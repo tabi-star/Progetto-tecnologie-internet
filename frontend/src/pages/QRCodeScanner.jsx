@@ -54,7 +54,7 @@ const QRCodeScanner = () => {
           ...prev,
           tickets: prev.tickets.map(ticket => ({
             ...ticket,
-            status: 'confirmed'
+            status: 'validate'
           }))
         }));
         alert('✅ Ticket validati con successo!');
@@ -123,26 +123,6 @@ const QRCodeScanner = () => {
               </small>
             </div>
 
-            <div className="form-actions">
-              <button 
-                type="submit" 
-                className="btn btn-primary-qr-check"
-                disabled={loading || !qrText || user?.role !== 'admin'}
-              >
-                {loading ? 'Verifica in corso...' : 'Verifica QR Code'}
-              </button>
-              
-              {result && (
-                <button 
-                  type="button" 
-                  onClick={resetForm}
-                  className="btn btn-secondary-qr-check"
-                >
-                  Nuova Scansione
-                </button>
-              )}
-            </div>
-
             {error && (
               <div className="error-message">
                 <XCircle size={20} />
@@ -199,7 +179,8 @@ const QRCodeScanner = () => {
                             <span className="ticket-id">Biglietto #{ticket.id}</span>
                             <span className={`status-badge ${ticket.status}`}>
                               {ticket.status === 'reserved' ? 'Prenotato' : 
-                              ticket.status === 'confirmed' ? 'Confermato' : 'Cancellato'}
+                              ticket.status === 'confirmed' ? 'Confermato' : /*'Cancellato'*/
+                              ticket.status === 'validated' ? 'Convalidato' : 'Cancellato'}
                             </span>
                           </div>
                           <div className="qr-ticket-details">
@@ -218,17 +199,18 @@ const QRCodeScanner = () => {
                     </div>
                   </div>
 
-                  {result.tickets.some(t => t.status === 'reserved') && (
+                  {result.tickets.some(t => t.status === 'confirmed') && ( //reserved
                     <div className="validation-actions">
                       <button 
                         onClick={handleValidateAndUse}
                         className="btn btn-success btn-large"
                         disabled={loading}
                       >
-                        {loading ? 'Validazione...' : 'Conferma Utilizzo Biglietti'}
+                        {loading ? 'CONVALIDA...' : result.tickets.length > 1 ? 'CONVALIDA I BIGLIETTI' : 'CONVALIDA IL BIGLIETTO'}
                       </button>
                       <p className="help-text">
-                        Clicca per marcare i biglietti come utilizzati. Questa azione non può essere annullata.
+                        {/*Clicca per marcare i biglietti come utilizzati. Questa azione non può essere annullata.*/}
+                        Clicca per convalidare i biglietti. Questa azione è irreversibile.
                       </p>
                     </div>
                   )}
@@ -242,6 +224,27 @@ const QRCodeScanner = () => {
                 </div>
               </div>
             )}
+
+            <div className="form-actions">
+              <button 
+                type="submit" 
+                className="btn btn-primary-qr-check"
+                disabled={loading || !qrText || user?.role !== 'admin'}
+              >
+                {loading ? 'Verifica in corso...' : 'Verifica QR Code'}
+              </button>
+              
+              {result && (
+                <button 
+                  type="button" 
+                  onClick={resetForm}
+                  className="btn btn-secondary-qr-check"
+                >
+                  Nuova Scansione
+                </button>
+              )}
+            </div>
+
           </form>
         </div>
       </div>
