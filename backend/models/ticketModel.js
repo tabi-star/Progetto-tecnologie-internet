@@ -3,7 +3,10 @@ import db from "../db.js";
 import { promisePool } from "../db.js";
 import { sendConfirmationEmail } from '../services/emailService.js';
 
-// FUNZIONE MANCANTE AGGIUNTA
+
+/*
+// PER ORA QUESTA FUNZIONE NON LA STIAMO UTILIZZANDO
+ 
 export const checkTicketsStatus = async (ticket_ids) => {
   if (!ticket_ids || ticket_ids.length === 0) {
     return [];
@@ -20,6 +23,7 @@ export const checkTicketsStatus = async (ticket_ids) => {
   
   return tickets;
 };
+*/
 
 export const getAllTickets = (cb) => {
   db.query(`
@@ -51,7 +55,7 @@ export const getTicketsByUser = async (user_id) => {
   return rows;
 };
 
-export const reserveSeats = async (screening_id, seat_numbers, user_id) => {
+export const reserveSeats = async (screening_id, seat_numbers, user_id, discountApplied) => {
   const connection = await promisePool.getConnection();
   
   try {
@@ -103,7 +107,17 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id) => {
     for (const seat_number of seat_numbers) {
       const seat = seatDetails.find(s => s.seat_number === seat_number);
       const price = seat?.seat_type === 'premium' ? 10.00 : 7.50;
-      
+      const finalPrice = (() => {
+        try {
+          if (discountApplied && !isNaN(discountApplied) && discountApplied > 0 && discountApplied <= 100) {
+            return Math.round(price * (1 - discountApplied / 100) * 100) / 100;
+          }
+          return price;
+        } catch (error) {
+          console.error('Errore nel calcolo dello sconto:', error);
+          return price;
+        }
+      })();      
       await connection.execute(
         `INSERT INTO tickets (screening_id, user_id, seat_number, status, reserved_until, price) 
          VALUES (?, ?, ?, 'reserved', ?, ?) 
@@ -112,7 +126,7 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id) => {
          status = VALUES(status), 
          reserved_until = VALUES(reserved_until),
          price = VALUES(price)`,
-        [screening_id, user_id, seat_number, reservedUntil, price]
+        [screening_id, user_id, seat_number, reservedUntil, finalPrice]
       );
     }
 

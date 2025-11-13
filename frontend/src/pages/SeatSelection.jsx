@@ -120,8 +120,8 @@ const SeatSelection = () => {
         const seatNumbers = selectedSeats.map(seat => seat.seat_number)
         const reserveResponse = await axios.post('/api/tickets/reserve', {
         screening_id: parseInt(screeningId),
-        seat_numbers: seatNumbers
-        })
+        seat_numbers: seatNumbers,
+        discountApplied: discountApplied ? parseInt(discountApplied.discount_percent) : 0        })
 
         if (reserveResponse.data.success) {
         // Passa ALL i dati necessari al Payment
