@@ -20,7 +20,7 @@ const Layout = ({ children }) => {
 
   const handleLogout = () => {
     logout()
-    navigate('/')
+    navigate('/', { replace: true });
   }
 
   return (

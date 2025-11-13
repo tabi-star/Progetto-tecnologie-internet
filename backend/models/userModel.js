@@ -27,12 +27,28 @@ export const insertUser = async (user) => {
 };
 
 export const updateUser = async (id, userData) => {
-  // Se c'è la password, hasha
-  if (userData.password) {
-    userData.password = await bcrypt.hash(userData.password, 12);
+  // Filtra solo i campi che sono stati forniti e non sono undefined
+  const fieldsToUpdate = {};
+  if (userData.name !== undefined) fieldsToUpdate.name = userData.name;
+  if (userData.password !== undefined) {
+    fieldsToUpdate.password = await bcrypt.hash(userData.password, 12);
   }
+
+  // Se non ci sono campi da aggiornare, ritorna
+  if (Object.keys(fieldsToUpdate).length === 0) {
+    return { affectedRows: 0 };
+  }
+
+  // Costruisci la query dinamicamente
+  const setClause = Object.keys(fieldsToUpdate).map(field => `${field} = ?`).join(', ');
+  const values = Object.values(fieldsToUpdate);
+  values.push(id); // Aggiungi l'ID alla fine
+
+  const [result] = await promisePool.execute(
+    `UPDATE users SET ${setClause} WHERE id = ?`,
+    values
+  );
   
-  const [result] = await promisePool.execute("UPDATE users SET ? WHERE id = ?", [userData, id]);
   return result;
 };
 
