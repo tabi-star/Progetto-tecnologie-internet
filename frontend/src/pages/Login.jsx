@@ -56,7 +56,7 @@ const Login = () => {
       }
 
       if (result.success) {
-        navigate(from, { replace: true })
+        navigate('/', { replace: true });
       } else {
         setError(result.error)
       }

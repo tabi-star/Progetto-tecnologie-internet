@@ -184,7 +184,7 @@ const UserProfile = () => {
             </div>
 
             {editMode ? (
-              <form onSubmit={handleUpdateProfile} className="edit-form">
+              <form className="edit-form">
                 <div className="form-group">
                   <label htmlFor="name">Nome</label>
                   <input
@@ -233,7 +233,7 @@ const UserProfile = () => {
                 )}
 
                 <div className="form-actions">
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" onClick={handleUpdateProfile} className="btn btn-primary">
                     <Save size={16} />
                     Salva modifiche
                   </button>
