@@ -5,12 +5,23 @@ export const createDiscountCode = (discount, cb) => {
   db.query("INSERT INTO discount_codes SET ?", discount, cb);
 };
 
+export const deleteDiscountCode = (id, callback) => {
+  const query = "DELETE FROM discount_codes WHERE id = ?";
+  
+  db.query(query, [id], (err, result) => {
+    if (err) return callback(err);
+    callback(null, result);
+  });
+};
+
 export const getAdminDiscountCodes = (admin_id, cb) => {
   db.query("SELECT * FROM discount_codes WHERE created_by = ? ORDER BY created_at DESC", [admin_id], cb);
 };
 
 export const getValidDiscountCode = (code, cb) => {
-  db.query("SELECT * FROM discount_codes WHERE code = ? AND valid_until > NOW() AND used = FALSE", [code], cb);
+  //db.query("SELECT * FROM discount_codes WHERE code = ? AND valid_until >= NOW() AND used = FALSE", [code], cb);
+  /*PER RENDERE VALIDO IL CODICE CONFRONTANDO SOLO I GIORNI*/ db.query("SELECT * FROM discount_codes WHERE code = ? AND DATE(valid_until) >= CURDATE() AND used = FALSE", [code], cb);
+  //PARLARNE CON TABI!!!
 };
 
 export const markDiscountAsUsed = (code_id, user_id, cb) => {

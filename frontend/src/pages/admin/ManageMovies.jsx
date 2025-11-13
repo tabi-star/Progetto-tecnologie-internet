@@ -23,7 +23,7 @@ const ManageMovies = () => {
     description: '',
     duration_minutes: '',
     release_date: '',
-    language: ''/*'Italiano'*/,
+    language: /*''*/'Italiano',
     foto_locandina: '',
     banner_image: '',
   })
@@ -128,7 +128,7 @@ const ManageMovies = () => {
       description: '',
       duration_minutes: '',
       release_date: '',
-      language: '',/*'Italiano',*/
+      language: /*'',*/'Italiano',
       foto_locandina: '',
       banner_image: ''
     })
@@ -136,10 +136,19 @@ const ManageMovies = () => {
     setShowForm(false)
   }
 
-  const filteredMovies = movies.filter(movie =>
-    movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    movie.description.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredMovies = movies.filter(movie => {
+    
+    const releaseDate = movie.release_date ? new Date(movie.release_date).toLocaleDateString('it-IT').toLowerCase() : '';
+    const createdDate = movie.createdAt ? new Date(movie.createdAt).toLocaleDateString('it-IT').toLowerCase() : '';
+
+    return (
+      movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      movie.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      movie.language.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      releaseDate.includes(searchTerm.toLowerCase()) ||
+      createdDate.includes(searchTerm.toLowerCase())
+    );
+  });
 
   if (!user || user.role !== 'admin') {
     return <div className="error">Accesso negato</div>
@@ -168,10 +177,6 @@ const ManageMovies = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <button className="btn btn-secondary">
-              <Filter size={16} />
-              Filtri
-            </button>
           </div>
 
           <button 

@@ -32,7 +32,7 @@ export const getMoviesByScreeningsDate = (req, res) => {
     SELECT DISTINCT m.*
     FROM movies m
     JOIN screenings s ON m.id = s.movie_id
-    WHERE DATE(s.start_time) = ?
+    WHERE DATE(s.start_time) = ? AND s.start_time >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
     ORDER BY m.title
   `;
 

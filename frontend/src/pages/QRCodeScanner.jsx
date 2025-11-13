@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { QrCode, CheckCircle, XCircle, Clock, User, MapPin, Film, Calendar } from 'lucide-react';
+import { QrCode, CheckCircle, XCircle, Clock, User, Building, Film, Calendar } from 'lucide-react';
 import axios from 'axios';
 import './QRCodeScanner.css';
 
@@ -142,107 +142,107 @@ const QRCodeScanner = () => {
                 </button>
               )}
             </div>
-          </form>
 
-          {error && (
-            <div className="error-message">
-              <XCircle size={20} />
-              {error}
-            </div>
-          )}
-
-          {result && (
-            <div className="verification-result">
-              <div className="result-header success">
-                <CheckCircle size={24} />
-                <h2>QR Code Valido</h2>
-                <span className="ticket-count">{result.tickets.length} biglietto{result.tickets.length > 1 ? 'i' : ''}</span>
+            {error && (
+              <div className="error-message">
+                <XCircle size={20} />
+                {error}
               </div>
+            )}
 
-              <div className="tickets-info">
-                <div className="screening-summary">
-                  <h3>
-                    <Film size={20} />
-                    {result.tickets[0]?.movie_title}
-                  </h3>
+            {result && (
+              <div className="verification-result">
+                <div className="result-header success">
+                  <CheckCircle size={24} />
+                  <h2>QR Code Valido</h2>
+                  <span className="ticket-count">{result.tickets.length} {result.tickets.length > 1 ? 'biglietti' : 'biglietto'}</span>
+                </div>
+
+                <div className="tickets-info">
+                  <div className="screening-summary">
+                    <h3>
+                      <Film size={20} />
+                      {result.tickets[0]?.movie_title}
+                    </h3>
                   
-                  <div className="screening-details">
-                    <div className="detail-row">
-                      <div className="detail-item">
-                        <User size={16} />
-                        <span><strong>Cliente:</strong> {result.tickets[0]?.user_name}</span>
+                    <div className="qr-screening-details">
+                      <div className="qr-detail-row">
+                        <div className="qr-detail-item">
+                          <User size={18} />
+                          <span><strong>Cliente:</strong> {result.tickets[0]?.user_name}</span>
+                        </div>
+                        <div className="qr-detail-item">
+                          <Building size={18} />
+                          <span><strong>Sala:</strong> {result.tickets[0]?.hall_name}</span>
+                        </div>
                       </div>
-                      <div className="detail-item">
-                        <MapPin size={16} />
-                        <span><strong>Sala:</strong> {result.tickets[0]?.hall_name}</span>
-                      </div>
-                    </div>
                     
-                    <div className="detail-row">
-                      <div className="detail-item">
-                        <Calendar size={16} />
-                        <span><strong>Data:</strong> {formatDate(result.tickets[0]?.start_time)}</span>
-                      </div>
-                      <div className="detail-item">
-                        <Clock size={16} />
-                        <span><strong>Ora:</strong> {formatTime(result.tickets[0]?.start_time)}</span>
+                      <div className="qr-detail-row">
+                        <div className="qr-detail-item">
+                          <Calendar size={18} />
+                          <span><strong>Data:</strong> {formatDate(result.tickets[0]?.start_time)}</span>
+                        </div>
+                        <div className="qr-detail-item">
+                          <Clock size={18} />
+                          <span><strong>Ora:</strong> {formatTime(result.tickets[0]?.start_time)}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="tickets-list">
-                  <h4>Dettagli Biglietti</h4>
-                  <div className="tickets-grid">
-                    {result.tickets.map(ticket => (
-                      <div key={ticket.id} className={`qr-scanner-ticket-card ${ticket.status}`}>
-                        <div className="qr-scanner-ticket-header">
-                          <span className="ticket-id">Biglietto #{ticket.id}</span>
-                          <span className={`status-badge ${ticket.status}`}>
-                            {ticket.status === 'reserved' ? 'Prenotato' : 
-                             ticket.status === 'confirmed' ? 'Confermato' : 'Cancellato'}
-                          </span>
+                  <div className="tickets-list">
+                    <h4>Dettagli Biglietti</h4>
+                    <div className="tickets-grid">
+                      {result.tickets.map(ticket => (
+                        <div key={ticket.id} className={`qr-scanner-ticket-card ${ticket.status}`}>
+                          <div className="qr-scanner-ticket-header">
+                            <span className="ticket-id">Biglietto #{ticket.id}</span>
+                            <span className={`status-badge ${ticket.status}`}>
+                              {ticket.status === 'reserved' ? 'Prenotato' : 
+                              ticket.status === 'confirmed' ? 'Confermato' : 'Cancellato'}
+                            </span>
+                          </div>
+                          <div className="qr-ticket-details">
+                            <div className="detail">
+                              <strong>Posto:</strong> {ticket.seat_number}
+                            </div>
+                            <div className="detail">
+                              <strong>Prezzo:</strong> €{ticket.price}
+                            </div>
+                            <div className="detail">
+                              <strong>Prenotato il:</strong> {formatDate(ticket.bookedAt)}
+                            </div>
+                          </div>
                         </div>
-                        <div className="ticket-details">
-                          <div className="detail">
-                            <strong>Posto:</strong> {ticket.seat_number}
-                          </div>
-                          <div className="detail">
-                            <strong>Prezzo:</strong> €{ticket.price}
-                          </div>
-                          <div className="detail">
-                            <strong>Prenotato il:</strong> {formatDate(ticket.bookedAt)}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
+
+                  {result.tickets.some(t => t.status === 'reserved') && (
+                    <div className="validation-actions">
+                      <button 
+                        onClick={handleValidateAndUse}
+                        className="btn btn-success btn-large"
+                        disabled={loading}
+                      >
+                        {loading ? 'Validazione...' : 'Conferma Utilizzo Biglietti'}
+                      </button>
+                      <p className="help-text">
+                        Clicca per marcare i biglietti come utilizzati. Questa azione non può essere annullata.
+                      </p>
+                    </div>
+                  )}
+
+                  {result.tickets.every(t => t.status === 'confirmed') && (
+                    <div className="already-used-message">
+                      <CheckCircle size={20} />
+                      <span>Questi biglietti sono già stati utilizzati</span>
+                    </div>
+                  )}
                 </div>
-
-                {result.tickets.some(t => t.status === 'reserved') && (
-                  <div className="validation-actions">
-                    <button 
-                      onClick={handleValidateAndUse}
-                      className="btn btn-success btn-large"
-                      disabled={loading}
-                    >
-                      {loading ? 'Validazione...' : 'Conferma Utilizzo Biglietti'}
-                    </button>
-                    <p className="help-text">
-                      Clicca per marcare i biglietti come utilizzati. Questa azione non può essere annullata.
-                    </p>
-                  </div>
-                )}
-
-                {result.tickets.every(t => t.status === 'confirmed') && (
-                  <div className="already-used-message">
-                    <CheckCircle size={20} />
-                    <span>Questi biglietti sono già stati utilizzati</span>
-                  </div>
-                )}
               </div>
-            </div>
-          )}
+            )}
+          </form>
         </div>
       </div>
     </div>

@@ -106,6 +106,53 @@ const AdminDashboard = () => {
           
           <div className="admin-stats-header">
             <h2>Statistiche in Tempo Reale</h2>
+          </div>
+
+          <div className="admin-stats-body">
+            <div className="admin-stats">
+              <div className="stat-card">
+                <Film size={24} />
+                <div className="stat-info">
+                  {loading ? (
+                    <div className="stat-loading">...</div>
+                  ) : (
+                    <>
+                      <span className="stat-number">{stats.activeMovies}</span>
+                      <span className="stat-label">Film attivi</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            
+              <div className="stat-card">
+                <Calendar size={24} />
+                <div className="stat-info">
+                  {loading ? (
+                    <div className="stat-loading">...</div>
+                  ) : (
+                    <>
+                      <span className="stat-number">{stats.todayScreenings}</span>
+                      <span className="stat-label">Proiezioni oggi</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            
+              <div className="stat-card">
+                <Ticket size={24} />
+                <div className="stat-info">
+                  {loading ? (
+                    <div className="stat-loading">...</div>
+                  ) : (
+                    <>
+                      <span className="stat-number">{stats.soldTickets}</span>
+                      <span className="stat-label">Biglietti venduti</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <button 
               className="refresh-btn"
               onClick={() => fetchStats(true)}
@@ -114,50 +161,6 @@ const AdminDashboard = () => {
               <RefreshCw size={16} className={refreshing ? 'refreshing' : ''} />
               {refreshing ? 'Aggiornamento...' : 'Aggiorna'}
             </button>
-          </div>
-
-          <div className="admin-stats">
-            <div className="stat-card">
-              <Film size={24} />
-              <div className="stat-info">
-                {loading ? (
-                  <div className="stat-loading">...</div>
-                ) : (
-                  <>
-                    <span className="stat-number">{stats.activeMovies}</span>
-                    <span className="stat-label">Film attivi</span>
-                  </>
-                )}
-              </div>
-            </div>
-            
-            <div className="stat-card">
-              <Calendar size={24} />
-              <div className="stat-info">
-                {loading ? (
-                  <div className="stat-loading">...</div>
-                ) : (
-                  <>
-                    <span className="stat-number">{stats.todayScreenings}</span>
-                    <span className="stat-label">Proiezioni oggi</span>
-                  </>
-                )}
-              </div>
-            </div>
-            
-            <div className="stat-card">
-              <Ticket size={24} />
-              <div className="stat-info">
-                {loading ? (
-                  <div className="stat-loading">...</div>
-                ) : (
-                  <>
-                    <span className="stat-number">{stats.soldTickets}</span>
-                    <span className="stat-label">Biglietti venduti</span>
-                  </>
-                )}
-              </div>
-            </div>
           </div>
         </div>
 

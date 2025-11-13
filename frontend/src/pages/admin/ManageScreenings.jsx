@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import axios from 'axios'
-import { Plus, Edit2, Trash2, Calendar, Clock, Film, Building } from 'lucide-react'
+import { Plus, Edit2, Trash2, Search, Calendar, Clock, Building } from 'lucide-react'
 import './ManageScreenings.css'
 
 const ManageScreenings = () => {
@@ -17,6 +17,9 @@ const ManageScreenings = () => {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [overlapCheck, setOverlapCheck] = useState(null)
+  const [showDeleteScreeningModal, setShowDeleteScreeningModal] = useState(false)
+  const [screeningToDelete, setScreeningToDelete] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const [formData, setFormData] = useState({
     movie_id: '',
@@ -52,7 +55,11 @@ const ManageScreenings = () => {
     }
 
     try {
-      const response = await axios.post('/api/screenings/check-overlap', formData)
+      const dataLoad = {
+        ...formData,
+        screening_id: editingScreening ? editingScreening.id : undefined
+      }
+      const response = await axios.post('/api/screenings/check-overlap', dataLoad)
       setOverlapCheck(response.data)
     } catch (err) {
       console.error('Errore nel controllo sovrapposizioni:', err)
@@ -89,6 +96,8 @@ const ManageScreenings = () => {
       fetchData()
     } catch (err) {
       setError(err.response?.data?.error || 'Errore nel salvataggio')
+      resetForm()
+      fetchData()
     }
   }
 
@@ -98,12 +107,13 @@ const ManageScreenings = () => {
       movie_id: screening.movie_id,
       hall_id: screening.hall_id,
       start_time: screening.start_time.split('.')[0] // Rimuovi millisecondi per input datetime-local
+      /*release_movie_date: screening.release_movie_date*/
     })
     setShowForm(true)
   }
 
-  const handleDelete = async (screeningId) => {
-    if (window.confirm('Sei sicuro di voler eliminare questa proiezione?')) {
+  const handleDelete = /*async*/ (screening) => {
+    /*if (window.confirm('Sei sicuro di voler eliminare questa proiezione?')) {
       try {
         await axios.delete(`/api/screenings/${screeningId}`)
         setSuccess('Proiezione eliminata con successo')
@@ -111,14 +121,34 @@ const ManageScreenings = () => {
       } catch (err) {
         setError('Errore nell\'eliminazione della proiezione')
       }
+    }*/
+   setScreeningToDelete(screening)
+   setShowDeleteScreeningModal(true)
+  }
+
+  const confirmDelete = async () => {
+
+    if (!screeningToDelete) return
+
+    try {
+      await axios.delete(`/api/screenings/${screeningToDelete.id}`)
+      setSuccess(`Proiezione di "${screeningToDelete.title}" eliminata con successo`)
+      fetchData()
+    } catch (err) {
+      setError('Errore nell\'eliminazione della proiezione')
+    } finally {
+      setShowDeleteScreeningModal(false)
+      setScreeningToDelete(null)
     }
+
   }
 
   const resetForm = () => {
     setFormData({
       movie_id: '',
       hall_id: '',
-      start_time: ''
+      start_time: '',
+      /*release_movie_date: ''*/
     })
     setEditingScreening(null)
     setShowForm(false)
@@ -127,14 +157,21 @@ const ManageScreenings = () => {
 
   const formatDateTime = (dateTime) => {
     return new Date(dateTime).toLocaleString('it-IT', {
-      weekday: 'short',
+      weekday: 'long'/*'short'*/,
       year: 'numeric',
-      month: 'short',
+      month: 'long'/*'short'*/,
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     })
   }
+  
+  const filteredScreenings = screenings.filter(screening => 
+    screening.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    screening.hall_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    screening.hall_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    formatDateTime(screening.start_time).toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   if (!user || user.role !== 'admin') {
     return <div className="error">Accesso negato</div>
@@ -152,18 +189,32 @@ const ManageScreenings = () => {
         {success && <div className="success-message">{success}</div>}
 
         <div className="screenings-header">
-          <div className="header-info">
-            <h2>Proiezioni Programmate</h2>
-            <span className="count-badge">{screenings.length} proiezioni</span>
-          </div>
+          <div className="screenings-header-action">
+            <div className="header-info">
+              <h2>Proiezioni Programmate</h2>
+              <span className="count-badge">{screenings.length} proiezioni</span>
+            </div>
           
-          <button 
-            onClick={() => setShowForm(true)}
-            className="btn btn-primary"
-          >
-            <Plus size={16} />
-            Nuova Proiezione
-          </button>
+            <button 
+              onClick={() => setShowForm(true)}
+              className="btn btn-primary"
+            >
+              <Plus size={16} />
+              Nuova Proiezione
+            </button>
+          </div>
+
+          <div className="screenings-search-filter">
+            <div className="screenings-search-box">
+              <Search size={20} />
+              <input
+                type="text"
+                placeholder="Cerca le proiezioni..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
 
         {showForm && (
@@ -252,55 +303,65 @@ const ManageScreenings = () => {
           </div>
         )}
 
+        {showDeleteScreeningModal && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h3>Conferma eliminazione</h3>
+              <p>Sei sicuro di voler eliminare la proiezione di <strong>{screeningToDelete?.title}</strong>?</p>
+              <div className="modal-actions">
+                <button className="btn btn-primary" onClick={confirmDelete}>Elimina</button>
+                <button className="btn btn-secondary" onClick={() => setShowDeleteScreeningModal(false)}>Annulla</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="loading">Caricamento proiezioni...</div>
         ) : (
-          <div className="screenings-list">
-            {screenings.map(screening => (
-              <div key={screening.id} className="screening-card">
-                <div className="screening-main">
-                  <div className="screening-poster">
-                    <img 
-                      src={screening.foto_locandina || '/placeholder-movie.jpg'} 
-                      alt={screening.title}
-                    />
-                  </div>
-                  
-                  <div className="screening-info">
-                    <h3>{screening.title}</h3>
+          //RIPRENDIAMO DA QUI!!!!
+          <div className="manage-screenings-grid">
+            {/*screenings*/filteredScreenings.map(screening => (
+              <div key={screening.id} className="manage-screening-card">
+
+                <div className="manage-screening-header">
+                  <img 
+                    src={screening.foto_locandina || '/placeholder-movie.jpg'} 
+                    alt={screening.title}
+                    className="manage-screening-poster"
+                  />
+                  <h3>{screening.title}</h3>
+                </div>
+ 
+                <div className="manage-screening-info">
                     
-                    <div className="screening-details">
-                      <div className="detail-item">
-                        <Calendar size={16} />
-                        <span>{formatDateTime(screening.start_time)}</span>
-                      </div>
-                      <div className="detail-item">
-                        <Clock size={16} />
-                        <span>{Math.floor(screening.duration_minutes / 60)}h {screening.duration_minutes % 60}m</span>
-                      </div>
-                      <div className="detail-item">
-                        <Building size={16} />
-                        <span>{screening.hall_name} ({screening.hall_type})</span>
-                      </div>
-                      <div className="detail-item">
-                        <Film size={16} />
-                        <span>{screening.language}</span>
-                      </div>
+                  <div className="screening-details">
+                    <div className="screening-detail-item">
+                      <Calendar size={20} />
+                      <span>{formatDateTime(screening.start_time)}</span>
+                    </div>
+                    <div className="screening-detail-item">
+                      <Clock size={20} />
+                      <span>{Math.floor(screening.duration_minutes / 60)}h {screening.duration_minutes % 60}m</span>
+                    </div>
+                    <div className="screening-detail-item">
+                      <Building size={20} />
+                      <span>{screening.hall_name} ({screening.hall_type})</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="screening-actions">
+                <div className="manage-screening-actions">
                   <button 
                     onClick={() => handleEdit(screening)}
-                    className="btn-action edit"
+                    className="manage-screening-btn-action edit"
                   >
                     <Edit2 size={16} />
                     Modifica
                   </button>
                   <button 
-                    onClick={() => handleDelete(screening.id)}
-                    className="btn-action delete"
+                    onClick={() => handleDelete(screening)}
+                    className="manage-screening-btn-action delete"
                   >
                     <Trash2 size={16} />
                     Elimina
@@ -311,11 +372,12 @@ const ManageScreenings = () => {
           </div>
         )}
 
-        {screenings.length === 0 && !loading && (
+        {filteredScreenings.length === 0 && !loading && (
           <div className="no-screenings">
             <Calendar size={48} />
             <h3>Nessuna proiezione programmata</h3>
-            <p>Crea la prima proiezione per iniziare</p>
+            {/*<p>Crea la prima proiezione per iniziare</p>*/}
+            <p>{searchTerm ? 'Prova a modificare i termini di ricerca' : 'Crea la prima proiezione per iniziare'}</p>
           </div>
         )}
       </div>

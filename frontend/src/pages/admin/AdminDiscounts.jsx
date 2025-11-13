@@ -14,6 +14,9 @@ const AdminDiscounts = () => {
   const [copiedCode, setCopiedCode] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [userEmails, setUserEmails] = useState({});
+  const [showDeleteDiscountModal, setShowDeleteDiscountModal] = useState(false)
+  const [discountToDelete, setDiscountToDelete] = useState(null)
 
   const [formData, setFormData] = useState({
     code: '',
@@ -93,7 +96,55 @@ const AdminDiscounts = () => {
   }
 
   const isExpired = (validUntil) => {
-    return new Date(validUntil) < new Date()
+    //return new Date(validUntil) < new Date()
+    // il codice è valido fino alla fine del giorno della data valid_until
+    const expiry = new Date(validUntil)
+    const endOfDay = new Date(expiry)
+    endOfDay.setHours(23, 59, 59, 999)
+    return new Date() > endOfDay
+  }
+
+  const fetchUserEmail = async (userId) => {
+    try {
+      const response = await axios.get(`/api/users/${userId}`);
+      const email = response.data.email; // ← se il backend la restituisce così
+      setUserEmails(prev => ({
+        ...prev,
+        [userId]: email
+      }));
+    } catch (err) {
+      console.error(`Errore nel recupero email per utente #${userId}:`, err);
+    }
+  };
+
+  useEffect(() => {
+    discounts.forEach(discount => {
+      if (discount.used && discount.used_by && !userEmails[discount.used_by]) {
+        fetchUserEmail(discount.used_by);
+      }
+    });
+  }, [discounts]);
+
+  const handleDelete = (discount) => {
+    setDiscountToDelete(discount)
+    setShowDeleteDiscountModal(true)
+  }
+
+  const confirmDelete = async () => {
+
+    if (!discountToDelete) return
+
+    try {
+      await axios.delete(`/api/discounts/${discountToDelete.id}`)
+      setSuccess(`Codice sconto ${discountToDelete.code} eliminato con successo`)
+      fetchDiscounts()
+    } catch (err) {
+      setError('Errore nell\'eliminazione del codice sconto')
+    } finally {
+      setShowDeleteDiscountModal(false)
+      setDiscountToDelete(null)
+    }
+
   }
 
   if (!user || user.role !== 'admin') {
@@ -206,12 +257,26 @@ const AdminDiscounts = () => {
           </div>
         )}
 
+        {showDeleteDiscountModal && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h3>Conferma eliminazione</h3>
+              <p>Sei sicuro di voler eliminare <strong>{discountToDelete.code}</strong>?</p>
+              <div className="modal-actions">
+                <button className="btn btn-primary" onClick={confirmDelete}>Elimina</button>
+                <button className="btn btn-secondary" onClick={() => setShowDeleteDiscountModal(false)}>Annulla</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="loading">Caricamento codici...</div>
         ) : (
           <div className="discounts-grid">
             {discounts.map(discount => (
               <div key={discount.id} className={`discount-card ${discount.used ? 'used' : ''} ${isExpired(discount.valid_until) ? 'expired' : ''}`}>
+                <>
                 <div className="discount-header">
                   <div className="discount-code">
                     <h3>{discount.code}</h3>
@@ -249,22 +314,38 @@ const AdminDiscounts = () => {
                     ) : (
                       <CheckCircle size={16} className="available-icon" />
                     )}
-                    <div className="detail-info">
-                      <span className="detail-label">Stato</span>
+                    <div className="detail-info-state">
+                      <span className="detail-label">Stato:</span>
                       <span className="detail-value">
                         {discount.used ? 'Utilizzato' : isExpired(discount.valid_until) ? 'Scaduto' : 'Disponibile'}
                       </span>
                     </div>
                   </div>
 
-                  {discount.used && (
+                  {/*{discount.used && (
                     <div className="detail-item">
                       <div className="detail-info">
                         <span className="detail-label">Utilizzato da</span>
                         <span className="detail-value">Utente #{discount.used_by}</span>
                       </div>
                     </div>
-                  )}
+                  )}*/}
+                  {discount.used ?
+                    <div className="detail-item">
+                      <div className="detail-info-used">
+                        <span className="detail-label">Utilizzato da:</span>
+                        {/*<span className="detail-value">Utente #{discount.used_by}</span>*/}
+                        <div className="detail-info-used-data">
+                          <span className="detail-value-1">Utente #{discount.used_by}</span>
+                          <span className="detail-value-2">
+                            {userEmails[discount.used_by] || 'Caricamento...'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    :
+                    null
+                  }
                 </div>
 
                 <div className="discount-stats">
@@ -273,12 +354,19 @@ const AdminDiscounts = () => {
                     <span className="stat-value">{formatDate(discount.created_at)}</span>
                   </div>
                   
-                  {discount.used && (
+                  {/*{discount.used && (
                     <div className="stat">
                       <span className="stat-label">Utilizzato il</span>
                       <span className="stat-value">{formatDate(discount.used_at)}</span>
                     </div>
-                  )}
+                  )}*/}
+                  { discount.used ?
+                    <div className="stat">
+                      <span className="stat-label">Utilizzato il</span>
+                      <span className="stat-value">{formatDate(discount.used_at)}</span>
+                    </div>
+                    : null
+                  }
                 </div>
 
                 <div className="discount-status">
@@ -289,6 +377,14 @@ const AdminDiscounts = () => {
                   ) : (
                     <span className="status-badge active">Attivo</span>
                   )}
+                </div>
+                </>
+                <div className="delete-discount-action">
+                  <button className="delete-discount-btn"
+                    onClick={() => { handleDelete(discount) }}
+                  >
+                    Elimina codice sconto
+                  </button>
                 </div>
               </div>
             ))}

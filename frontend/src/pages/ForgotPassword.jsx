@@ -59,10 +59,10 @@ const ForgotPassword = () => {
     <div className="forgot-password-page">
       <div className="container">
         <div className="forgot-password-card">
-          <button onClick={() => navigate(-1)} className="btn-back">
+          {/*<button onClick={() => navigate(-1)} className="btn-back">
             <ArrowLeft size={20} />
             Torna indietro
-          </button>
+          </button>*/}
 
           <div className="forgot-password-header">
             <Mail size={48} className="header-icon" />
