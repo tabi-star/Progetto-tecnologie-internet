@@ -171,7 +171,7 @@ const QRCodeScanner = () => {
                   </div>
 
                   <div className="tickets-list">
-                    <h4>Dettagli Biglietti</h4>
+                    <h4>Dettagli {result.tickets.length > 1 ? 'biglietti' : 'biglietto'}</h4>
                     <div className="tickets-grid">
                       {result.tickets.map(ticket => (
                         <div key={ticket.id} className={`qr-scanner-ticket-card ${ticket.status}`}>
@@ -180,7 +180,8 @@ const QRCodeScanner = () => {
                             <span className={`status-badge ${ticket.status}`}>
                               {ticket.status === 'reserved' ? 'Prenotato' : 
                               ticket.status === 'confirmed' ? 'Confermato' : /*'Cancellato'*/
-                              ticket.status === 'validated' ? 'Convalidato' : 'Cancellato'}
+                              ticket.status === 'validated' ? 'Convalidato' :
+                              ticket.status === 'cancelled' ? 'Cancellato' : null}
                             </span>
                           </div>
                           <div className="qr-ticket-details">
@@ -225,14 +226,16 @@ const QRCodeScanner = () => {
               </div>
             )}
 
-            <div className="form-actions">
-              <button 
-                type="submit" 
-                className="btn btn-primary-qr-check"
-                disabled={loading || !qrText || user?.role !== 'admin'}
-              >
-                {loading ? 'Verifica in corso...' : 'Verifica QR Code'}
-              </button>
+            <div className="qr-form-actions">
+              {!result && (
+                <button 
+                  type="submit" 
+                  className="btn btn-primary-qr-check"
+                  disabled={loading || !qrText || user?.role !== 'admin'}
+                >
+                  {loading ? 'Verifica in corso...' : 'Verifica QR Code'}
+                </button>
+              )}
               
               {result && (
                 <button 

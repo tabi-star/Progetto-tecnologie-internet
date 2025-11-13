@@ -273,8 +273,8 @@
 }
 
 .status-validated {
-  background: #ccc;
-  color: #34495e;
+  background: #3498db;
+  color: white;
   padding: 0.5rem 0.8rem;
   border-radius: 20px;
   font-size: 0.7rem;
