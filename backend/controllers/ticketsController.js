@@ -1,4 +1,5 @@
 // controllers/ticketsController.js
+
 import { getAllTickets, getTicketsByUser, reserveSeats, confirmTickets, cancelTicket, insertTicket } from "../models/ticketModel.js";
 import { generateQRCode } from "../services/qrCodeService.js";
 
@@ -20,14 +21,14 @@ export const getUserTickets = async (req, res) => {
 
 export const reserveTicketSeats = async (req, res) => {
   try {
-    const { screening_id, seat_numbers } = req.body;
+    const { screening_id, seat_numbers, discountApplied} = req.body;
     const user_id = req.user.id;
 
     if (!screening_id || !seat_numbers || !Array.isArray(seat_numbers)) {
       return res.status(400).json({ error: "Screening ID e lista posti sono obbligatori" });
     }
 
-    const result = await reserveSeats(screening_id, seat_numbers, user_id);
+    const result = await reserveSeats(screening_id, seat_numbers, user_id, discountApplied);
     
     res.json({
       message: "Posti riservati temporaneamente",

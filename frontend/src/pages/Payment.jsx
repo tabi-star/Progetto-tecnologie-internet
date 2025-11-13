@@ -86,7 +86,7 @@ const Payment = () => {
           ticket_ids: reservationData?.ticket_ids || [],
           paypal_order_id: paymentResponse.data.orderID || null,
           payment_id: captureResponse.data.transactionID || `simulated_${Date.now()}`,
-          qr_code_url: null, // Puoi generarlo dopo se vuoi
+          //qr_code_url: null, // Puoi generarlo dopo se vuoi
           discount_id: discountApplied?.discount_id || null,
           user_id: user.id
         }
