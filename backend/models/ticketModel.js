@@ -49,7 +49,7 @@ export const getTicketsByUser = async (user_id) => {
      JOIN movies m ON s.movie_id = m.id
      JOIN halls h ON s.hall_id = h.id
      WHERE t.user_id = ? AND (t.status = 'confirmed' OR t.status = 'validated')
-     ORDER BY s.start_time DESC`,
+     ORDER BY s.start_time ASC`,
     [user_id]
   );
   return rows;
