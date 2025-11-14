@@ -13,7 +13,7 @@ export const validateQRCode = async (qrText, currentUserId = null) => {
     if (!parsedData) {
       return {
         valid: false,
-        error: 'Formato QR code non valido'
+        error: 'Formato QR Code non valido'
       };
     }
 
@@ -183,13 +183,13 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
     console.log('✅ Tutti i ticket hanno il QR code URL corretto');
 
     // Controlla se ci sono ticket cancellati
-    const cancelledTickets = tickets.filter(t => t.status === 'cancelled');
+    /*const cancelledTickets = tickets.filter(t => t.status === 'cancelled');
     if (cancelledTickets.length > 0) {
       return {
         valid: false,
         error: `Ticket ${cancelledTickets.map(t => t.id).join(', ')} cancellati`
       };
-    }
+    }*/
 
     // Controlla se la proiezione è già passata
     const now = new Date();

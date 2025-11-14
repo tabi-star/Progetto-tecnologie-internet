@@ -84,7 +84,7 @@ export const getAvailableSeats = async (screening_id, current_user_id) => {
            SELECT 1 FROM tickets t 
            WHERE t.screening_id = ? 
              AND t.seat_number = s.seat_number 
-             AND t.status = 'confirmed' OR t.status = 'validated'
+             AND (t.status = 'confirmed' OR t.status = 'validated')
          ) THEN 'occupied'
          
          -- Posto RISERVATO da un ALTRO utente (non disponibile)

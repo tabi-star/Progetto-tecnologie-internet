@@ -162,7 +162,7 @@ const Home = () => {
                   <div className="banner-content">
                     <h1 className="banner-title">{upcomingMovies[currentSlide]?.title}</h1>
                     <div className="banner-actions">
-                      <Link to={`/movie/${upcomingMovies[currentSlide]?.id}`} className="btn btn-primary">
+                      <Link to={`/movie/${upcomingMovies[currentSlide]?.id}`} state={{ from: location.pathname }} className="btn btn-primary">
                         <Play size={16} />
                         Scopri di più
                       </Link>

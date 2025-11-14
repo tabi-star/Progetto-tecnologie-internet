@@ -16,10 +16,11 @@ export const getAdminStats = async () => {
        WHERE DATE(start_time) = CURDATE()`
     );
 
-    // Biglietti venduti (tutti i biglietti, non solo dell'admin)
+    // Biglietti venduti (tutti i biglietti, non solo dell'admin) /*Solo quelli di oggi*/
     const [ticketsResult] = await promisePool.execute(
       `SELECT COUNT(*) as count FROM tickets 
-       WHERE status IN ('validated', 'confirmed')`
+       WHERE status IN ('validated', 'confirmed')
+       AND DATE(bookedAt) = CURDATE()`
     );
 
     return {

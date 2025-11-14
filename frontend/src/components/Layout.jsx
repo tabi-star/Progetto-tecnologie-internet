@@ -8,13 +8,14 @@ import './Layout.css'
 const Layout = ({ children }) => {
   const { user, logout } = useAuth()
   const location = useLocation()
+  const from = location.state?.from || '/';
   const navigate = useNavigate()
   const isHomePage = location.pathname === '/'
   const isMovieDetail = location.pathname.startsWith('/movie/');
   const isScreeningSelection = location.pathname.startsWith('/screening/');
 
   let buttonText = "Torna indietro";
-  if (isMovieDetail || isScreeningSelection) {
+  if ((isMovieDetail || isScreeningSelection) && from !== '/') {
     buttonText = "Torna ai film";
   }
 
