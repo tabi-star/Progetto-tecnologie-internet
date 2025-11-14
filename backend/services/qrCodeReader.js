@@ -12,7 +12,7 @@ export const validateQRCode = async (qrText) => {
     if (!parsedData) {
       return {
         valid: false,
-        error: 'Formato QR code non valido'
+        error: 'Formato QR Code non valido'
       };
     }
 

@@ -50,14 +50,29 @@ const QRCodeScanner = () => {
       const response = await axios.post('/api/qr/validate', { qrText: cleanQRText });
       
       if (response.data.success) {
+        
+        const hadConfirmed = result.tickets.some(t => t.status === "confirmed");
+
+        const updatedTickets = result.tickets.map(ticket => {
+          if (ticket.status === "confirmed") {
+            return { ...ticket, status: "validated" }; // cambia solo i confirmed
+          }
+          return ticket; // lascia invariato cancelled / validated
+        });
+
         setResult(prev => ({
+          ...prev,
+          tickets: updatedTickets,
+          _justValidated: hadConfirmed   // 🔹 flag temporaneo per mostrare messaggio "appena convalidati"
+        }));
+        /*setResult(prev => ({
           ...prev,
           tickets: prev.tickets.map(ticket => ({
             ...ticket,
-            status: 'validate'
+            status: 'validated'
           }))
-        }));
-        alert('✅ Ticket validati con successo!');
+        }));*/
+        // alert('✅ Ticket validati con successo!');
       }
     } catch (err) {
       setError(err.response?.data?.error || 'Errore nella validazione');
@@ -132,11 +147,25 @@ const QRCodeScanner = () => {
 
             {result && (
               <div className="verification-result">
-                <div className="result-header success">
-                  <CheckCircle size={24} />
-                  <h2>QR Code Valido</h2>
-                  <span className="ticket-count">{result.tickets.length} {result.tickets.length > 1 ? 'biglietti' : 'biglietto'}</span>
-                </div>
+                {result.tickets.some(t => t.status === 'validated') && !result._justValidated ?
+                  <div className="result-header already-validated">
+                    <CheckCircle size={24} />
+                    <h2>QR Code già convalidato</h2>
+                    <span className="ticket-count">{result.tickets.length} {result.tickets.length > 1 ? 'biglietti' : 'biglietto'}</span>
+                  </div>
+                  :
+                  result.tickets.every(t => t.status === 'cancelled') ?
+                    <div className="result-header completely-cancelled">
+                      <CheckCircle size={24} />
+                      <h2>QR Code valido</h2>
+                      <span className="ticket-count">{result.tickets.length} {result.tickets.length > 1 ? 'biglietti' : 'biglietto'}</span>
+                    </div> :
+                  <div className="result-header success">
+                    <CheckCircle size={24} />
+                    <h2>QR Code valido</h2>
+                    <span className="ticket-count">{result.tickets.length} {result.tickets.length > 1 ? 'biglietti' : 'biglietto'}</span>
+                  </div>
+                }
 
                 <div className="tickets-info">
                   <div className="screening-summary">
@@ -171,7 +200,7 @@ const QRCodeScanner = () => {
                   </div>
 
                   <div className="tickets-list">
-                    <h4>Dettagli {result.tickets.length > 1 ? 'biglietti' : 'biglietto'}</h4>
+                    <h4>Dettagli {result.tickets.length > 1 ? 'biglietti' : 'biglietto'}:</h4>
                     <div className="tickets-grid">
                       {result.tickets.map(ticket => (
                         <div key={ticket.id} className={`qr-scanner-ticket-card ${ticket.status}`}>
@@ -216,10 +245,28 @@ const QRCodeScanner = () => {
                     </div>
                   )}
 
-                  {result.tickets.every(t => t.status === 'confirmed') && (
+                  {/* MESSAGGIO: appena convalidati */}
+                  {result._justValidated && (
+                  <div className="just-used-message">
+                    {/*<CheckCircle size={20} />*/}
+                    <span>✅ {result.tickets.length > 1 ? 'Biglietti appena convalidati' : 'Biglietto appena convalidato'} con successo!</span>
+                  </div>
+                  )}
+
+                  {/*{result.tickets.some(t => t.status === 'validated') && (*/}
+                  {result.tickets.some(t => t.status === 'validated') && !result._justValidated && (
                     <div className="already-used-message">
                       <CheckCircle size={20} />
-                      <span>Questi biglietti sono già stati utilizzati</span>
+                      {/*<span>Questi biglietti sono già stati utilizzati</span>*/}
+                      <span>{result.tickets.length > 1 ? 'Questi biglietti sono già stati convalidati' : 'Questo biglietto è già stato convalidato'}!</span>
+                    </div>
+                  )}
+
+                  {result.tickets.every(t => t.status === 'cancelled') && (
+                    <div className="completely-cancelled-message">
+                      <XCircle size={20} />
+                      {/*<span>Questi biglietti sono già stati utilizzati</span>*/}
+                      <span>{result.tickets.length > 1 ? 'Questi biglietti sono stati cancellati' : 'Questo biglietto è stato cancellato'}!</span>
                     </div>
                   )}
                 </div>
