@@ -164,10 +164,6 @@ const Payment = () => {
       <div className="container">
         {/* Header */}
         <div className="payment-header">
-          <button onClick={() => navigate(-1)} className="btn-back">
-            <ArrowLeft size={20} />
-            Torna ai posti
-          </button>
           <h1>Pagamento</h1>
         </div>
 

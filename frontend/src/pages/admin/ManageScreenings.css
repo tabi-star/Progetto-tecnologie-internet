@@ -296,6 +296,7 @@
   align-items: center;
   /*gap: 1rem;*/
   padding: 0.75rem;
+  font-size: 0.9rem;
   background: #2c3e50;
   border-radius: 8px;
   border: 1px solid #34495e;
@@ -304,7 +305,7 @@
 .screening-detail-item svg {
   color: #e74c3c;
   flex-shrink: 0;
-  margin-right: 0.5rem;
+  margin-right: 0.75rem;
 }
 
 .manage-screening-actions {

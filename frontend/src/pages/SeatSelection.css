@@ -18,17 +18,18 @@
 .screening-info h1 {
   font-size: 2rem;
   margin-bottom: 0.5rem;
+  margin-right: 1rem;
   color: #e74c3c;
 }
 
-.screening-details {
+.seat-selection-screening-details {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   color: #ccc;
   font-size: 0.9rem;
 }
 
-.screening-details span {
+.seat-selection-screening-details span {
   background: #2c3e50;
   padding: 0.5rem 1rem;
   border-radius: 20px;
@@ -110,6 +111,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
 }
 
 .seat.available {
@@ -127,6 +129,11 @@
   background: #f1c40f !important;
   color: #2c3e50 !important;
   transform: scale(1.1);
+}
+
+.seat.premium {
+  background: #9b59b6;
+  color: white;
 }
 
 .seat.premium.selected {
@@ -219,7 +226,7 @@
 }
 
 .legend-item .seat.premium.available {
-  background: #9b59b6;
+  background: #9b59b6 !important;
 }
 
 .order-summary {
@@ -332,7 +339,7 @@
 }
 
 .price-row.total {
-  border-top: 1px solid #34495e;
+  border-top: 3px solid #34495e;
   padding-top: 0.5rem;
   margin-top: 0.5rem;
   font-size: 1.2rem;
@@ -386,7 +393,7 @@
 }
 
 .seat-type {
-  background: #34495e;
+  background: #46627c;
   padding: 0.25rem 0.5rem;
   border-radius: 12px;
   font-size: 0.8rem;
@@ -437,7 +444,7 @@
 .price-breakdown h4 {
   margin-bottom: 1rem;
   color: #ccc;
-  border-bottom: 1px solid #34495e;
+  border-bottom: 2px solid #34495e;
   padding-bottom: 0.5rem;
 }
 
@@ -449,7 +456,7 @@
 }
 
 .price-row.subtotal {
-  border-top: 1px solid #34495e;
+  border-top: 2px solid #34495e;
   padding-top: 0.5rem;
   margin-top: 0.5rem;
   font-weight: 600;
@@ -460,7 +467,7 @@
 }
 
 .price-row.total {
-  border-top: 2px solid #34495e;
+  border-top: 3px solid #34495e;
   padding-top: 1rem;
   margin-top: 1rem;
   font-size: 1.2rem;

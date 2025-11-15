@@ -46,6 +46,7 @@ const Movies = () => {
   const fetchMoviesByScreeningsByDate = async (selectedDate) => {
     try {
       setLoading(true)
+      console.log(selectedDate)
       const response = await axios.get(`/api/movies/by-screenings/${selectedDate}`)
       setMovies(response.data)
     } catch (err) {
@@ -100,6 +101,12 @@ const Movies = () => {
 
     window.addEventListener('click', handleClickOutside);
     return () => window.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem("selectedDate");
+    };
   }, []);
 
   // Genera date della settimana
@@ -176,10 +183,17 @@ const Movies = () => {
                   key={date}
                   className={`date-btn ${selectedDate === date ? 'active' : ''}`}
                   onClick={() => {
-                    setSelectedDate(selectedDate === date ? '' : date) /*non funziona (forse)*/
+                    //setSelectedDate(selectedDate === date ? '' : date) /*non funziona (forse)*/
                     //sessionStorage.setItem("selectedDate", date);
-                    localStorage.setItem("selectedDate", date);
+                    //localStorage.setItem("selectedDate", date);
                     //localStorage.setItem("selectedDateDetail", date);
+                    if (selectedDate === date) {
+                      setSelectedDate('');
+                      localStorage.removeItem("selectedDate");
+                    } else {
+                      setSelectedDate(date);
+                      localStorage.setItem("selectedDate", date);
+                    }
                   }}
                 >
                   {label}

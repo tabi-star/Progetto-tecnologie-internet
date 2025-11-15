@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
+/*import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 const ScrollToTop = () => {
-  const { pathname } = useLocation()
+  const { pathname } = useLocation()*/
 
   /*useEffect(() => {
     window.scrollTo(0, 0)
@@ -10,7 +10,7 @@ const ScrollToTop = () => {
   }, [pathname])*/
 
   //Per dire manualmente al browser che sono io a far scrollare in alto e che lui non deve emorizzare nulla della posizione attuale della pagina
-  useEffect(() => {
+  /*useEffect(() => {
     // Piccolo delay per evitare il ripristino automatico del browser
     const timer = setTimeout(() => {
       window.scrollTo({ top: 0, behavior: "instant" });
@@ -29,7 +29,7 @@ const ScrollToTop = () => {
   return null
 }
 
-export default ScrollToTop
+export default ScrollToTop*/
 
 /*comportamento corretto ma incompleto del ScrollToTop “base”:
 funziona solo quando React Router cambia pathname in avanti, ma non intercetta lo scroll salvato dal browser quando torni indietro (Back o Forward del browser).
@@ -50,3 +50,62 @@ Aspettando 50 ms, React ha tempo di montare la nuova pagina prima che lo scroll 
 Quando navighi avanti o indietro, la pagina torna sempre in cima.
 
 Funziona con Link, navigate(), e anche col tasto “← Indietro” del browser.*/
+
+import { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  const lastPath = useRef(pathname);
+
+  useEffect(() => {
+    // Scrolla solo se il vero pathname è cambiato
+    if (lastPath.current !== pathname) {
+      lastPath.current = pathname;
+
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: "instant"
+        });
+      }, 80);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+  }, []);
+
+  return null;
+};
+
+export default ScrollToTop;
+
+/*import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    // Piccolo delay per evitare il ripristino automatico del browser
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
+  // Disattiva il comportamento di "scroll restoration" del browser
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+  }, []);
+
+  return null;
+};
+
+export default ScrollToTop;*/

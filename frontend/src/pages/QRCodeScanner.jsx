@@ -50,7 +50,7 @@ const QRCodeScanner = () => {
       const response = await axios.post('/api/qr/validate', { qrText: cleanQRText });
       
       if (response.data.success) {
-        
+        console.log(response.data)
         const hadConfirmed = result.tickets.some(t => t.status === "confirmed");
 
         const updatedTickets = result.tickets.map(ticket => {

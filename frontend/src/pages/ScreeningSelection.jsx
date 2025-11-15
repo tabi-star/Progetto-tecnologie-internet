@@ -80,6 +80,7 @@ const ScreeningSelection = () => {
   const fetchScreenings = async () => {
     try {
       setLoading(true)
+      console.log(selectedDate)
       const response = await axios.get(`/api/screenings/movie/${movieId}/date/${selectedDate}`)
       setScreenings(response.data)
     } catch (err) {
@@ -281,11 +282,11 @@ const ScreeningSelection = () => {
         <section className="screenings-section">
           <h2>
             <Clock size={24} />
-            Proiezioni del {selectedDate && new Date(selectedDate).toLocaleDateString('it-IT', { 
+            Proiezioni {selectedDate ? `del ${new Date(selectedDate).toLocaleDateString('it-IT', { 
               weekday: 'long', 
               day: 'numeric', 
               month: 'long' 
-            })}
+            })}` : ''}
           </h2>
 
           {loading ? (
