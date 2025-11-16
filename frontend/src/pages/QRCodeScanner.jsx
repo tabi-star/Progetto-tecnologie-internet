@@ -1,6 +1,6 @@
 // src/pages/QRCodeScanner.jsx
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { QrCode, CheckCircle, XCircle, Clock, User, Building, Film, Calendar } from 'lucide-react';
 import axios from 'axios';
@@ -103,6 +103,10 @@ const QRCodeScanner = () => {
     setResult(null);
     setError('');
   };
+
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
 
   return (
     <div className="qr-scanner-page">

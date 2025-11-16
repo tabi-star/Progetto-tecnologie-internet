@@ -46,7 +46,6 @@ const Movies = () => {
   const fetchMoviesByScreeningsByDate = async (selectedDate) => {
     try {
       setLoading(true)
-      console.log(selectedDate)
       const response = await axios.get(`/api/movies/by-screenings/${selectedDate}`)
       setMovies(response.data)
     } catch (err) {
@@ -108,6 +107,10 @@ const Movies = () => {
       localStorage.removeItem("selectedDate");
     };
   }, []);
+
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
 
   // Genera date della settimana
   const getWeekDates = () => {
@@ -171,6 +174,7 @@ const Movies = () => {
           <div className="date-buttons-container">
 
             <button
+              type="button"
               className="left-arrow-btn"
               onClick={handlePrevDays}
             >
@@ -180,6 +184,7 @@ const Movies = () => {
             <div className="date-buttons" ref={scrollRef}>
               {getWeekDates().map(({ date, label }) => (
                 <button
+                  type="button"
                   key={date}
                   className={`date-btn ${selectedDate === date ? 'active' : ''}`}
                   onClick={() => {
@@ -202,6 +207,7 @@ const Movies = () => {
             </div>
 
             <button
+              type="button"
               className="right-arrow-btn"
               onClick={handleNextDays}
             >

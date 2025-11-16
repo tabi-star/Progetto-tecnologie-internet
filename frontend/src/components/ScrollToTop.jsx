@@ -68,7 +68,7 @@ const ScrollToTop = () => {
           top: 0,
           behavior: "instant"
         });
-      }, 80);
+      }, 50);
     }
   }, [pathname]);
 

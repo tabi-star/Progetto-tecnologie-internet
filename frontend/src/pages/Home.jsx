@@ -103,6 +103,10 @@ const Home = () => {
     startAutoSlide()
   }
 
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
+
   if (loading) return <div className="loading">Caricamento...</div>
   if (error) return <div className="error">{error}</div>
 

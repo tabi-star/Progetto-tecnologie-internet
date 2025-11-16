@@ -156,6 +156,10 @@ const SeatSelection = () => {
     return 'available'
   }
 
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
+
   if (loading) return <div className="loading">Caricamento posti...</div>
   if (error) return <div className="error">{error}</div>
 

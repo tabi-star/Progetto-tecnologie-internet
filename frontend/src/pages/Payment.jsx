@@ -119,6 +119,10 @@ const Payment = () => {
     }
   }
 
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
+
   if (!screening || !selectedSeats) {
     return (
       <div className="error">

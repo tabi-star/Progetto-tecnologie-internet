@@ -50,6 +50,10 @@ const AdminDashboard = () => {
     fetchStats()
   }, [])
 
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
+
   const adminFeatures = [
     {
       icon: <Film size={32} />,

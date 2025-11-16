@@ -173,6 +173,10 @@ const ManageScreenings = () => {
     formatDateTime(screening.start_time).toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   if (!user || user.role !== 'admin') {
     return <div className="error">Accesso negato</div>
   }
