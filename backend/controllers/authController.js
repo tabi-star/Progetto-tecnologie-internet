@@ -1,5 +1,5 @@
 // controllers/authController.js
-import { getUserByEmail, updateUser } from "../models/userModel.js";
+
 import { promisePool } from "../db.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";

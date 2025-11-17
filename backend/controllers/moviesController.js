@@ -1,5 +1,5 @@
 // controllers/moviesController.js
-import { getAllMovies, getMovieById, getUpcomingMovies, insertMovie, updateMovie, deleteMovie } from "../models/movieModel.js";
+import { getAllMovies, getMovieById, getUpcomingMovies, getAvailableMovies, insertMovie, updateMovie, deleteMovie } from "../models/movieModel.js";
 import db from "../db.js";
 
 export const getMovies = (req, res) => {
@@ -11,6 +11,13 @@ export const getMovies = (req, res) => {
 
 export const getUpcoming = (req, res) => {
   getUpcomingMovies((err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+};
+
+export const getAvailable = (req, res) => {
+  getAvailableMovies((err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });

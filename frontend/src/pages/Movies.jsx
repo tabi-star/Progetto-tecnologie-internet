@@ -19,7 +19,7 @@ const Movies = () => {
 
   const fetchMovies = async () => {
     try {
-      const response = await axios.get('/api/movies')
+      const response = await axios.get('/api/movies/available')
       setMovies(response.data)
     } catch (err) {
       setError('Errore nel caricamento dei film')
