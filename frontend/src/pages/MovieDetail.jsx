@@ -46,7 +46,7 @@ const MovieDetail = () => {
     if (dateFromParams) {
       setSelectedDate(dateFromParams)
     }
-    else if (storedDate){
+    else if (storedDate) {
       setSelectedDate(storedDate)
     } else {
       const today = new Date().toISOString().split('T')[0]
@@ -62,14 +62,14 @@ const MovieDetail = () => {
 
   const fetchScreenings = async () => {
     try {
-      setLoading(true)
+      setLoading(true) //OCCHIO PER LO SCATTINO VERSO L'ALTO!!!
       const response = await axios.get(`/api/screenings/movie/${id}/date/${selectedDate}`)
       setScreenings(response.data)
     } catch (err) {
       console.error('Errore nel caricamento delle proiezioni:', err)
       setScreenings([])
     } finally {
-      setLoading(false)
+      setLoading(false) //OCCHIO PER LO SCATTINO VERSO L'ALTO!!!
     }
   }
 
@@ -116,7 +116,7 @@ const MovieDetail = () => {
     if (selectedDate && movie) {
       fetchScreenings()
     }
-  }, [selectedDate, movie])
+  }, [selectedDate, movie]) //opure secondo parametro può essere id
 
   useEffect(() => {
     if (!selectedDate) {
@@ -174,7 +174,7 @@ const MovieDetail = () => {
     })
   }
 
-  if (loading) return <div className="loading">Caricamento film...</div>
+  //if (loading) return <div className="loading">Caricamento film...</div> //OCCHIO E' LUI IL VERO RESPONSABILE DELLO SCATTINO IN ALTO!!!
   if (error) return <div className="error">{error}</div>
   if (!movie) return <div className="error">Film non trovato</div>
 
@@ -255,6 +255,7 @@ const MovieDetail = () => {
             <div className="date-buttons-container">
 
               <button
+                type="button"
                 className="left-arrow-btn"
                 onClick={handlePrevDays}
               >
@@ -264,11 +265,12 @@ const MovieDetail = () => {
               <div className="date-buttons" ref={scrollRef}>
                 {getWeekDates().map(({ date, label }) => (
                   <button
+                    type="button"
                     key={date}
                     className={`date-btn ${selectedDate === date ? 'active' : ''}`}
                     onClick={() => {
                       setSelectedDate(selectedDate === date ? '' : date)
-                      localStorage.setItem("selectedDate", date)
+                      //localStorage.setItem("selectedDate", date)
                     }}
                   >
                     {label}
@@ -277,6 +279,7 @@ const MovieDetail = () => {
               </div>
 
               <button
+                type="button"
                 className="right-arrow-btn"
                 onClick={handleNextDays}
               >

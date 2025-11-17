@@ -1,6 +1,6 @@
 // src/pages/QRCodeScanner.jsx
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { QrCode, CheckCircle, XCircle, Clock, User, Building, Film, Calendar } from 'lucide-react';
 import axios from 'axios';
@@ -50,7 +50,7 @@ const QRCodeScanner = () => {
       const response = await axios.post('/api/qr/validate', { qrText: cleanQRText });
       
       if (response.data.success) {
-        
+        console.log(response.data)
         const hadConfirmed = result.tickets.some(t => t.status === "confirmed");
 
         const updatedTickets = result.tickets.map(ticket => {
@@ -103,6 +103,10 @@ const QRCodeScanner = () => {
     setResult(null);
     setError('');
   };
+
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
 
   return (
     <div className="qr-scanner-page">

@@ -21,21 +21,26 @@ export const validateQRCode = async (qrText, currentUserId = null) => {
 
     // ✅ PASSA IL currentUserId ALLA VALIDAZIONE
     const ticketValidation = await validateTickets(ticket_ids, qrFileName, currentUserId);
-    
+    // console.log(ticketValidation)
     if (!ticketValidation.valid) {
       return ticketValidation;
     }
+    //console.log(ticket_ids)
 
+    const filtered_ticket_ids = ticketValidation.tickets.map(t => t.id);
+    //console.log(filtered_ticket_ids)
     // Recupera informazioni dettagliate sui ticket
-    const ticketDetails = await getTicketDetails(ticket_ids);
+    const ticketsDetails = await getTicketDetails(filtered_ticket_ids);
+    //console.log(ticketsDetails, "ciao!")
+    const ticketDetailsIds = ticketsDetails.map(t => t.id);
 
     return {
       valid: true,
       data: {
-        ticket_ids,
+        ticket_ids: ticketDetailsIds,
         timestamp,
         qrFileName,
-        tickets: ticketDetails
+        tickets: ticketsDetails
       }
     };
 
@@ -114,6 +119,7 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
     const placeholders = ticket_ids.map(() => '?').join(',');
     
     // AGGIUNGI IL FILTRO PER USER ID SE FORNITO
+    // Prepara filtro opzionale per quando vuoi limitare i ticket al proprietario (ma non serve per admin)
     let userFilter = '';
     let queryParams = [...ticket_ids];
     
@@ -148,7 +154,7 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
       };
     }
 
-    if (tickets.length !== ticket_ids.length) {
+    if (tickets.length !== ticket_ids.length) { //Lo tolgo temporaneamente, ma può essere che mi serva!!!
       const foundIds = tickets.map(t => t.id);
       const missingIds = ticket_ids.filter(id => !foundIds.includes(id));
       return {
@@ -161,10 +167,10 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
     const expectedQRUrl = `/qr-codes/${qrFileName}`;
     console.log('🔗 QR code URL atteso:', expectedQRUrl);
 
-    const ticketsWithMatchingQR = tickets.filter(t => t.qr_code_url === expectedQRUrl);
+    //const ticketsWithMatchingQR = tickets.filter(t => t.qr_code_url === expectedQRUrl);
 
     // ✅ MODIFICA: Ora controlla se ALMENO UN ticket corrisponde
-    if (ticketsWithMatchingQR.length === 0) {
+    /*if (ticketsWithMatchingQR.length === 0) {
       console.log('❌ Nessun ticket trovato con QR code corrispondente');
       console.log('Ticket disponibili:', tickets.map(t => ({
         id: t.id,
@@ -175,12 +181,25 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
         valid: false,
         error: 'QR code non valido o scaduto'
       };
+    }*/
+
+    // Tieni SOLO i ticket che hanno esattamente il QR code ORIGINALE
+    const validTickets = tickets.filter(t => t.qr_code_url === expectedQRUrl);
+
+    if (validTickets.length === 0) {
+      return {
+        valid: false,
+        error: 'Il QR code non corrisponde più a nessun ticket valido'
+      };
     }
 
+    // Modifica nuova dopo Merge:
+    console.log(`🎟️ Ticket effettivamente validabili: ${validTickets.map(t => t.id).join(', ')}`);
+    //console.log(validTickets) CONTROLLA SE METTERLO O TOGLIERLO
     // Se arriviamo qui, ALMENO UN ticket ha il QR code corrispondente
-    console.log(`✅ QR code valido per ${ticketsWithMatchingQR.length} ticket su ${tickets.length}`);
+    //console.log(`✅ QR code valido per ${ticketsWithMatchingQR.length} ticket su ${tickets.length}`);
 
-    console.log('✅ Tutti i ticket hanno il QR code URL corretto');
+    //console.log('✅ Tutti i ticket hanno il QR code URL corretto');
 
     // Controlla se ci sono ticket cancellati
     /*const cancelledTickets = tickets.filter(t => t.status === 'cancelled');
@@ -193,7 +212,7 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
 
     // Controlla se la proiezione è già passata
     const now = new Date();
-    const expiredScreenings = tickets.filter(t => new Date(t.start_time) < now);
+    const expiredScreenings = validTickets.filter(t => new Date(t.start_time) < now);
     if (expiredScreenings.length > 0) {
       return {
         valid: false,
@@ -202,7 +221,7 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
     }
 
     // Verifica che tutti i ticket appartengano alla stessa proiezione
-    const screeningIds = [...new Set(tickets.map(t => t.screening_id))];
+    const screeningIds = [...new Set(validTickets.map(t => t.screening_id))];
     if (screeningIds.length > 1) {
       return {
         valid: false,
@@ -210,11 +229,11 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
       };
     }
 
-    console.log('✅ Validazione ticket completata con successo');
+    //console.log(screeningIds.length, " ", validTickets.length);
     
     return {
       valid: true,
-      tickets: tickets
+      tickets: validTickets
     };
 
   } catch (error) {

@@ -102,6 +102,16 @@ const Movies = () => {
     return () => window.removeEventListener('click', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem("selectedDate");
+    };
+  }, []);
+
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
+
   // Genera date della settimana
   const getWeekDates = () => {
     const dates = []
@@ -164,6 +174,7 @@ const Movies = () => {
           <div className="date-buttons-container">
 
             <button
+              type="button"
               className="left-arrow-btn"
               onClick={handlePrevDays}
             >
@@ -173,13 +184,21 @@ const Movies = () => {
             <div className="date-buttons" ref={scrollRef}>
               {getWeekDates().map(({ date, label }) => (
                 <button
+                  type="button"
                   key={date}
                   className={`date-btn ${selectedDate === date ? 'active' : ''}`}
                   onClick={() => {
-                    setSelectedDate(selectedDate === date ? '' : date) /*non funziona (forse)*/
+                    //setSelectedDate(selectedDate === date ? '' : date) /*non funziona (forse)*/
                     //sessionStorage.setItem("selectedDate", date);
-                    localStorage.setItem("selectedDate", date);
+                    //localStorage.setItem("selectedDate", date);
                     //localStorage.setItem("selectedDateDetail", date);
+                    if (selectedDate === date) {
+                      setSelectedDate('');
+                      localStorage.removeItem("selectedDate");
+                    } else {
+                      setSelectedDate(date);
+                      localStorage.setItem("selectedDate", date);
+                    }
                   }}
                 >
                   {label}
@@ -188,6 +207,7 @@ const Movies = () => {
             </div>
 
             <button
+              type="button"
               className="right-arrow-btn"
               onClick={handleNextDays}
             >

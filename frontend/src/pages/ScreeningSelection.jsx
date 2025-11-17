@@ -79,14 +79,14 @@ const ScreeningSelection = () => {
 
   const fetchScreenings = async () => {
     try {
-      setLoading(true)
+      setLoading(true) //OCCHIO PER LO SCATTINO VERSO L'ALTO!!!
       const response = await axios.get(`/api/screenings/movie/${movieId}/date/${selectedDate}`)
       setScreenings(response.data)
     } catch (err) {
       console.error('Errore nel caricamento delle proiezioni:', err)
       setScreenings([])
     } finally {
-      setLoading(false)
+      setLoading(false) //OCCHIO PER LO SCATTINO VERSO L'ALTO!!!
     }
   }
 
@@ -150,6 +150,10 @@ const ScreeningSelection = () => {
     }
   }, [selectedDate])
 
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
+
   const getWeekDates = () => {
     const dates = []
     /*const today = new Date()*/
@@ -196,7 +200,7 @@ const ScreeningSelection = () => {
     })
   }
 
-  /*if (loading) return <div className="loading">Caricamento proiezioni...</div>*/
+  /*if (loading) return <div className="loading">Caricamento proiezioni...</div>*/ //OCCHIO E' LUI IL VERO RESPONSABILE DELLO SCATTINO IN ALTO!!!
   if (error) return <div className="error">{error}</div>
 
   function getEndTime(startTime, durationMinutes) {
@@ -247,6 +251,7 @@ const ScreeningSelection = () => {
           </h2>
           <div className="date-buttons-container">
               <button
+                type="button"
                 className="left-arrow-btn"
                 onClick={handlePrevDays}
               >
@@ -256,6 +261,7 @@ const ScreeningSelection = () => {
               <div className="date-buttons" ref={scrollRef}>
                 {getWeekDates().map(({ date, label }) => (
                   <button
+                    type="button"
                     key={date}
                     className={`date-btn ${selectedDate === date ? 'active' : ''}`}
                     onClick={() => {
@@ -269,6 +275,7 @@ const ScreeningSelection = () => {
               </div>
 
               <button
+                type="button"
                 className="right-arrow-btn"
                 onClick={handleNextDays}
               >
@@ -281,11 +288,11 @@ const ScreeningSelection = () => {
         <section className="screenings-section">
           <h2>
             <Clock size={24} />
-            Proiezioni del {selectedDate && new Date(selectedDate).toLocaleDateString('it-IT', { 
+            Proiezioni {selectedDate ? `del ${new Date(selectedDate).toLocaleDateString('it-IT', { 
               weekday: 'long', 
               day: 'numeric', 
               month: 'long' 
-            })}
+            })}` : ''}
           </h2>
 
           {loading ? (

@@ -150,6 +150,10 @@ const ManageMovies = () => {
     );
   });
 
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
+
   if (!user || user.role !== 'admin') {
     return <div className="error">Accesso negato</div>
   }
@@ -301,9 +305,9 @@ const ManageMovies = () => {
             {filteredMovies.map(movie => (
               <div key={movie.id} className="manage-movie-card">
                 
-                <div className="movie-head-data">
+                <div className="manage-movie-head-data">
 
-                  <div className="movie-poster">
+                  <div className="manage-movie-poster">
                     <img 
                       src={movie.foto_locandina || '/placeholder-movie.jpg'}
                       alt={movie.title}

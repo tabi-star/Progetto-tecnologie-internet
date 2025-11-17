@@ -261,6 +261,7 @@
   font-size: 1.2rem;
   margin-bottom: 2rem;
   opacity: 0.8;
+  white-space: nowrap;
 }
 
 .btn-large {

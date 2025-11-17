@@ -14,6 +14,7 @@ export const verifyQRCode = async (req, res) => {
     }
 
     const validationResult = await validateQRCode(qrText);
+    //console.log(validationResult)
 
     if (!validationResult.valid) {
       return res.status(400).json({
@@ -49,6 +50,7 @@ export const validateAndUseTicket = async (req, res) => {
 
     // Prima valida il QR code
     const validationResult = await validateQRCode(qrText);
+    //console.log(validationResult)
 
     if (!validationResult.valid) {
       return res.status(400).json({

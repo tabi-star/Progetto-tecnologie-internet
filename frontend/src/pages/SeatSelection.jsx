@@ -156,6 +156,10 @@ const SeatSelection = () => {
     return 'available'
   }
 
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
+
   if (loading) return <div className="loading">Caricamento posti...</div>
   if (error) return <div className="error">{error}</div>
 
@@ -164,15 +168,15 @@ const SeatSelection = () => {
       <div className="container">
         {/* Header */}
         <div className="seat-header">
-          <button onClick={() => navigate(-1)} className="btn-back">
+          {/*<button onClick={() => navigate(-1)} className="btn-back">
             <ArrowLeft size={20} />
             Torna indietro
-          </button>
+          </button>*/}
           
           {screening && (
             <div className="screening-info">
               <h1>{screening.title}</h1>
-              <div className="screening-details">
+              <div className="seat-selection-screening-details">
                 <span>{new Date(screening.start_time).toLocaleDateString('it-IT')}</span>
                 <span>{new Date(screening.start_time).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</span>
                 <span>{screening.hall_name}</span>

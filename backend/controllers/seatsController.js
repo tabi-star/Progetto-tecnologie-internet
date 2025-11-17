@@ -17,7 +17,7 @@ export const getScreeningSeats = async (req, res) => {
     const { screening_id } = req.params;
     const user_id = req.user?.id || null; // ✅ funziona con optionalAuth
     
-    console.log('🎯 Recupero posti per screening:', screening_id, 'Utente:', user_id);
+    //console.log('🎯 Recupero posti per screening:', screening_id, 'Utente:', user_id);
     
     const seats = await getAvailableSeats(screening_id, user_id);
     res.json(seats);

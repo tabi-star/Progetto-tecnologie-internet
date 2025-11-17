@@ -119,6 +119,10 @@ const Payment = () => {
     }
   }
 
+  /*useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);*/
+
   if (!screening || !selectedSeats) {
     return (
       <div className="error">
@@ -164,10 +168,6 @@ const Payment = () => {
       <div className="container">
         {/* Header */}
         <div className="payment-header">
-          <button onClick={() => navigate(-1)} className="btn-back">
-            <ArrowLeft size={20} />
-            Torna ai posti
-          </button>
           <h1>Pagamento</h1>
         </div>
 

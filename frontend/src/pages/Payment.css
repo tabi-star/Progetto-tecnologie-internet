@@ -43,7 +43,7 @@
   gap: 1.5rem;
   margin-bottom: 2rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid #333; /*OCCHIO!!!!!!*/
+  border-bottom: 2px solid #333;
 }
 
 .payment-movie-poster {
@@ -93,7 +93,7 @@
 }
 
 .price-breakdown h4 {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   color: #ccc;
 }
 
@@ -306,7 +306,7 @@
 }
 
 .seat-type {
-  background: #34495e;
+  background: #46627c;
   padding: 0.25rem 0.5rem;
   border-radius: 12px;
   font-size: 0.8rem;
@@ -327,7 +327,7 @@
 .price-breakdown h4 {
   margin-bottom: 1rem;
   color: #ccc;
-  border-bottom: 1px solid #34495e;
+  border-bottom: 2px solid #34495e;
   padding-bottom: 0.5rem;
 }
 
@@ -344,7 +344,7 @@
 }
 
 .price-row.subtotal {
-  border-top: 1px solid #34495e;
+  border-top: 2px solid #34495e;
   padding-top: 1rem;
   margin-top: 0.5rem;
   font-weight: 600;
@@ -357,7 +357,7 @@
 }
 
 .price-row.total {
-  border-top: 2px solid #34495e;
+  border-top: 3px solid #34495e;
   padding-top: 1rem;
   margin-top: 0.5rem;
   font-size: 1.2rem;

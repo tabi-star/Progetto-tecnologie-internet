@@ -7,12 +7,12 @@
 .screening-page-header {
   /*display: grid;
   grid-template-columns: 1fr 1fr;*/
-  width: 100%;
-  padding: 2.5rem 0;
+  min-width: 100%;
+  padding: 1rem 0;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  /*justify-content: space-between;*/
   margin-bottom: 0/*3rem*/;
   flex-wrap: nowrap;
   gap: 2rem;
@@ -29,33 +29,42 @@
 }*/
 
 .movie-mini-data {
-  height: auto;
+  /*height: 30%;*/
+  min-width: 100%;
   display: flex;
   align-items: center;
   flex-direction: row;
   gap: 3rem;
-  justify-content: center;
-  flex-shrink: 1; /* permette di ridurre */
-  min-width: 0; /* ESSENZIALE per consentire il ridimensionamento del contenuto */
+  /*justify-content: space-between;*/
+  flex-shrink: 0; /* evita che l'immagine si restringa */ /*1; permette di ridurre */
+  /*min-width: 0;*/ /* ESSENZIALE per consentire il ridimensionamento del contenuto */
   /*margin-left: 0;*/
 }
 
 .movie-thumb {
-  width: 20vw;
-  height: 30vw;
+  width: auto;
+  height: 25vh;
   object-fit: cover;
   border-radius: 8px/*0.5rem*/;
+  justify-content: flex-start;
 }
 
 .movie-mini-info {
   display: flex;
-  align-items: center;
   flex-direction: column;
-  gap: 1.5rem;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-direction: column;
+  /*flex: 1;*/                /* prende tutto lo spazio rimanente */
+  /*min-width: 0;*/           /* evita overflow invisibile */
+  /*text-align: center;*/    /* opzionale, per contenuto centrato */
+  /*gap: 1.5rem;*/
 }
 
 .movie-mini-info h1 {
-  font-size: 3rem;
+  font-size: 2rem;
   /*margin-bottom: 0.25rem;*/
   text-align: center;
   color: #e74c3c;
@@ -78,23 +87,23 @@
 
 .movie-mini-meta span {
   background: #34495e;
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 20px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #999;
   /*margin-bottom: 0.25rem;*/
 }
 
 .movie-mini-info p {
   color: #ccc;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 
 .date-section {
   background: #1a1a1a;
   padding: 2rem;
   border-radius: 12px;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   border: 1px solid #333;
 }
 
