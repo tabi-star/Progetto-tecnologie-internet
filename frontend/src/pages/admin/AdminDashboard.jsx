@@ -1,6 +1,6 @@
-// src/pages/AdminDashboard.jsx
+// src/pages/admin/AdminDashboard.jsx
 
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
 import { Film, Calendar, Video, Building, Ticket, Settings, Users, RefreshCw } from 'lucide-react'
 import { useState, useEffect } from 'react'

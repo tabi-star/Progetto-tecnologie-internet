@@ -1,7 +1,7 @@
-// src/pages/QRCodeScanner.jsx
+// src/pages/admin/QRCodeScanner.jsx
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { QrCode, CheckCircle, XCircle, Clock, User, Building, Film, Calendar } from 'lucide-react';
 import axios from 'axios';
 import './QRCodeScanner.css';
