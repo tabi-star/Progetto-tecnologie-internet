@@ -3,8 +3,7 @@
 import { Router } from "express";
 import { 
   verifyQRCode, 
-  validateAndUseTicket, 
-  getTicketStats 
+  validateAndUseTicket 
 } from "../controllers/qrCodeController.js";
 import { authenticateToken, requireAdmin } from "../middleware/auth.js";
 
