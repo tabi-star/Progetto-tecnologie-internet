@@ -1,16 +1,6 @@
 // controllers/usersController.js
-import { getAllUsers, insertUser, getUserByEmail, getUserById, verifyPassword, updateUser, deleteUser } from "../models/userModel.js";
+import { insertUser, getUserByEmail, getUserById, verifyPassword, updateUser, deleteUser } from "../models/userModel.js";
 import jwt from "jsonwebtoken";
-
-export const getUsers = async (req, res) => {
-  try {
-    const users = await getAllUsers();
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
 
 export const getUserWithId = async (req, res) => {
   try {

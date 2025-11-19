@@ -6,7 +6,7 @@ import { authenticateToken, requireAdmin } from "../middleware/auth.js";
 const router = Router();
 
 router.post("/generate", authenticateToken, requireAdmin, generateDiscountCode);
-router.delete("/:id", removeDiscountCode);
+router.delete("/:id", authenticateToken, requireAdmin, removeDiscountCode); // ✅ AGGIUNTO MIDDLEWARE
 router.get("/my-codes", authenticateToken, requireAdmin, getMyDiscountCodes);
 router.post("/validate", authenticateToken, validateDiscountCode);
 router.post("/use", authenticateToken, useDiscountCode);

@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS payments (
   amount DECIMAL(10,2) NOT NULL,
   payment_method VARCHAR(50) NOT NULL,
   status ENUM('pending', 'completed', 'failed', 'refunded') DEFAULT 'completed',
-  paypal_order_id VARCHAR(100),
+  payment_order_id VARCHAR(100),
   transaction_id VARCHAR(100),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE

@@ -1,9 +1,8 @@
-// services/paypalService.js
+// services/paymentService.js
 
-// Servizio PayPal simulato per testing
+// Servizio di pagamento simulato per testing
 export const createOrder = async (amount, ticket_ids) => {
-  // Simulazione creazione ordine PayPal
-  console.log(`🎯 Simulazione PayPal - Creazione ordine per €${amount}`);
+  console.log(`🎯 Pagamento simulato - Creazione ordine per €${amount}`);
   
   return {
     id: `SIMULATED_ORDER_${Date.now()}`,
@@ -18,8 +17,7 @@ export const createOrder = async (amount, ticket_ids) => {
 };
 
 export const captureOrder = async (orderID) => {
-  // Simulazione cattura pagamento
-  console.log(`✅ Simulazione PayPal - Pagamento catturato: ${orderID}`);
+  console.log(`✅ Pagamento simulato - Pagamento confermato: ${orderID}`);
   
   return {
     id: orderID,

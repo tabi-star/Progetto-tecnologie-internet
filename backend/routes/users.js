@@ -1,7 +1,6 @@
 // routes/users.js
 import { Router } from "express";
 import { 
-  getUsers, 
   getUserWithId,
   addUser, 
   loginUser,
@@ -18,10 +17,9 @@ import { validateUser } from "../middleware/validation.js";
 
 const router = Router();
 
-router.get("/", authenticateToken, requireAdmin, getUsers);
-router.get("/:id", authenticateToken, requireAdmin, getUserWithId);
 router.post("/", validateUser, addUser);
 router.post("/login", loginUser);
+router.get("/:id", authenticateToken, requireAdmin, getUserWithId);
 router.put("/profile", authenticateToken, updateProfile);
 router.delete("/account", authenticateToken, deleteAccount);
 

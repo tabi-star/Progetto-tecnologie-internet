@@ -84,7 +84,7 @@ const Payment = () => {
         // 3. Prepara i dati per la conferma - gestisci tutti i valori possibilmente undefined
         const confirmData = {
           ticket_ids: reservationData?.ticket_ids || [],
-          paypal_order_id: paymentResponse.data.orderID || null,
+          payment_order_id: paymentResponse.data.orderID || null,
           payment_id: captureResponse.data.transactionID || `simulated_${Date.now()}`,
           //qr_code_url: null, // Puoi generarlo dopo se vuoi
           discount_id: discountApplied?.discount_id || null,

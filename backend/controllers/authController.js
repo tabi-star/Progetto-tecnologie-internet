@@ -20,7 +20,7 @@ export const forgotPassword = async (req, res) => {
     );
 
     if (users.length === 0) {
-      // Per sicurezza, non rivelare se l'email esiste o meno
+      // Per sicurezza, non rivelo se l'email esiste o meno
       return res.json({ 
         success: true, 
         message: "Se l'email esiste nel nostro sistema, riceverai un link di recupero" 

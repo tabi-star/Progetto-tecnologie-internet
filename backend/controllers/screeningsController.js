@@ -1,82 +1,106 @@
 // controllers/screeningsController.js
-import { getAllScreenings, getScreeningById, insertScreening, updateScreening, deleteScreening, countScreeningsTodayByHall } from "../models/screeningModel.js";
-import db from "../db.js";
+import { 
+  getAllScreenings, 
+  getScreeningById, 
+  insertScreening, 
+  updateScreening, 
+  deleteScreening, 
+  countScreeningsTodayByHall 
+} from "../models/screeningModel.js";
+import { promisePool } from "../db.js";
 
-export const getScreenings = (req, res) => {
-  getAllScreenings((err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+export const getScreenings = async (req, res) => {
+  try {
+    const screenings = await getAllScreenings();
+    res.json(screenings);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-/*Valutare se lasciare o togliere*/
-/*export const getScreeningsByDate = (req, res) => {
+export const getScreeningsByMovieAndDate = async (req, res) => {
+  try {
+    const { movie_id, date } = req.params;
+    
+    // ✅ Validazione input
+    const movieId = parseInt(movie_id);
+    if (!movieId || movieId <= 0) {
+      return res.status(400).json({ error: "ID film non valido" });
+    }
 
-  const { date } = req.params;
-  
-  const query = `
-    SELECT s.*, h.name AS hall_name, h.hall_type, m.title, m.duration_minutes
-    FROM screenings s
-    JOIN halls h ON s.hall_id = h.id
-    JOIN movies m ON s.movie_id = m.id
-    WHERE DATE(s.start_time) = ?
-    ORDER BY s.start_time ASC
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: "Formato data non valido (YYYY-MM-DD)" });
+    }
+
+    /*Vedi se tenere m.title nella SELECT della query*/
+    const query = `
+      SELECT s.*, h.name as hall_name, h.hall_type, m.title, m.duration_minutes
+      FROM screenings s
+      JOIN halls h ON s.hall_id = h.id
+      JOIN movies m ON s.movie_id = m.id
+      WHERE s.movie_id = ? AND DATE(s.start_time) = ? AND s.start_time >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
+      ORDER BY s.start_time ASC
     `;
-
-  db.query(query, [date], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
+    
+    const [results] = await promisePool.execute(query, [movieId, date]);
     res.json(results);
-  });
-
-};*/
-
-export const getScreeningsByMovieAndDate = (req, res) => {
-  const { movie_id, date } = req.params;
-  
-  /*Vedi se tenere m.title nella SELECT della query*/
-  const query = `
-    SELECT s.*, h.name as hall_name, h.hall_type, m.title, m.duration_minutes
-    FROM screenings s
-    JOIN halls h ON s.hall_id = h.id
-    JOIN movies m ON s.movie_id = m.id
-    WHERE s.movie_id = ? AND DATE(s.start_time) = ? AND s.start_time >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
-    ORDER BY s.start_time ASC
-  `;
-  
-  db.query(query, [movie_id, date], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
-}; // Se vuoi cambiare l'ordine con cui vengono mostrati i film e i biglietti, penso si debba cambiare questo: "ORDER BY s.start_time ASC"
-
-export const getScreening = (req, res) => {
-  const { id } = req.params;
-  getScreeningById(id, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (results.length === 0) return res.status(404).json({ error: "Proiezione non trovata" });
-    res.json(results[0]);
-  });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-export const getScreeningsCountToday = (req, res) => {
-  const { hall_id } = req.params;
-
-  countScreeningsTodayByHall(hall_id, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    /*res.json(result);*/
-    res.json({ count: result.screenings_today })
-  });
+export const getScreening = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const screening = await getScreeningById(id);
+    
+    if (!screening) {
+      return res.status(404).json({ error: "Proiezione non trovata" });
+    }
+    
+    res.json(screening);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-export const addScreening = (req, res) => {
-  const { movie_id, hall_id, start_time } = req.body;
+export const getScreeningsCountToday = async (req, res) => {
+  try {
+    const { hall_id } = req.params;
+    
+    // ✅ Validazione input
+    const hallId = parseInt(hall_id);
+    if (!hallId || hallId <= 0) {
+      return res.status(400).json({ error: "ID sala non valido" });
+    }
 
-  // Controlla la data di uscita del film
-  db.query("SELECT release_date FROM movies WHERE id = ?", [movie_id], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (results.length === 0) return res.status(404).json({ error: "Film non trovato" });
+    const result = await countScreeningsTodayByHall(hallId);
+    res.json({ count: result.screenings_today });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
-    const releaseDate = new Date(results[0].release_date);
+export const addScreening = async (req, res) => {
+  try {
+    const { movie_id, hall_id, start_time } = req.body;
+
+    // ✅ Validazione input
+    if (!movie_id || !hall_id || !start_time) {
+      return res.status(400).json({ error: "Campi obbligatori mancanti" });
+    }
+
+    // Controlla la data di uscita del film
+    const [movieResults] = await promisePool.execute(
+      "SELECT release_date FROM movies WHERE id = ?", 
+      [movie_id]
+    );
+    
+    if (movieResults.length === 0) {
+      return res.status(404).json({ error: "Film non trovato" });
+    }
+
+    const releaseDate = new Date(movieResults[0].release_date);
     const screeningStart = new Date(start_time);
 
     if (screeningStart < releaseDate) {
@@ -92,89 +116,111 @@ export const addScreening = (req, res) => {
       createdAt: new Date()
     };
 
-    insertScreening(newScreening, (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      newScreening.id = result.insertId;
-      res.status(201).json({ message: "Proiezione aggiunta con successo", screening: newScreening });
+    const result = await insertScreening(newScreening);
+    newScreening.id = result.insertId;
+    
+    res.status(201).json({ 
+      message: "Proiezione aggiunta con successo", 
+      screening: newScreening 
     });
-  });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-export const checkScreeningOverlap = (req, res) => {
-  const { hall_id, start_time, movie_id, screening_id } = req.body;
-  
-  const query = `
-    SELECT s.*, m.title as movie_title, m.duration_minutes,
-           TIMESTAMPADD(MINUTE, m.duration_minutes, s.start_time) as end_time
-    FROM screenings s
-    JOIN movies m ON s.movie_id = m.id
-    WHERE s.hall_id = ? AND s.start_time BETWEEN DATE_SUB(?, INTERVAL 4 HOUR) AND DATE_ADD(?, INTERVAL 4 HOUR)
-    ${screening_id ? "AND s.id <> ?" : ""}
-  `;
+export const checkScreeningOverlap = async (req, res) => {
+  try {
+    const { hall_id, start_time, movie_id, screening_id } = req.body;
+    
+    // ✅ Validazione input
+    if (!hall_id || !start_time || !movie_id) {
+      return res.status(400).json({ error: "Campi obbligatori mancanti" });
+    }
 
-  const queryParams = screening_id ? [hall_id, start_time, start_time, screening_id] : [hall_id, start_time, start_time];
-  
-  db.query(query, queryParams/*[hall_id, start_time, start_time]*/, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
+    const query = `
+      SELECT s.*, m.title as movie_title, m.duration_minutes,
+             TIMESTAMPADD(MINUTE, m.duration_minutes, s.start_time) as end_time
+      FROM screenings s
+      JOIN movies m ON s.movie_id = m.id
+      WHERE s.hall_id = ? AND s.start_time BETWEEN DATE_SUB(?, INTERVAL 4 HOUR) AND DATE_ADD(?, INTERVAL 4 HOUR)
+      ${screening_id ? "AND s.id <> ?" : ""}
+    `;
+
+    const queryParams = screening_id ? [hall_id, start_time, start_time, screening_id] : [hall_id, start_time, start_time];
+    
+    const [results] = await promisePool.execute(query, queryParams);
     
     const newScreeningStart = new Date(start_time);
     let hasOverlap = false;
     const overlapping = [];
 
     // Ottieni durata del nuovo film
-    db.query("SELECT duration_minutes FROM movies WHERE id = ?", [movie_id], (err, movieResults) => {
-      if (err) return res.status(500).json({ error: err.message });
-      
-      const newMovieDuration = movieResults[0]?.duration_minutes || 120;
-      const newScreeningEnd = new Date(newScreeningStart.getTime() + newMovieDuration * 60000);
+    const [movieResults] = await promisePool.execute(
+      "SELECT duration_minutes FROM movies WHERE id = ?", 
+      [movie_id]
+    );
+    
+    const newMovieDuration = movieResults[0]?.duration_minutes || 120;
+    const newScreeningEnd = new Date(newScreeningStart.getTime() + newMovieDuration * 60000);
 
-      results.forEach(screening => {
-        const existingStart = new Date(screening.start_time);
-        const existingEnd = new Date(screening.end_time);
+    results.forEach(screening => {
+      const existingStart = new Date(screening.start_time);
+      const existingEnd = new Date(screening.end_time);
 
-        if (
-          (newScreeningStart >= existingStart && newScreeningStart < existingEnd) ||
-          (newScreeningEnd > existingStart && newScreeningEnd <= existingEnd) ||
-          (newScreeningStart <= existingStart && newScreeningEnd >= existingEnd)
-        ) {
-          hasOverlap = true;
-          overlapping.push({
-            id: screening.id,
-            movie_title: screening.movie_title,
-            start_time: screening.start_time,
-            end_time: screening.end_time
-          });
-        }
-      });
-
-      res.json({ 
-        hasOverlap,
-        overlappingScreenings: overlapping,
-        newScreening: {
-          start_time: newScreeningStart,
-          end_time: newScreeningEnd
-        }
-      });
+      if (
+        (newScreeningStart >= existingStart && newScreeningStart < existingEnd) ||
+        (newScreeningEnd > existingStart && newScreeningEnd <= existingEnd) ||
+        (newScreeningStart <= existingStart && newScreeningEnd >= existingEnd)
+      ) {
+        hasOverlap = true;
+        overlapping.push({
+          id: screening.id,
+          movie_title: screening.movie_title,
+          start_time: screening.start_time,
+          end_time: screening.end_time
+        });
+      }
     });
-  });
+
+    res.json({ 
+      hasOverlap,
+      overlappingScreenings: overlapping,
+      newScreening: {
+        start_time: newScreeningStart,
+        end_time: newScreeningEnd
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-export const modifyScreening = (req, res) => {
-  const { id } = req.params;
-  const { movie_id, hall_id, start_time } = req.body;
+export const modifyScreening = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { movie_id, hall_id, start_time } = req.body;
 
+    // ✅ Validazione input
+    if (!movie_id || !hall_id || !start_time) {
+      return res.status(400).json({ error: "Campi obbligatori mancanti" });
+    }
 
-  // Controlla la data di uscita del film
-  db.query("SELECT release_date FROM movies WHERE id = ?", [movie_id], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (results.length === 0) return res.status(404).json({ error: "Film non trovato" });
+    // Controlla la data di uscita del film
+    const [movieResults] = await promisePool.execute(
+      "SELECT release_date FROM movies WHERE id = ?", 
+      [movie_id]
+    );
+    
+    if (movieResults.length === 0) {
+      return res.status(404).json({ error: "Film non trovato" });
+    }
 
-    const releaseDate = new Date(results[0].release_date);
+    const releaseDate = new Date(movieResults[0].release_date);
     const screeningStart = new Date(start_time);
 
     if (screeningStart < releaseDate) {
       return res.status(400).json({ 
-        error: "Non è possibile modificare una proiezione con data precedente all’uscita del film." 
+        error: "Non è possibile modificare una proiezione con data precedente all'uscita del film." 
       });
     }
 
@@ -184,19 +230,32 @@ export const modifyScreening = (req, res) => {
       start_time
     };
 
-    updateScreening(id, updatedScreening, (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      if (result.affectedRows === 0) return res.status(404).json({ error: "Proiezione non trovata" });
-      res.json({ message: "Proiezione aggiornata con successo", screening: updatedScreening });
+    const result = await updateScreening(id, updatedScreening);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Proiezione non trovata" });
+    }
+    
+    res.json({ 
+      message: "Proiezione aggiornata con successo", 
+      screening: updatedScreening 
     });
-  });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-export const removeScreening = (req, res) => {
-  const { id } = req.params;
-  deleteScreening(id, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (result.affectedRows === 0) return res.status(404).json({ error: "Proiezione non trovata" });
+export const removeScreening = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await deleteScreening(id);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Proiezione non trovata" });
+    }
+    
     res.json({ message: "Proiezione eliminata con successo" });
-  });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };

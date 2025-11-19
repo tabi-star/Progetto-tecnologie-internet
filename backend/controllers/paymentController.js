@@ -1,5 +1,5 @@
 // controllers/paymentController.js
-import { createOrder, captureOrder } from "../services/paypalService.js";
+import { createOrder, captureOrder } from "../services/paymentService.js";
 
 export const initiatePayment = async (req, res) => {
   try {

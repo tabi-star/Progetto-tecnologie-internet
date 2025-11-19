@@ -1,80 +1,117 @@
 // controllers/discountController.js
-import { createDiscountCode, deleteDiscountCode, getAdminDiscountCodes, getValidDiscountCode, markDiscountAsUsed } from "../models/discountModel.js";
+import { 
+  createDiscountCode, 
+  deleteDiscountCode, 
+  getDiscountCodes, 
+  getValidDiscountCode, 
+  markDiscountAsUsed 
+} from "../models/discountModel.js";
 
-export const generateDiscountCode = (req, res) => {
-  const { code, discount_percent, valid_until } = req.body;
-  const adminId = req.user.id;
+export const generateDiscountCode = async (req, res) => {
+  try {
+    const { code, discount_percent, valid_until } = req.body;
+    const adminId = req.user.id;
 
-  const discountCode = {
-    code: code || `ADMIN${Date.now()}`,
-    discount_percent: discount_percent || 20,
-    valid_until: valid_until || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 giorni
-    created_by: adminId,
-    created_at: new Date()
-  };
-
-  createDiscountCode(discountCode, (err, result) => {
-    if (err) {
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(409).json({ error: "Codice sconto già esistente" });
-      }
-      return res.status(500).json({ error: err.message });
+    // ✅ Validazione input
+    if (discount_percent && (discount_percent < 1 || discount_percent > 100)) {
+      return res.status(400).json({ error: "La percentuale di sconto deve essere tra 1 e 100" });
     }
+
+    const discountCode = {
+      code: code || `ADMIN${Date.now()}`,
+      discount_percent: discount_percent || 20, // ✅ Corretto nome campo (coerente con DB)
+      valid_until: valid_until || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 giorni
+      created_by: adminId,
+      created_at: new Date()
+    };
+
+    const result = await createDiscountCode(discountCode);
     discountCode.id = result.insertId;
-    res.status(201).json({ message: "Codice sconto generato", discount: discountCode });
-  });
+    
+    res.status(201).json({ 
+      message: "Codice sconto generato", 
+      discount: discountCode 
+    });
+  } catch (error) {
+    // ✅ Gestione errori specifica per duplicati
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ error: "Codice sconto già esistente" });
+    }
+    res.status(500).json({ error: error.message });
+  }
 };
 
-export const removeDiscountCode = (req, res) => {
-  const { id } = req.params;
+export const removeDiscountCode = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  deleteDiscountCode(id, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-
+    const result = await deleteDiscountCode(id);
+    
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Codice sconto non trovato" });
     }
 
     res.json({ message: "Codice sconto eliminato con successo" });
-  });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-export const getMyDiscountCodes = (req, res) => {
-  const adminId = req.user.id;
-  
-  getAdminDiscountCodes(adminId, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+export const getMyDiscountCodes = async (req, res) => {
+  try {
+    const adminId = req.user.id;
+    
+    const discountCodes = await getDiscountCodes(adminId);
+    res.json(discountCodes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-export const validateDiscountCode = (req, res) => {
-  const { code } = req.body;
-  const userId = req.user.id;
+export const validateDiscountCode = async (req, res) => {
+  try {
+    const { code } = req.body;
+    const userId = req.user.id;
 
-  getValidDiscountCode(code, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (results.length === 0) {
+    // ✅ Validazione input
+    if (!code || typeof code !== 'string' || code.trim().length === 0) {
+      return res.status(400).json({ error: "Codice sconto non valido" });
+    }
+
+    const discount = await getValidDiscountCode(code);
+    
+    if (!discount) {
       return res.status(404).json({ error: "Codice sconto non valido o scaduto" });
     }
 
-    const discount = results[0];
     res.json({ 
       valid: true, 
-      discount_percent: discount.discount_percent,
+      discount_percent: discount.discount_percent, // ✅ Coerenza con nome campo DB
       discount_id: discount.id
     });
-  });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-export const useDiscountCode = (req, res) => {
-  const { discount_id } = req.body;
-  const userId = req.user.id;
+export const useDiscountCode = async (req, res) => {
+  try {
+    const { discount_id } = req.body;
+    const userId = req.user.id;
 
-  markDiscountAsUsed(discount_id, userId, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (result.affectedRows === 0) return res.status(404).json({ error: "Codice sconto non trovato" });
+    // ✅ Validazione input
+    if (!discount_id) {
+      return res.status(400).json({ error: "ID codice sconto mancante" });
+    }
+
+    const result = await markDiscountAsUsed(discount_id, userId);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Codice sconto non trovato" });
+    }
     
     res.json({ message: "Codice sconto utilizzato con successo" });
-  });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };

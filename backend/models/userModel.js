@@ -2,11 +2,6 @@
 import { promisePool } from "../db.js";
 import bcrypt from "bcryptjs";
 
-export const getAllUsers = async () => {
-  const [rows] = await promisePool.execute("SELECT id, name, email, role, createdAt FROM users");
-  return rows;
-};
-
 export const getUserByEmail = async (email) => {
   const [rows] = await promisePool.execute("SELECT * FROM users WHERE email = ?", [email]);
   return rows;

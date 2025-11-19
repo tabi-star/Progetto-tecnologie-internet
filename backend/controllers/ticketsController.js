@@ -1,13 +1,21 @@
 // controllers/ticketsController.js
-
-import { getAllTickets, getTicketsByUser, reserveSeats, confirmTickets, cancelTicket, insertTicket } from "../models/ticketModel.js";
+import { 
+  getAllTickets, 
+  getTicketsByUser, 
+  reserveSeats, 
+  confirmTickets, 
+  cancelTicket, 
+  insertTicket 
+} from "../models/ticketModel.js";
 import { generateQRCode } from "../services/qrCodeService.js";
 
-export const getTickets = (req, res) => {
-  getAllTickets((err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+export const getTickets = async (req, res) => {
+  try {
+    const tickets = await getAllTickets();
+    res.json(tickets);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 export const getUserTickets = async (req, res) => {
@@ -21,46 +29,65 @@ export const getUserTickets = async (req, res) => {
 
 export const reserveTicketSeats = async (req, res) => {
   try {
-    const { screening_id, seat_numbers, discountApplied} = req.body;
+    const { screening_id, seat_numbers, discountApplied } = req.body;
     const user_id = req.user.id;
 
-    if (!screening_id || !seat_numbers || !Array.isArray(seat_numbers)) {
-      return res.status(400).json({ error: "Screening ID e lista posti sono obbligatori" });
+    // ✅ Validazione input migliorata
+    if (!screening_id) {
+      return res.status(400).json({ error: "Screening ID obbligatorio" });
     }
 
-    const result = await reserveSeats(screening_id, seat_numbers, user_id, discountApplied);
+    if (!seat_numbers || !Array.isArray(seat_numbers) || seat_numbers.length === 0) {
+      return res.status(400).json({ error: "Lista posti obbligatoria e non vuota" });
+    }
+
+    // Validazione screening_id
+    const screeningId = parseInt(screening_id);
+    if (!screeningId || screeningId <= 0) {
+      return res.status(400).json({ error: "Screening ID non valido" });
+    }
+
+    const result = await reserveSeats(screeningId, seat_numbers, user_id, discountApplied);
     
     res.json({
       message: "Posti riservati temporaneamente",
       ...result
     });
   } catch (error) {
+    console.error('❌ Errore prenotazione posti:', error);
     res.status(400).json({ error: error.message });
   }
 };
 
 export const confirmTicketPayment = async (req, res) => {
   try {
-    const { ticket_ids, discount_id, paypal_order_id} = req.body;
+    const { ticket_ids, discount_id, payment_order_id } = req.body;
     const user_id = req.user.id;
 
-    if (!ticket_ids || !Array.isArray(ticket_ids)) {
-      return res.status(400).json({ error: "Lista ticket IDs è obbligatoria" });
+    // ✅ Validazione input migliorata
+    if (!ticket_ids || !Array.isArray(ticket_ids) || ticket_ids.length === 0) {
+      return res.status(400).json({ error: "Lista ticket IDs obbligatoria e non vuota" });
+    }
+
+    // Validazione ticket_ids
+    const validTicketIds = ticket_ids.map(id => parseInt(id)).filter(id => id > 0);
+    if (validTicketIds.length !== ticket_ids.length) {
+      return res.status(400).json({ error: "Formato ticket IDs non valido" });
     }
 
     // ✅ GENERA IL QR CODE PRIMA
-    const qr_code_url = await generateQRCode(ticket_ids);
+    const qr_code_url = await generateQRCode(validTicketIds);
 
     const payment_data = {
       payment_id: `pay_${Date.now()}`,
       qr_code_url,
-      paypal_order_id,
+      payment_order_id,
       user_id,
-      discount_id
+      discount_id: discount_id ? parseInt(discount_id) : null
     };
 
     // ✅ CONFERMA I TICKET (questo gestirà anche l'email)
-    const tickets = await confirmTickets(ticket_ids, payment_data);
+    const tickets = await confirmTickets(validTicketIds, payment_data);
 
     res.json({
       message: "Pagamento confermato e biglietti emessi",
@@ -68,6 +95,7 @@ export const confirmTicketPayment = async (req, res) => {
       qr_code_url
     });
   } catch (error) {
+    console.error('❌ Errore conferma pagamento:', error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -77,28 +105,52 @@ export const cancelUserTicket = async (req, res) => {
     const { ticket_id } = req.params;
     const user_id = req.user.id;
 
-    await cancelTicket(ticket_id, user_id);
+    // ✅ Validazione input
+    const ticketId = parseInt(ticket_id);
+    if (!ticketId || ticketId <= 0) {
+      return res.status(400).json({ error: "Ticket ID non valido" });
+    }
+
+    await cancelTicket(ticketId, user_id);
     
     res.json({ message: "Prenotazione cancellata con successo" });
   } catch (error) {
+    console.error('❌ Errore cancellazione ticket:', error);
     res.status(400).json({ error: error.message });
   }
 };
 
-export const addTicket = (req, res) => {
-  const { screening_id, seat_number } = req.body;
-  const user_id = req.user.id;
+export const addTicket = async (req, res) => {
+  try {
+    const { screening_id, seat_number } = req.body;
+    const user_id = req.user.id;
 
-  const newTicket = {
-    screening_id,
-    user_id,
-    seat_number,
-    bookedAt: new Date()
-  };
+    // ✅ Validazione input
+    if (!screening_id || !seat_number) {
+      return res.status(400).json({ error: "Screening ID e numero posto obbligatori" });
+    }
 
-  insertTicket(newTicket, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
+    const screeningId = parseInt(screening_id);
+    if (!screeningId || screeningId <= 0) {
+      return res.status(400).json({ error: "Screening ID non valido" });
+    }
+
+    const newTicket = {
+      screening_id: screeningId,
+      user_id,
+      seat_number,
+      bookedAt: new Date()
+    };
+
+    const result = await insertTicket(newTicket);
     newTicket.id = result.insertId;
-    res.status(201).json({ message: "Biglietto prenotato con successo", ticket: newTicket });
-  });
+    
+    res.status(201).json({ 
+      message: "Biglietto prenotato con successo", 
+      ticket: newTicket 
+    });
+  } catch (error) {
+    console.error('❌ Errore aggiunta biglietto:', error);
+    res.status(500).json({ error: error.message });
+  }
 };

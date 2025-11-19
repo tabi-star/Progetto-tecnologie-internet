@@ -8,7 +8,10 @@ const createTransporter = () => {
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.APP_PASSWORD
-    }
+    },
+    // ✅ Timeout per prevenire blocchi
+    connectionTimeout: 10000, // 10 secondi
+    socketTimeout: 15000      // 15 secondi
   });
 };
 

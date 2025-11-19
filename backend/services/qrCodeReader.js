@@ -1,14 +1,26 @@
 // services/qrCodeReader.js
-
 import { promisePool } from "../db.js";
+
+const validateInput = (qrText, currentUserId) => {
+  if (!qrText || typeof qrText !== 'string' || qrText.trim().length === 0) {
+    throw new Error('Testo QR code non valido');
+  }
+  
+  if (currentUserId && (isNaN(currentUserId) || currentUserId <= 0)) {
+    throw new Error('User ID non valido');
+  }
+  
+  return {
+    cleanQrText: qrText.trim(),
+    validUserId: currentUserId ? parseInt(currentUserId) : null
+  };
+};
 
 export const validateQRCode = async (qrText, currentUserId = null) => {
   try {
-    console.log('🔍 Validazione QR code:', qrText);
-    console.log('👤 User ID corrente:', currentUserId);
+    const { cleanQrText, validUserId } = validateInput(qrText, currentUserId);
     
-    // Parsing del testo del QR code
-    const parsedData = parseQRText(qrText);
+    const parsedData = parseQRText(cleanQrText);
     
     if (!parsedData) {
       return {
@@ -19,19 +31,23 @@ export const validateQRCode = async (qrText, currentUserId = null) => {
 
     const { ticket_ids, timestamp, qrFileName } = parsedData;
 
-    // ✅ PASSA IL currentUserId ALLA VALIDAZIONE
-    const ticketValidation = await validateTickets(ticket_ids, qrFileName, currentUserId);
-    // console.log(ticketValidation)
+    const qrAge = Date.now() - timestamp;
+    const MAX_QR_AGE = 365 * 24 * 60 * 60 * 1000;
+    if (qrAge > MAX_QR_AGE) {
+      return {
+        valid: false,
+        error: 'QR code troppo vecchio'
+      };
+    }
+
+    const ticketValidation = await validateTickets(ticket_ids, qrFileName, validUserId);
+    
     if (!ticketValidation.valid) {
       return ticketValidation;
     }
-    //console.log(ticket_ids)
 
     const filtered_ticket_ids = ticketValidation.tickets.map(t => t.id);
-    //console.log(filtered_ticket_ids)
-    // Recupera informazioni dettagliate sui ticket
     const ticketsDetails = await getTicketDetails(filtered_ticket_ids);
-    //console.log(ticketsDetails, "ciao!")
     const ticketDetailsIds = ticketsDetails.map(t => t.id);
 
     return {
@@ -45,32 +61,24 @@ export const validateQRCode = async (qrText, currentUserId = null) => {
     };
 
   } catch (error) {
-    console.error('❌ Errore validazione QR code:', error);
+    console.error('Errore validazione QR code:', error);
     return {
       valid: false,
-      error: 'Errore nella validazione del QR code'
+      error: 'Errore nella validazione del QR code: ' + error.message
     };
   }
 };
 
 export const parseQRText = (qrText) => {
   try {
-    console.log('📝 Parsing QR text:', qrText);
-    
-    // Formato: "ticket_11_1700000000000" o "ticket_1_2_1700000000000"
-    // Rimuovi eventuale estensione .png se presente
     const cleanText = qrText.replace('.png', '');
-    
-    // Split per underscore
     const parts = cleanText.split('_');
     
     if (parts.length < 3) {
-      console.log('❌ Formato non valido: parti insufficienti');
       return null;
     }
 
-    // La prima parte è "ticket", le parti centrali sono gli ID, l'ultima è il timestamp
-    const ticketParts = parts.slice(1, -1); // Prendi tutto tranne primo ("ticket") e ultimo (timestamp)
+    const ticketParts = parts.slice(1, -1);
     const timestampStr = parts[parts.length - 1];
     
     const ticket_ids = ticketParts.map(id => {
@@ -86,10 +94,7 @@ export const parseQRText = (qrText) => {
       throw new Error(`Timestamp non numerico: ${timestampStr}`);
     }
 
-    // Ricostruisce il nome file completo
     const qrFileName = `ticket_${ticket_ids.join('_')}_${timestamp}.png`;
-
-    console.log('✅ Parsing completato:', { ticket_ids, timestamp, qrFileName });
     
     return {
       ticket_ids,
@@ -97,7 +102,7 @@ export const parseQRText = (qrText) => {
       qrFileName
     };
   } catch (error) {
-    console.error('❌ Errore parsing QR text:', error);
+    console.error('Errore parsing QR text:', error);
     return null;
   }
 };
@@ -111,15 +116,8 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
       };
     }
 
-    console.log('🎫 Validazione ticket IDs:', ticket_ids);
-    console.log('📁 QR code file atteso:', qrFileName);
-    console.log('👤 User ID corrente:', currentUserId);
-
-    // Query per verificare che i ticket esistano E che il QR code URL corrisponda
     const placeholders = ticket_ids.map(() => '?').join(',');
     
-    // AGGIUNGI IL FILTRO PER USER ID SE FORNITO
-    // Prepara filtro opzionale per quando vuoi limitare i ticket al proprietario (ma non serve per admin)
     let userFilter = '';
     let queryParams = [...ticket_ids];
     
@@ -144,9 +142,6 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
       queryParams
     );
 
-    console.log('📊 Ticket trovati nel DB:', tickets.length);
-
-    // ✅ AGGIUNGI CONTROLLO: Se currentUserId è fornito ma non trova ticket
     if (currentUserId && tickets.length === 0) {
       return {
         valid: false,
@@ -154,7 +149,7 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
       };
     }
 
-    if (tickets.length !== ticket_ids.length) { //Lo tolgo temporaneamente, ma può essere che mi serva!!!
+    if (tickets.length !== ticket_ids.length) {
       const foundIds = tickets.map(t => t.id);
       const missingIds = ticket_ids.filter(id => !foundIds.includes(id));
       return {
@@ -163,27 +158,7 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
       };
     }
 
-    // VERIFICA CRITICA: Controlla che ALMENO UN ticket abbia il QR code corrispondente
     const expectedQRUrl = `/qr-codes/${qrFileName}`;
-    console.log('🔗 QR code URL atteso:', expectedQRUrl);
-
-    //const ticketsWithMatchingQR = tickets.filter(t => t.qr_code_url === expectedQRUrl);
-
-    // ✅ MODIFICA: Ora controlla se ALMENO UN ticket corrisponde
-    /*if (ticketsWithMatchingQR.length === 0) {
-      console.log('❌ Nessun ticket trovato con QR code corrispondente');
-      console.log('Ticket disponibili:', tickets.map(t => ({
-        id: t.id,
-        qr_code_url: t.qr_code_url
-      })));
-      
-      return {
-        valid: false,
-        error: 'QR code non valido o scaduto'
-      };
-    }*/
-
-    // Tieni SOLO i ticket che hanno esattamente il QR code ORIGINALE
     const validTickets = tickets.filter(t => t.qr_code_url === expectedQRUrl);
 
     if (validTickets.length === 0) {
@@ -193,24 +168,6 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
       };
     }
 
-    // Modifica nuova dopo Merge:
-    console.log(`🎟️ Ticket effettivamente validabili: ${validTickets.map(t => t.id).join(', ')}`);
-    //console.log(validTickets) CONTROLLA SE METTERLO O TOGLIERLO
-    // Se arriviamo qui, ALMENO UN ticket ha il QR code corrispondente
-    //console.log(`✅ QR code valido per ${ticketsWithMatchingQR.length} ticket su ${tickets.length}`);
-
-    //console.log('✅ Tutti i ticket hanno il QR code URL corretto');
-
-    // Controlla se ci sono ticket cancellati
-    /*const cancelledTickets = tickets.filter(t => t.status === 'cancelled');
-    if (cancelledTickets.length > 0) {
-      return {
-        valid: false,
-        error: `Ticket ${cancelledTickets.map(t => t.id).join(', ')} cancellati`
-      };
-    }*/
-
-    // Controlla se la proiezione è già passata
     const now = new Date();
     const expiredScreenings = validTickets.filter(t => new Date(t.start_time) < now);
     if (expiredScreenings.length > 0) {
@@ -220,7 +177,6 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
       };
     }
 
-    // Verifica che tutti i ticket appartengano alla stessa proiezione
     const screeningIds = [...new Set(validTickets.map(t => t.screening_id))];
     if (screeningIds.length > 1) {
       return {
@@ -228,8 +184,6 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
         error: 'I ticket appartengono a proiezioni diverse'
       };
     }
-
-    //console.log(screeningIds.length, " ", validTickets.length);
     
     return {
       valid: true,
@@ -237,7 +191,7 @@ export const validateTickets = async (ticket_ids, qrFileName, currentUserId = nu
     };
 
   } catch (error) {
-    console.error('❌ Errore validazione ticket:', error);
+    console.error('Errore validazione ticket:', error);
     return {
       valid: false,
       error: 'Errore nella validazione dei ticket'
@@ -275,7 +229,7 @@ export const getTicketDetails = async (ticket_ids) => {
 
     return tickets;
   } catch (error) {
-    console.error('❌ Errore recupero dettagli ticket:', error);
+    console.error('Errore recupero dettagli ticket:', error);
     throw error;
   }
 };
@@ -289,7 +243,7 @@ export const markTicketAsUsed = async (ticket_id) => {
 
     return result.affectedRows > 0;
   } catch (error) {
-    console.error('❌ Errore aggiornamento ticket:', error);
+    console.error('Errore aggiornamento ticket:', error);
     throw error;
   }
 };

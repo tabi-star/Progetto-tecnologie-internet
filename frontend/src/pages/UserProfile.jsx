@@ -301,7 +301,8 @@ const UserProfile = () => {
                             <div className="ticket-status">
                               <span className={`status-${ticket.status}`}>
                                 {ticket.status === 'confirmed' ? 'Confermato' : 
-                                 ticket.status === 'validated'? 'Convalidato' : ticket.status}
+                                 ticket.status === 'validated'? 'Convalidato' :
+                                 ticket.status === 'cancelled'? 'Cancellato' : ticket.status}
                               </span>
                             </div>
                           </div>

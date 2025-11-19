@@ -1,58 +1,111 @@
 // models/ticketModel.js
-import db from "../db.js";
 import { promisePool } from "../db.js";
 import { sendConfirmationEmail } from '../services/emailService.js';
 
-
-/*
-// PER ORA QUESTA FUNZIONE NON LA STIAMO UTILIZZANDO
- 
-export const checkTicketsStatus = async (ticket_ids) => {
-  if (!ticket_ids || ticket_ids.length === 0) {
-    return [];
+// ✅ FUNZIONI DI VALIDAZIONE per evitare SQL INJECTION
+const validateSeatNumbers = (seat_numbers) => {
+  if (!Array.isArray(seat_numbers) || seat_numbers.length === 0) {
+    return false;
   }
   
-  const placeholders = ticket_ids.map(() => '?').join(', ');
+  if (seat_numbers.length > 30) {
+    return false;
+  }
   
-  const [tickets] = await promisePool.execute(
-    `SELECT id, status, reserved_until 
-     FROM tickets 
-     WHERE id IN (${placeholders})`,
-    ticket_ids
-  );
-  
-  return tickets;
-};
-*/
-
-export const getAllTickets = (cb) => {
-  db.query(`
-    SELECT t.*, m.title, s.start_time, h.name as hall_name, u.name as user_name
-    FROM tickets t
-    JOIN screenings s ON t.screening_id = s.id
-    JOIN movies m ON s.movie_id = m.id
-    JOIN halls h ON s.hall_id = h.id
-    JOIN users u ON t.user_id = u.id
-    ORDER BY t.bookedAt DESC
-  `, cb);
+  return seat_numbers.every(seat => {
+    if (typeof seat !== 'string') return false;
+    return /^[A-Z][1-9][0-9]?$/.test(seat);
+  });
 };
 
-export const insertTicket = (ticket, cb) => {
-  db.query("INSERT INTO tickets SET ?", ticket, cb);
+const validateTicketIds = (ticket_ids) => {
+  if (!Array.isArray(ticket_ids) || ticket_ids.length === 0) {
+    return false;
+  }
+  
+  if (ticket_ids.length > 30) {
+    return false;
+  }
+  
+  return ticket_ids.every(id => {
+    const numId = Number(id);
+    return Number.isInteger(numId) && numId > 0;
+  });
+};
+
+export const getAllTickets = async () => {
+  try {
+    const [rows] = await promisePool.execute(`
+      SELECT t.*, m.title, s.start_time, h.name as hall_name, u.name as user_name
+      FROM tickets t
+      JOIN screenings s ON t.screening_id = s.id
+      JOIN movies m ON s.movie_id = m.id
+      JOIN halls h ON s.hall_id = h.id
+      JOIN users u ON t.user_id = u.id
+      ORDER BY t.bookedAt DESC
+    `);
+    return rows;
+  } catch (error) {
+    console.error('Errore recupero biglietti:', error);
+    throw error;
+  }
+};
+
+export const insertTicket = async (ticket) => {
+  try {
+    if (!ticket || typeof ticket !== 'object') {
+      throw new Error('Dati biglietto non validi');
+    }
+
+    const requiredFields = ['screening_id', 'user_id', 'seat_number'];
+    for (const field of requiredFields) {
+      if (!ticket[field]) {
+        throw new Error(`Campo obbligatorio mancante: ${field}`);
+      }
+    }
+
+    // ✅ QUERY per MariaDB
+    const [result] = await promisePool.execute(
+      "INSERT INTO tickets (screening_id, user_id, seat_number, status, price, bookedAt) VALUES (?, ?, ?, ?, ?, ?)", 
+      [
+        ticket.screening_id,
+        ticket.user_id,
+        ticket.seat_number,
+        ticket.status || 'confirmed',
+        ticket.price || 0,
+        ticket.bookedAt || new Date()
+      ]
+    );
+    
+    return result;
+  } catch (error) {
+    console.error('Errore inserimento biglietto:', error);
+    throw error;
+  }
 };
 
 export const getTicketsByUser = async (user_id) => {
-  const [rows] = await promisePool.execute(
-    `SELECT t.*, m.title, m.foto_locandina, s.start_time, h.name as hall_name
-     FROM tickets t
-     JOIN screenings s ON t.screening_id = s.id
-     JOIN movies m ON s.movie_id = m.id
-     JOIN halls h ON s.hall_id = h.id
-     WHERE t.user_id = ? AND (t.status = 'confirmed' OR t.status = 'validated')
-     ORDER BY s.start_time ASC`,
-    [user_id]
-  );
-  return rows;
+  try {
+    const userId = parseInt(user_id);
+    if (!userId || userId <= 0) {
+      throw new Error('ID utente non valido');
+    }
+
+    const [rows] = await promisePool.execute(
+      `SELECT t.*, m.title, m.foto_locandina, s.start_time, h.name as hall_name
+       FROM tickets t
+       JOIN screenings s ON t.screening_id = s.id
+       JOIN movies m ON s.movie_id = m.id
+       JOIN halls h ON s.hall_id = h.id
+       WHERE t.user_id = ?
+       ORDER BY s.start_time ASC`,
+      [userId]
+    );
+    return rows;
+  } catch (error) {
+    console.error('Errore recupero biglietti utente:', error);
+    throw error;
+  }
 };
 
 export const reserveSeats = async (screening_id, seat_numbers, user_id, discountApplied) => {
@@ -63,14 +116,16 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id, discount
 
     console.log('Starting reservation:', { screening_id, seat_numbers, user_id });
 
+    if (!validateSeatNumbers(seat_numbers)) {
+      throw new Error('Formato posti non valido');
+    }
+
     if (seat_numbers.length === 0) {
       throw new Error('Nessun posto selezionato');
     }
 
-    // Crea placeholder dinamicamente per IN clause
     const placeholders = seat_numbers.map(() => '?').join(', ');
 
-    // Prima ottieni i dettagli dei posti
     const [seatDetails] = await connection.execute(
       `SELECT seat_number, seat_type FROM seats 
        WHERE hall_id = (SELECT hall_id FROM screenings WHERE id = ?)
@@ -80,11 +135,10 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id, discount
 
     console.log('Seat details:', seatDetails);
 
-    // Verifica che i posti siano ancora disponibili
     const [availableSeats] = await connection.execute(
       `SELECT seat_number FROM tickets 
        WHERE screening_id = ? AND seat_number IN (${placeholders}) 
-       AND status = 'confirmed' OR status = 'validated'  
+       AND (status = 'confirmed' OR status = 'validated') 
        AND (reserved_until IS NULL OR reserved_until > NOW())`,
       [screening_id, ...seat_numbers]
     );
@@ -93,7 +147,6 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id, discount
       throw new Error(`Posti già occupati: ${availableSeats.map(s => s.seat_number).join(', ')}`);
     }
 
-    // Rimuovi prenotazioni scadute
     await connection.execute(
       `DELETE FROM tickets 
        WHERE screening_id = ? AND status = 'reserved' 
@@ -101,7 +154,6 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id, discount
       [screening_id]
     );
 
-    // Inserisci nuove prenotazioni
     const reservedUntil = new Date(Date.now() + 2 * 60 * 1000);
     
     for (const seat_number of seat_numbers) {
@@ -130,7 +182,6 @@ export const reserveSeats = async (screening_id, seat_numbers, user_id, discount
       );
     }
 
-    // Ottieni gli ID dei ticket
     const [ticketIds] = await connection.execute(
       `SELECT id FROM tickets 
        WHERE screening_id = ? AND user_id = ? AND seat_number IN (${placeholders})
@@ -161,19 +212,20 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
   try {
     await connection.beginTransaction();
 
-    // Filtra e valida i ticket_ids
+    if (!validateTicketIds(ticket_ids)) {
+      throw new Error("Formato ID ticket non valido");
+    }
+
     const validTicketIds = ticket_ids.filter(id => id != null && id !== undefined);
     
     if (validTicketIds.length === 0) {
       throw new Error("Nessun ticket ID valido fornito");
     }
 
-    // Crea placeholder dinamicamente per IN clause
     const placeholders = validTicketIds.map(() => '?').join(', ');
 
     console.log('Ticket IDs da confermare:', validTicketIds);
 
-    // VERIFICA 1: Controlla che i ticket esistano e siano nello stato "reserved"
     const [tickets] = await connection.execute(
       `SELECT id, screening_id, seat_number, price, status, reserved_until 
        FROM tickets 
@@ -187,7 +239,6 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
       throw new Error(`Ticket non validi o già confermati: ${missingIds.join(', ')}`);
     }
 
-    // VERIFICA 2: Controlla che le prenotazioni non siano scadute
     const now = new Date();
     const expiredTickets = tickets.filter(ticket => 
       new Date(ticket.reserved_until) < now
@@ -197,12 +248,10 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
       throw new Error(`Prenotazioni scadute per i ticket: ${expiredTickets.map(t => t.id).join(', ')}`);
     }
 
-    // Prepara i dati per l'update - gestisci valori undefined
     const paymentId = payment_data.payment_id || null;
     const qrCodeUrl = payment_data.qr_code_url || null; 
-    const paypalOrderId = payment_data.paypal_order_id || null;
+    const paymentOrderId = payment_data.payment_order_id || null;
 
-    // AGGIORNA i biglietti a confermati
     const updateResult = await connection.execute(
       `UPDATE tickets 
        SET status = 'confirmed', 
@@ -216,16 +265,14 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
 
     console.log(`Ticket aggiornati: ${updateResult[0].affectedRows}`);
 
-    // Inserisci record pagamento per ogni ticket
     for (const ticket of tickets) {
       await connection.execute(
-        `INSERT INTO payments (ticket_id, amount, payment_method, status, paypal_order_id, transaction_id) 
-         VALUES (?, ?, 'paypal', 'completed', ?, ?)`,
-        [ticket.id, ticket.price, paypalOrderId, paymentId]
+        `INSERT INTO payments (ticket_id, amount, payment_method, status, payment_order_id, transaction_id) 
+         VALUES (?, ?, 'payment', 'completed', ?, ?)`,
+        [ticket.id, ticket.price, paymentOrderId, paymentId]
       );
     }
 
-    // Se c'è uno sconto applicato, aggiorna la tabella discount_codes
     if (payment_data.discount_id) {
       await connection.execute(
         `UPDATE discount_codes 
@@ -235,7 +282,6 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
       );
     }
 
-    // Ottieni i ticket aggiornati con tutte le informazioni
     const [updatedTickets] = await connection.execute(
       `SELECT t.*, m.title, m.foto_locandina, s.start_time, h.name as hall_name,
               u.name as user_name, u.email as user_email
@@ -250,7 +296,6 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
 
     await connection.commit();
 
-    // ✅ INVIA EMAIL CON IL QR CODE CORRETTO
     try {
       const totalAmount = updatedTickets.reduce((sum, ticket) => {
         return sum + Number(ticket.price || 0);
@@ -260,10 +305,10 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
         updatedTickets[0].user_email, 
         updatedTickets, 
         totalAmount, 
-        qrCodeUrl // ✅ PASSIAMO IL QR CODE URL
+        qrCodeUrl
       );
     } catch (emailError) {
-      console.error('⚠️ Errore invio email, ma pagamento confermato:', emailError);
+      console.error('Errore invio email, ma pagamento confermato:', emailError);
     }
     
     return updatedTickets;
@@ -277,43 +322,68 @@ export const confirmTickets = async (ticket_ids, payment_data) => {
 };
 
 export const cancelTicket = async (ticket_id, user_id) => {
-  const [result] = await promisePool.execute(
-    `UPDATE tickets 
-     SET status = 'cancelled' 
-     WHERE id = ? AND user_id = ? 
-     AND status = 'confirmed' 
-     AND EXISTS (
-       SELECT 1 FROM screenings s 
-       WHERE s.id = tickets.screening_id 
-       AND s.start_time > DATE_ADD(NOW(), INTERVAL 2 HOUR)
-     )`,
-    [ticket_id, user_id]
-  );
+  try {
+    const ticketId = parseInt(ticket_id);
+    const userId = parseInt(user_id);
 
-  if (result.affectedRows === 0) {
-    throw new Error("Impossibile cancellare: meno di 2 ore alla proiezione o prenotazione non trovata");
+    if (!ticketId || ticketId <= 0 || !userId || userId <= 0) {
+      throw new Error('ID ticket o utente non valido');
+    }
+
+    const [result] = await promisePool.execute(
+      `UPDATE tickets 
+       SET status = 'cancelled' 
+       WHERE id = ? AND user_id = ? 
+       AND status = 'confirmed' 
+       AND EXISTS (
+         SELECT 1 FROM screenings s 
+         WHERE s.id = tickets.screening_id 
+         AND s.start_time > DATE_ADD(NOW(), INTERVAL 2 HOUR)
+       )`,
+      [ticketId, userId]
+    );
+
+    if (result.affectedRows === 0) {
+      throw new Error("Impossibile cancellare: meno di 2 ore alla proiezione o prenotazione non trovata");
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Errore cancellazione ticket:', error);
+    throw error;
   }
-
-  return result;
 };
 
-// Funzione helper per ottenere i posti occupati per una proiezione
 export const getOccupiedSeats = async (screening_id) => {
-  const [rows] = await promisePool.execute(
-    `SELECT seat_number FROM tickets 
-     WHERE screening_id = ? AND status = 'confirmed' OR status = 'validated'  
-     AND (reserved_until IS NULL OR reserved_until > NOW())`,
-    [screening_id]
-  );
-  return rows.map(row => row.seat_number);
+  try {
+    const screeningId = parseInt(screening_id);
+    if (!screeningId || screeningId <= 0) {
+      throw new Error('ID proiezione non valido');
+    }
+
+    const [rows] = await promisePool.execute(
+      `SELECT seat_number FROM tickets 
+       WHERE screening_id = ? AND (status = 'confirmed' OR status = 'validated')  
+       AND (reserved_until IS NULL OR reserved_until > NOW())`,
+      [screeningId]
+    );
+    return rows.map(row => row.seat_number);
+  } catch (error) {
+    console.error('Errore recupero posti occupati:', error);
+    throw error;
+  }
 };
 
-// Funzione per pulire le prenotazioni scadute
 export const cleanupExpiredReservations = async () => {
-  const [result] = await promisePool.execute(
-    `DELETE FROM tickets 
-     WHERE status = 'reserved' 
-     AND reserved_until <= NOW()`
-  );
-  return result.affectedRows;
+  try {
+    const [result] = await promisePool.execute(
+      `DELETE FROM tickets 
+       WHERE status = 'reserved' 
+       AND reserved_until <= NOW()`
+    );
+    return result.affectedRows;
+  } catch (error) {
+    console.error('Errore pulizia prenotazioni scadute:', error);
+    throw error;
+  }
 };
