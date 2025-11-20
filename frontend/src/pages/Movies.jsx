@@ -1,5 +1,3 @@
-// src/pages/Movies.jsx
-
 import { useState, useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
@@ -31,17 +29,7 @@ const Movies = () => {
 
   useEffect(() => {
     fetchMovies()
-    // Imposta la data di oggi come default
-    /*const today = new Date().toISOString().split('T')[0]*/
-    /*setSelectedDate(today)*/
   }, [])
-
-  /*Penso si possa eliminare questo pezzo di codice*/
-  /*useEffect(() => {
-    if (selectedDate*/ /*&& movies *//*Non sono sicuro ci voglia anche l'array movies*//*) {*/
-      /*fetchMoviesByScreeningsByDate(selectedDate);
-    }
-  }, [selectedDate*//*, movies*//*])*/
 
   const fetchMoviesByScreeningsByDate = async (selectedDate) => {
     try {
@@ -58,15 +46,12 @@ const Movies = () => {
 
   useEffect(() => {
     if (!selectedDate) {
-      // nessuna data selezionata → mostra tutti i film
       fetchMovies();
     } else {
-      // data selezionata → mostra solo i film con screening in quella data
       fetchMoviesByScreeningsByDate(selectedDate);
     }
   }, [selectedDate]);
-  
-  // useEffect per aggiornare i movie quando cambia la data
+
   useEffect(() => {
     if (selectedDate) {
       fetchMoviesByScreeningsByDate(selectedDate)
@@ -74,16 +59,12 @@ const Movies = () => {
   }, [selectedDate])
 
   useEffect(() => {
-    //const storedDate = localStorage.getItem("selectedDate")
     const dateFromParams = searchParams.get('date')
     if (dateFromParams) {
       setSelectedDate(dateFromParams)
       fetchMoviesByScreeningsByDate(dateFromParams)
-    } /*else if (storedDate) {
-      setSelectedDate(storedDate)
-    }*/ else {
+    } else {
       setSelectedDate('')
-      //fetchMovies()
     }
     fetchMovies()
   }, [searchParams])
@@ -108,18 +89,12 @@ const Movies = () => {
     };
   }, []);
 
-  /*useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);*/
-
   // Genera date della settimana
   const getWeekDates = () => {
     const dates = []
-    /*const today = new Date()*/
     
     for (let i = 0; i < 7; i++) {
-      const date = new Date(startDate/*today*/)
-      /*date.setDate(today.getDate() + i)*/
+      const date = new Date(startDate)
       date.setDate(startDate.getDate() + i)
       const today = new Date()
       const tomorrow = new Date()
@@ -135,7 +110,7 @@ const Movies = () => {
     return dates
   }
 
-  // 🔹 Sposta i 7 giorni in avanti
+  // Sposta i 7 giorni in avanti
   const handleNextDays = () => {
     scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' })
     const newStart = new Date(startDate)
@@ -143,7 +118,7 @@ const Movies = () => {
     setStartDate(newStart)
   }
 
-  // 🔹 Sposta i 7 giorni indietro (senza andare prima di oggi)
+  // Sposta i 7 gionri indietro (senza andare indietro prima di oggi)
   const handlePrevDays = () => {
     const today = new Date()
     if (startDate.toDateString() === today.toDateString()) return
@@ -188,10 +163,6 @@ const Movies = () => {
                   key={date}
                   className={`date-btn ${selectedDate === date ? 'active' : ''}`}
                   onClick={() => {
-                    //setSelectedDate(selectedDate === date ? '' : date) /*non funziona (forse)*/
-                    //sessionStorage.setItem("selectedDate", date);
-                    //localStorage.setItem("selectedDate", date);
-                    //localStorage.setItem("selectedDateDetail", date);
                     if (selectedDate === date) {
                       setSelectedDate('');
                       localStorage.removeItem("selectedDate");
@@ -239,7 +210,7 @@ const Movies = () => {
                       state={{ from: location.pathname }} 
                       className="btn movie-btn-secondary"
                     >
-                      <Clock /*size={22}*/ />
+                      <Clock />
                       Orari
                     </Link>
                   </div>
@@ -263,19 +234,6 @@ const Movies = () => {
                     {/*{movie?.description || null}*/}
                 </p>
               </div>
-
-              {/*<div className="movie-info">
-                <h3 className="movie-title">{movie.title}</h3>
-                <p className="movie-description">
-                  {movie.description?.substring(0, 120)}...
-                </p>
-                <div className="movie-meta">
-                  <span className="movie-duration">
-                    {Math.floor(movie.duration_minutes / 60)}h {movie.duration_minutes % 60}m
-                  </span>
-                  <span className="movie-language">{movie.language}</span>
-                </div>
-              </div>*/}
             </div>
           ))}
         </div>

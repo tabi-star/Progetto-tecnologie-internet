@@ -1,8 +1,6 @@
-// src/pages/admin/AdminDashboard.jsx
-
 import { useAuth } from '../../contexts/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
-import { Film, Calendar, Video, Building, Ticket, Settings, Users, RefreshCw } from 'lucide-react'
+import { Film, Video, Building, Ticket, Settings, Users, RefreshCw } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './AdminDashboard.css'
@@ -50,10 +48,6 @@ const AdminDashboard = () => {
     fetchStats()
   }, [])
 
-  /*useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);*/
-
   const adminFeatures = [
     {
       icon: <Film size={32} />,
@@ -63,7 +57,7 @@ const AdminDashboard = () => {
       color: '#e74c3c'
     },
     {
-      icon: <Video/*Calendar*/ size={32} />,
+      icon: <Video size={32} />,
       title: 'Gestisci Proiezioni',
       description: 'Programma le proiezioni e gestisci gli orari',
       link: '/admin/screenings',
@@ -88,7 +82,7 @@ const AdminDashboard = () => {
       title: 'Scansiona biglietti',
       description: 'Verifica e convalida i biglietti con QR code',
       link: '/admin/qr-scanner',
-      color: '#7a68c9' /*'#9b59b6'*/
+      color: '#7a68c9'
     },
     {
       icon: <Settings size={32} />,
@@ -129,7 +123,7 @@ const AdminDashboard = () => {
               </div>
             
               <div className="stat-card">
-                <Video /*Calendar*/ size={24} />
+                <Video size={24} />
                 <div className="stat-info">
                   {loading ? (
                     <div className="stat-loading">...</div>

@@ -305,7 +305,7 @@ const AdminDiscounts = () => {
 
                 <div className="discount-details">
                   <div className="detail-item">
-                    <Calendar size={16} />
+                    <Calendar size={20} />
                     <div className="detail-info">
                       <span className="detail-label">Valido fino al</span>
                       <span className="detail-value">{formatDate(discount.valid_until)}</span>
@@ -314,9 +314,9 @@ const AdminDiscounts = () => {
 
                   <div className="detail-item">
                     {discount.used ? (
-                      <XCircle size={16} className="used-icon" />
-                    ) : (
-                      <CheckCircle size={16} className="available-icon" />
+                      <XCircle size={20} className="used-icon" />
+                    ) : isExpired(discount.valid_until) ? (<XCircle size={20} className="expired-icon" />) : (
+                      <CheckCircle size={20} className="available-icon" />
                     )}
                     <div className="detail-info-state">
                       <span className="detail-label">Stato:</span>
@@ -375,11 +375,11 @@ const AdminDiscounts = () => {
 
                 <div className="discount-status">
                   {discount.used ? (
-                    <span className="status-badge used">Utilizzato</span>
+                    <span className="discount-status-badge used">Utilizzato</span>
                   ) : isExpired(discount.valid_until) ? (
-                    <span className="status-badge expired">Scaduto</span>
+                    <span className="discount-status-badge expired">Scaduto</span>
                   ) : (
-                    <span className="status-badge active">Attivo</span>
+                    <span className="discount-status-badge active">Attivo</span>
                   )}
                 </div>
                 </>

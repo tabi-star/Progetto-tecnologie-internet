@@ -160,8 +160,8 @@ const QRCodeScanner = () => {
                   :
                   result.tickets.every(t => t.status === 'cancelled') ?
                     <div className="result-header completely-cancelled">
-                      <CheckCircle size={24} />
-                      <h2>QR Code valido</h2>
+                      <XCircle size={24} />
+                      <h2>QR Code non valido</h2>
                       <span className="ticket-count">{result.tickets.length} {result.tickets.length > 1 ? 'biglietti' : 'biglietto'}</span>
                     </div> :
                   <div className="result-header success">
@@ -210,7 +210,7 @@ const QRCodeScanner = () => {
                         <div key={ticket.id} className={`qr-scanner-ticket-card ${ticket.status}`}>
                           <div className="qr-scanner-ticket-header">
                             <span className="ticket-id">Biglietto #{ticket.id}</span>
-                            <span className={`status-badge ${ticket.status}`}>
+                            <span className={`qr-status-badge ${ticket.status}`}>
                               {ticket.status === 'reserved' ? 'Prenotato' : 
                               ticket.status === 'confirmed' ? 'Confermato' : /*'Cancellato'*/
                               ticket.status === 'validated' ? 'Convalidato' :

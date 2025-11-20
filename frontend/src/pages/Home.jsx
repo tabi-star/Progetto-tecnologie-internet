@@ -1,5 +1,3 @@
-// src/pages/Home.jsx
-
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
@@ -61,32 +59,6 @@ const Home = () => {
 
   const nextSlide = () => {
     setCurrentSlide(prev => (prev + 1) % upcomingMovies.length)
-    {/* CODICE CHE POTREBBE ESSERE UTILE PER IL BANNER "ROTANTE" */}
-    {/*useEffect(() => {
-      if (currentSlide === upcomingMovies.length) {
-        // Disattiva transizione momentaneamente
-        setTimeout(() => {
-          document.querySelector('.banner-slides').style.transition = 'none';
-          setCurrentSlide(0);
-          // Ripristina la transizione per gli step successivi
-          setTimeout(() => {
-            document.querySelector('.banner-slides').style.transition = 'transform 0.8s ease-in-out';
-          }, 50);
-        }, 800); // 800 ms = durata della tua transizione
-      }
-    }, [currentSlide])*/}
-    {/*if (currentSlide === upcomingMovies.length - 1) {
-      // vai temporaneamente alla copia nascosta della prima
-      setCurrentSlide(currentSlide + 1);
-      setTimeout(() => {
-        // disabilita la transizione e torna invisibilmente a 0
-        setIsTransitioning(false);
-        setCurrentSlide(0);
-        setTimeout(() => setIsTransitioning(true), 50);
-      }, 800);
-    } else {
-      setCurrentSlide(currentSlide + 1);
-    }*/}
     resetProgressBar()
     startAutoSlide()
   }
@@ -103,10 +75,6 @@ const Home = () => {
     startAutoSlide()
   }
 
-  /*useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);*/
-
   if (loading) return <div className="loading">Caricamento...</div>
   if (error) return <div className="error">{error}</div>
 
@@ -116,29 +84,6 @@ const Home = () => {
       <section className="hero">
         {upcomingMovies.length > 0 && (
           <div className="banner">
-
-            {/*<div className="banner-slides">
-              <div
-                key={upcomingMovies[currentSlide]?.id}
-                className="banner-slide active"
-                style={{
-                  backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${upcomingMovies[currentSlide]?.banner_image || '/placeholder-movie.jpg'})`
-                }}
-              >
-                <div className="banner-content">
-                  <h1 className="banner-title">{upcomingMovies[currentSlide]?.title}</h1> 
-                  {/*<p className="banner-description">
-                    {upcomingMovies[currentSlide]?.description?.substring(0, 150)}...
-                  </p>*/}
-                  {/*<div className="banner-actions">
-                    <Link to={`/movie/${upcomingMovies[currentSlide]?.id}`} className="btn btn-primary">
-                      <Play size={16} />
-                      Scopri di più
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>*/}
 
             <div className="banner-slides">
               <div

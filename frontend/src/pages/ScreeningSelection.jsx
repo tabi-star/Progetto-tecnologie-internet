@@ -1,5 +1,3 @@
-// src/pages/ScreeningSelection.jsx
-
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -13,7 +11,6 @@ const ScreeningSelection = () => {
   const [movie, setMovie] = useState(null)
   const [screenings, setScreenings] = useState([])
   const [selectedDate, setSelectedDate] = useState('')
-  //const [startDate, setStartDate] = useState(new Date())
   const storedDate = localStorage.getItem("selectedDate")
   const [startDate, setStartDate] = useState(storedDate ? new Date(storedDate) : new Date())
   const [loading, setLoading] = useState(true)
@@ -58,35 +55,17 @@ const ScreeningSelection = () => {
       setSelectedDate('');
     };
   }, [movieId, searchParams])
-  
-  /*useEffect(() => {
-    const storedDate = sessionStorage.getItem('selectedDate')
-    if (storedDate) {
-      setSelectedDate(storedDate)
-      setStartDate(new Date(storedDate))
-    } else {
-      const today = new Date()
-      setSelectedDate(today.toISOString().split('T')[0])
-      setStartDate(today)
-    }
-
-    // pulizia alla chiusura pagina
-    return () => {
-      sessionStorage.removeItem('selectedDate')
-      setSelectedDate('')
-    }
-  }, [])*/
 
   const fetchScreenings = async () => {
     try {
-      setLoading(true) //OCCHIO PER LO SCATTINO VERSO L'ALTO!!!
+      setLoading(true)
       const response = await axios.get(`/api/screenings/movie/${movieId}/date/${selectedDate}`)
       setScreenings(response.data)
     } catch (err) {
       console.error('Errore nel caricamento delle proiezioni:', err)
       setScreenings([])
     } finally {
-      setLoading(false) //OCCHIO PER LO SCATTINO VERSO L'ALTO!!!
+      setLoading(false)
     }
   }
 
@@ -121,21 +100,6 @@ const ScreeningSelection = () => {
     }
   }, [selectedDate, movieId])
 
-  /*Bisogna ripartire da qui e capire cosa fa l'useEffect di sopra*/
-  /*SENTI CON TABI SE LASCIARLO O TOGLIERLO!!!*/
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!dateSectionRef.current?.contains(event.target)) return;
-      // Se il click NON avviene dentro .date-buttons
-      if (!event.target.closest('.date-buttons') && !event.target.closest('.left-arrow-btn') && !event.target.closest('.right-arrow-btn')) {
-        setSelectedDate('');
-      }
-    };
-
-    window.addEventListener('click', handleClickOutside);
-    return () => window.removeEventListener('click', handleClickOutside);
-  }, []);
-
   /*useEffect(() => {
     if (selectedDate && movie) {
       fetchScreenings()
@@ -150,16 +114,10 @@ const ScreeningSelection = () => {
     }
   }, [selectedDate])
 
-  /*useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);*/
-
   const getWeekDates = () => {
     const dates = []
-    /*const today = new Date()*/
     for (let i = 0; i < 7; i++) {
-      const date = new Date(startDate/*today*/)
-      /*date.setDate(today.getDate() + i)*/
+      const date = new Date(startDate)
       date.setDate(startDate.getDate() + i)
       const today = new Date()
       const tomorrow = new Date()
@@ -175,7 +133,7 @@ const ScreeningSelection = () => {
     return dates
   }
 
-  // 🔹 Sposta i 7 giorni in avanti
+  // Sposta i 7 giorni in avanti
   const handleNextDays = () => {
     scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' })
     const newStart = new Date(startDate)
@@ -183,7 +141,7 @@ const ScreeningSelection = () => {
     setStartDate(newStart)
   }
 
-  // 🔹 Sposta i 7 giorni indietro (senza andare prima di oggi)
+  // Sposta i 7 giorni indietro (senza andare prima di oggi)
   const handlePrevDays = () => {
     const today = new Date()
     if (startDate.toDateString() === today.toDateString()) return
@@ -200,7 +158,6 @@ const ScreeningSelection = () => {
     })
   }
 
-  /*if (loading) return <div className="loading">Caricamento proiezioni...</div>*/ //OCCHIO E' LUI IL VERO RESPONSABILE DELLO SCATTINO IN ALTO!!!
   if (error) return <div className="error">{error}</div>
 
   function getEndTime(startTime, durationMinutes) {
@@ -218,12 +175,6 @@ const ScreeningSelection = () => {
       <div className="container">
         {/* Header */}
         <div className="screening-page-header">
-          {/*<div className="btn-back-container">*/}
-          {/*<button onClick={() => navigate(-1)} className="btn-back">
-            <ArrowLeft size={20} />
-            Torna ai film
-          </button>*/}
-          {/*</div>*/}
           {movie && (
             <div className="movie-mini-data">
               <img 
@@ -266,7 +217,6 @@ const ScreeningSelection = () => {
                     className={`date-btn ${selectedDate === date ? 'active' : ''}`}
                     onClick={() => {
                       setSelectedDate(selectedDate === date ? '' : date)
-                      //localStorage.setItem("selectedDate", date)
                     }}
                   >
                     {label}
@@ -305,9 +255,6 @@ const ScreeningSelection = () => {
                     <div className="screening-time">
                       <strong>{formatTime(screening.start_time)} - {getEndTime(screening.start_time, screening.duration_minutes)}</strong>
                     </div>
-                    {/*<div className="screening-duration">
-                      {Math.floor(screening.duration_minutes / 60)}h {screening.duration_minutes % 60}m
-                    </div>*/}
                   </div>
 
                   <div className="screening-info">
@@ -316,7 +263,6 @@ const ScreeningSelection = () => {
                       <span className="hall-type">{screening.hall_type}</span>
                     </div>
                     <div className="screening-meta">
-                      {/*<span className="capacity">Posti disponibili: {screening.capacity}</span>*/}
                       {availableSeats[screening.id] === 0 ? (
                         <span className="capacity soldout">Posti esauriti</span>
                       ) : (
@@ -328,20 +274,6 @@ const ScreeningSelection = () => {
                   </div>
 
                   <div className="screening-actions">
-                    {/*{availableSeats[screening.id] === 0 ? (
-                      <button className="btn btn-disabled" disabled>
-                        <Ticket size={16} />
-                          Posti esauriti
-                      </button>
-                    ) : (
-                      <Link 
-                        to={`/seats/${screening.id}`}
-                        className="btn btn-primary"
-                      >
-                      <Ticket size={16} />
-                      Scegli i posti
-                      </Link>
-                    )}*/}
                     <Link 
                       to={`/seats/${screening.id}`}
                       className={`btn btn-primary ${availableSeats[screening.id] === 0 ? 'disabled' : ''}`}

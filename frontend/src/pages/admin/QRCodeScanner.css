@@ -341,12 +341,13 @@
   font-size: 0.9rem;
 }
 
-.status-badge {
+.qr-status-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.7rem;
   font-weight: bold;
   text-transform: uppercase;
+  text-align: center;
 }
 
 /*.status-badge.reserved {
@@ -354,17 +355,17 @@
   color: white;
 }*/
 
-.status-badge.confirmed {
+.qr-status-badge.confirmed {
   background: #28a745;
   color: white;
 }
 
-.status-badge.cancelled {
+.qr-status-badge.cancelled {
   background: #dc3545;
   color: white;
 }
 
-.status-badge.validated {
+.qr-status-badge.validated {
   background: #3498db;
   color: white;
 }
