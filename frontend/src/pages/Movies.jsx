@@ -6,12 +6,11 @@ import './Movies.css'
 
 const Movies = () => {
   const [movies, setMovies] = useState([])
-  /*const [screenings, setScreenings] = useState([])*/ /*Non sicuro di metterlo*/
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchParams] = useSearchParams()
   const [selectedDate, setSelectedDate] = useState('')
-  const [startDate, setStartDate] = useState(new Date()) // giorno iniziale visibile
+  const [startDate, setStartDate] = useState(new Date())
   const scrollRef = useRef(null)
   const dateSelectorRef = useRef(null);
 
@@ -46,14 +45,8 @@ const Movies = () => {
 
   useEffect(() => {
     if (!selectedDate) {
-      fetchMovies();
+      fetchMovies()
     } else {
-      fetchMoviesByScreeningsByDate(selectedDate);
-    }
-  }, [selectedDate]);
-
-  useEffect(() => {
-    if (selectedDate) {
       fetchMoviesByScreeningsByDate(selectedDate)
     }
   }, [selectedDate])
@@ -62,26 +55,10 @@ const Movies = () => {
     const dateFromParams = searchParams.get('date')
     if (dateFromParams) {
       setSelectedDate(dateFromParams)
-      fetchMoviesByScreeningsByDate(dateFromParams)
     } else {
       setSelectedDate('')
     }
-    fetchMovies()
   }, [searchParams])
-
-  /*SENTI CON TABI SE LASCIARLO O TOGLIERLO!!!*/
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!dateSelectorRef.current?.contains(event.target)) return;
-      // Se il click NON avviene dentro .date-buttons
-      if (!event.target.closest('.date-buttons') && !event.target.closest('.left-arrow-btn') && !event.target.closest('.right-arrow-btn')) {
-        setSelectedDate('');
-      }
-    };
-
-    window.addEventListener('click', handleClickOutside);
-    return () => window.removeEventListener('click', handleClickOutside);
-  }, []);
 
   useEffect(() => {
     return () => {
@@ -89,7 +66,6 @@ const Movies = () => {
     };
   }, []);
 
-  // Genera date della settimana
   const getWeekDates = () => {
     const dates = []
     
@@ -110,7 +86,6 @@ const Movies = () => {
     return dates
   }
 
-  // Sposta i 7 giorni in avanti
   const handleNextDays = () => {
     scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' })
     const newStart = new Date(startDate)
@@ -118,7 +93,6 @@ const Movies = () => {
     setStartDate(newStart)
   }
 
-  // Sposta i 7 gionri indietro (senza andare indietro prima di oggi)
   const handlePrevDays = () => {
     const today = new Date()
     if (startDate.toDateString() === today.toDateString()) return
@@ -139,7 +113,6 @@ const Movies = () => {
           <p>Scegli tra i migliori film del momento</p>
         </div>
 
-        {/* Date Selector */}
         <div className="date-selector" ref={dateSelectorRef}>
           <h3>
             <Calendar size={24} />
@@ -188,7 +161,6 @@ const Movies = () => {
           </div>
         </div>
 
-        {/* Movies Grid */}
         <div className="movies-grid">
           {movies.map(movie => (
             <div key={movie.id} className="movie-card">
@@ -231,7 +203,6 @@ const Movies = () => {
                       .split(' ')
                       .slice(0, 30)
                       .join(' ') + (movie.description.split(' ').length > 30 ? '...' : '') || null}
-                    {/*{movie?.description || null}*/}
                 </p>
               </div>
             </div>

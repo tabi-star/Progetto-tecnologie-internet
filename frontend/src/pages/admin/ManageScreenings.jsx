@@ -1,5 +1,3 @@
-// src/pages/admin/ManageScreenings.jsx
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import axios from 'axios'
@@ -106,22 +104,12 @@ const ManageScreenings = () => {
     setFormData({
       movie_id: screening.movie_id,
       hall_id: screening.hall_id,
-      start_time: screening.start_time.split('.')[0] // Rimuovi millisecondi per input datetime-local
-      /*release_movie_date: screening.release_movie_date*/
+      start_time: screening.start_time.split('.')[0]
     })
     setShowForm(true)
   }
 
-  const handleDelete = /*async*/ (screening) => {
-    /*if (window.confirm('Sei sicuro di voler eliminare questa proiezione?')) {
-      try {
-        await axios.delete(`/api/screenings/${screeningId}`)
-        setSuccess('Proiezione eliminata con successo')
-        fetchData()
-      } catch (err) {
-        setError('Errore nell\'eliminazione della proiezione')
-      }
-    }*/
+  const handleDelete = (screening) => {
    setScreeningToDelete(screening)
    setShowDeleteScreeningModal(true)
   }
@@ -147,8 +135,7 @@ const ManageScreenings = () => {
     setFormData({
       movie_id: '',
       hall_id: '',
-      start_time: '',
-      /*release_movie_date: ''*/
+      start_time: ''
     })
     setEditingScreening(null)
     setShowForm(false)
@@ -157,9 +144,9 @@ const ManageScreenings = () => {
 
   const formatDateTime = (dateTime) => {
     return new Date(dateTime).toLocaleString('it-IT', {
-      weekday: 'long'/*'short'*/,
+      weekday: 'long',
       year: 'numeric',
-      month: 'long'/*'short'*/,
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -172,10 +159,6 @@ const ManageScreenings = () => {
     screening.hall_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
     formatDateTime(screening.start_time).toLowerCase().includes(searchTerm.toLowerCase())
   )
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   if (!user || user.role !== 'admin') {
     return <div className="error">Accesso negato</div>
@@ -323,9 +306,8 @@ const ManageScreenings = () => {
         {loading ? (
           <div className="loading">Caricamento proiezioni...</div>
         ) : (
-          //RIPRENDIAMO DA QUI!!!!
           <div className="manage-screenings-grid">
-            {/*screenings*/filteredScreenings.map(screening => (
+            {filteredScreenings.map(screening => (
               <div key={screening.id} className="manage-screening-card">
 
                 <div className="manage-screening-header">
@@ -380,7 +362,6 @@ const ManageScreenings = () => {
           <div className="no-screenings">
             <Calendar size={48} />
             <h3>Nessuna proiezione programmata</h3>
-            {/*<p>Crea la prima proiezione per iniziare</p>*/}
             <p>{searchTerm ? 'Prova a modificare i termini di ricerca' : 'Crea la prima proiezione per iniziare'}</p>
           </div>
         )}

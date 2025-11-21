@@ -1,5 +1,3 @@
-// src/contexts/AuthContext.jsx - VERSIONE CORRETTA
-
 import { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 
@@ -35,11 +33,7 @@ export const AuthProvider = ({ children }) => {
         return
       }
 
-      // VERIFICA REALE CON IL SERVER
       const userData = JSON.parse(atob(token.split('.')[1]))
-      
-      // Opzionale: fai una chiamata API per verificare che il token sia ancora valido
-      // await axios.get('/api/users/me');
       
       setUser(userData)
     } catch (error) {
@@ -54,7 +48,6 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('🔐 [AuthContext] Iniziando login per:', email)
       
-      // ✅ ROUTE CORRETTA - usa /api/users/login
       const response = await axios.post('/api/users/login', { 
         email, 
         password 
@@ -102,12 +95,10 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('👤 [AuthContext] Iniziando registrazione per:', userData.email)
       
-      // ✅ ROUTE CORRETTA - usa /api/users
       const response = await axios.post('/api/users', userData)
       
       console.log('✅ [AuthContext] Registrazione completata:', response.data)
       
-      // Auto-login dopo registrazione
       if (response.data.user) {
         const loginResult = await login(userData.email, userData.password)
         return loginResult
@@ -145,7 +136,6 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (profileData) => {
     try {
-      // ✅ ROUTE CORRETTA - usa /api/users/profile
       await axios.put('/api/users/profile', profileData)
       if (profileData.name) {
         setUser(prev => ({ ...prev, name: profileData.name }))

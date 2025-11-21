@@ -1,5 +1,3 @@
-// src/pages/admin/ManageHalls.jsx
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import axios from 'axios'
@@ -50,18 +48,18 @@ const ManageHalls = () => {
   }
 
   useEffect(() => {
+
     const rows = parseInt(seatConfig.rows);
     const columns = parseInt(seatConfig.columns);
 
-    /*if (!rows || !columns) {
-      setSeatError('Inserisci entrambi i valori');
-    } else */if (isNaN(rows) || isNaN(columns) || rows <= 0 || columns <= 0) {
+    if (isNaN(rows) || isNaN(columns) || rows <= 0 || columns <= 0) {
       setSeatError('Inserisci numeri interi per file e posti');
     } else if (rows > 20 || columns > 30) {
-      setSeatError('Numero di file o colonne troppo elevato'); /*(max: 20 file, 30 posti per fila)*/
+      setSeatError('Numero di file o colonne troppo elevato');
     } else {
-      setSeatError(''); // nessun errore → input valido
+      setSeatError('');
     }
+
 }, [seatConfig.rows, seatConfig.columns]);
 
   const handleSubmit = async (e) => {
@@ -76,75 +74,43 @@ const ManageHalls = () => {
       
       if (editingHall) {
         await axios.put(`/api/halls/${editingHall.id}`, formData)
-        //setSuccess('Sala aggiornata con successo')
         hallId = editingHall.id
         hallName = editingHall.name
-        /*setCapacityToBeSet(!capacityToBeSet)*/
       } else {
         const response = await axios.post('/api/halls', {
           ...formData,
           capacity: 0
         })
-        // setSuccess('Sala aggiunta con success0')
-        //console.log(response.data.hall)
-        // const newHall = response.data
         hallId = response.data.hall.id
         hallName = response.data.hall.name
-        // hallName = newHall.name
-        /*setCapacityToBeSet(!capacityToBeSet)*/
       }
 
       if (hallId && hallName) {
-        // generateSeats(hallId, hallName)
         setSeatConfig({ hallId, hallName, rows: '', columns: '' })
         setShowForm(false)
         setShowSeatModal(true)
       }
 
-      // setSuccess(editingHall ? 'Sala aggiornata con successo' : 'Sala aggiunta con successo') DA USARE DOPO!
-
-      /*if (!capacityToBeSet) {
-        resetForm()
-        fetchHalls()
-      }*/
     } catch (err) {
       setError(err.response?.data?.error || 'Errore nel salvataggio')
     }
 
   }
 
-  const generateSeats = async (/*hallId, hallName*/) => {
-    /*const rows = prompt(`Quante file per ${hallName}?`);
-    const columns = prompt(`Quanti posti per fila per ${hallName}?`);*/
+  const generateSeats = async () => {
+    
     const { hallId, hallName, rows, columns } = seatConfig
 
     const numRows = parseInt(rows)
     const numColumns = parseInt(columns)
-
-    
-    /*if (!rows || !columns) return;
-    
-    // Validazione input
-    const numRows = parseInt(rows);
-    const numColumns = parseInt(columns);*/
     
     if (isNaN(numRows) || isNaN(numColumns) || numRows <= 0 || numColumns <= 0) {
       setError('Inserisci numeri validi per file e colonne');
-      /*await axios.delete(`/api/halls/${hallId}`)
-      setShowSeatModal(false);
-      setSeatConfig({ hallId: null, hallName: '', rows: '', columns: '' })
-      resetForm();*/
-      //cancelWrongHall()
       return;
     }
 
     if (numRows > 20 || numColumns > 30) {
       setError('Numero di file o colonne troppo elevato (max: 20 file, 30 posti per fila)');
-      /*await axios.delete(`/api/halls/${hallId}`)
-      setShowSeatModal(false);
-      setSeatConfig({ hallId: null, hallName: '', rows: '', columns: '' })
-      resetForm();*/
-      //cancelWrongHall()
       return;
     }
     
@@ -157,26 +123,13 @@ const ManageHalls = () => {
       const capacity = numRows * numColumns
       await axios.put(`/api/halls/${hallId}`, {
         ...formData,
-        /*name: hallName,
-        hall_type: formData.hall_type || "Stamdard",*/
         capacity
       })
-
-      /*if (response.data.success) {
-        setSuccess(response.data.message);*/
-        /*setEditingHall({ hallId, hallName,  capacity: 0 })
-        setCapacityToBeSet(!capacityToBeSet)
-        handleSubmit(setFormData({ hallId, hallName, capacity: numRows*numColumns }))*/
-        // Ricarica la lista delle sale per mostrare i posti aggiornati
-        /*fetchHalls();*/
-      /*}*/
-      /*setSuccess(`Sala "${hallName}" aggiornata con ${capacity} posti`)*/
       setSuccess(editingHall? `${formData.name} da ${capacity} posti aggiornata con successo` : `${hallName} da ${capacity} posti creata con successo`)
       fetchHalls()
     } catch (err) {
       console.error('Errore generazione posti:', err);
       setError(err.response?.data?.error || 'Errore nella generazione dei posti');
-      /*setShowSeatModal(false);*/
     } finally {
         setShowSeatModal(false)
         setSeatConfig({ hallId: null, hallName: '', rows: '', columns: '' })
@@ -196,16 +149,7 @@ const ManageHalls = () => {
     setShowForm(true)
   }
 
-  const handleDelete = /*async*/ (hall) => {
-    /*if (window.confirm('Sei sicuro di voler eliminare questa sala?')) {
-      try {
-        await axios.delete(`/api/halls/${hallId}`)
-        setSuccess('Sala eliminata con successo')
-        fetchHalls()
-      } catch (err) {
-        setError('Errore nell\'eliminazione della sala')
-      }
-    }*/
+  const handleDelete = (hall) => {
     setHallToDelete(hall)
     setShowDeleteHallModal(true)
   }
@@ -229,9 +173,6 @@ const ManageHalls = () => {
 
   const cancelWrongHall = async () => {
     const { hallId, hallName, rows, columns } = seatConfig
-    /*if (isNaN(rows) || isNaN(columns) || rows <= 0 || columns <= 0 || rows > 20 || columns > 30) {
-      await axios.delete(`/api/halls/${hallId}`)
-    }*/
     axios.delete(`/api/halls/${hallId}`)
     setShowSeatModal(false);
     setSeatConfig({ hallId: null, hallName: '', rows: '', columns: '' })
@@ -242,7 +183,7 @@ const ManageHalls = () => {
   const resetForm = () => {
     setFormData({
       name: '',
-      hall_type: /*''*/'Standard',
+      hall_type: 'Standard',
       capacity: ''
     })
     setEditingHall(null)
@@ -250,11 +191,11 @@ const ManageHalls = () => {
   }
 
   const getHallLayout = async (hallId) => {
+
     try {
-      const res = await axios.get(`/api/seats/hall/${hallId}`); // endpoint che ritorna tutti i posti
+      const res = await axios.get(`/api/seats/hall/${hallId}`);
       const seats = res.data;
 
-      // Calcolo delle file e dei posti per fila
       const rowsMap = seats.reduce((rows, seat) => {
         if (!rows[seat.seat_row]) rows[seat.seat_row] = [];
         rows[seat.seat_row].push(seat);
@@ -264,7 +205,6 @@ const ManageHalls = () => {
       const totalRows = Object.keys(rowsMap).length;
       const maxSeatsPerRow = Math.max(...Object.values(rowsMap).map(rowSeats => rowSeats.length));
 
-      // Salva nel state
       setHallLayouts(prev => ({
         ...prev,
         [hallId]: { totalRows, maxSeatsPerRow }
@@ -272,20 +212,23 @@ const ManageHalls = () => {
     } catch (err) {
       console.error(`Errore nel caricamento layout sala ${hallId}:`, err);
     }
-  };
+
+  }
 
   useEffect(() => {
-    // Appena caricate le sale, calcoliamo il layout per ciascuna
+
     if (halls.length > 0) {
       (async () => {
         for (const hall of halls) {
-          await getHallLayout(hall.id); // una alla volta, evita sovraccarichi
+          await getHallLayout(hall.id);
         }
       })();
     }
+
   }, [halls]);
 
   const getScreeningCount = async (hallId) => {
+
     try {
       const response = await axios.get(`/api/screenings/count/${hallId}`);
       setScreeningsCount(prev => ({
@@ -295,9 +238,11 @@ const ManageHalls = () => {
     } catch (err) {
       console.error(`Errore nel caricamento delle proiezioni per la sala ${hallId}:`, err);
     }
+
   };
 
   useEffect(() => {
+
     if (halls.length > 0) {
       (async () => {
         for (const hall of halls) {
@@ -305,11 +250,8 @@ const ManageHalls = () => {
         }
       })();
     }
-  }, [halls])
 
-  /*useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);*/
+  }, [halls])
 
   if (!user || user.role !== 'admin') {
     return <div className="error">Accesso negato</div>
@@ -375,7 +317,6 @@ const ManageHalls = () => {
 
                 <div className="form-actions">
                   <button type="submit" className="btn btn-primary">
-                    {/*{editingHall ? 'Aggiorna Sala' : 'Crea Sala'}*/}
                     Procedi
                   </button>
                   <button type="button" onClick={resetForm} className="btn btn-secondary">
@@ -398,7 +339,7 @@ const ManageHalls = () => {
                     type="number"
                     value={seatConfig.rows}
                     onChange={(e) => setSeatConfig(prev => ({ ...prev, rows: e.target.value }))}
-                    placeholder="Massimo 20 file" //"Es: 10"
+                    placeholder="Massimo 20 file"
                   />
                 </div>
 
@@ -408,12 +349,11 @@ const ManageHalls = () => {
                     type="number"
                     value={seatConfig.columns}
                     onChange={(e) => setSeatConfig(prev => ({ ...prev, columns: e.target.value }))}
-                    placeholder="Massimo 30 posti per fila" //"Es: 15"
+                    placeholder="Massimo 30 posti per fila"
                   />
                 </div>
               </div>
 
-              {/* 🔴 Mostra messaggio d'errore se presente */}
               {seatError && <p className="error-message">{seatError}</p>}
 
               <div className="modal-actions">
@@ -422,12 +362,11 @@ const ManageHalls = () => {
                   onClick={generateSeats}
                   disabled={!!seatError}
                   >
-                  {/*Genera posti*/}
                   {editingHall ? 'Aggiorna Sala' : 'Crea Sala'}
                 </button>
                 {editingHall ? <button className="btn btn-secondary" onClick={() => setShowSeatModal(false)}>
                   Annulla
-                </button> : null} {/*editingHall ? setShowDeleteHallModal(false) : cancelWrongHall()*/}
+                </button> : null}
               </div>
             </div>
           </div>
@@ -477,13 +416,10 @@ const ManageHalls = () => {
                     <Map size={20} />
                     <div className="detail-info-layout">
                       <span className="detail-label">Configurazione:</span>
-                      {/*<span className="detail-value">Posti standard</span>*/}
                       <span className="detail-value">
                         {hallLayouts[hall.id]
                         ? `${hallLayouts[hall.id].totalRows} file • ${hallLayouts[hall.id].maxSeatsPerRow} posti per fila`
                         : "Caricamento..."}
-                        {/*{hallLayouts[hall.id].totalRows} file <br />
-                        {hallLayouts[hall.id].maxSeatsPerRow} posti per fila*/}
                       </span>
                     </div>
                   </div>

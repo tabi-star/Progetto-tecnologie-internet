@@ -1,8 +1,6 @@
-// src/components/Layout.jsx
-
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Home, User, ArrowLeft, LogOut } from 'lucide-react'
+import { User, ArrowLeft, LogOut } from 'lucide-react'
 import './Layout.css'
 
 const Layout = ({ children }) => {
@@ -29,35 +27,19 @@ const Layout = ({ children }) => {
       <header className="header">
         <div className="container">
           <div className="header-content">
-            {/*Il logo prima era qui.*/}
-            {/*<div className="header-actions">*/}
+
             {!isHomePage && location.pathname !== '/' && (
               <button 
                 onClick={() => navigate(-1)}
                 className="btn-back"
               >
                 <ArrowLeft size={20} />
-                {/*Torna indietro*/}
                 {buttonText}
               </button>
             )}
-            {/*<Link to="/" className="logo">
-              🎥 🎬 TRCinema
-            </Link>
-            
-            <div className="header-actions">
-              {!isHomePage && location.pathname !== '/' && (
-                <button 
-                  onClick={() => navigate(-1)}
-                  className="btn-back"
-                >
-                  <ArrowLeft size={20} />
-                  Torna indietro
-                </button>
-              )}*/}
               
             <Link to="/" className="logo">
-              🎥 🎬 TRCinema{/*CinemaAPI*/}
+              🎥 🎬 TRCinema
             </Link>
 
             <div className="user-menu">
@@ -69,7 +51,7 @@ const Layout = ({ children }) => {
                   </Link>
                   <div className="dropdown-content">
                     <button onClick={handleLogout} className="dropdown-item">
-                      <LogOut size={20} /> {/*16*/}
+                      <LogOut size={20} />
                       Logout
                     </button>
                   </div>
@@ -81,7 +63,6 @@ const Layout = ({ children }) => {
                 </Link>
               )}
             </div>
-            {/*</div>*/}
           </div>
         </div>
       </header>

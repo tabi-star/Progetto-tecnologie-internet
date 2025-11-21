@@ -1,7 +1,6 @@
-// src/pages/ResetPassword.jsx
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, Lock, CheckCircle } from 'lucide-react'
+import { Lock, CheckCircle } from 'lucide-react'
 import axios from 'axios'
 import './ForgotPassword.css'
 
@@ -18,7 +17,7 @@ const ResetPassword = () => {
   const [validToken, setValidToken] = useState(null)
 
   useEffect(() => {
-    // Verifica se il token è valido
+
     const verifyToken = async () => {
       try {
         await axios.get(`/api/users/verify-reset-token/${token}`)
@@ -32,9 +31,11 @@ const ResetPassword = () => {
     if (token) {
       verifyToken()
     }
+
   }, [token])
 
   const handleSubmit = async (e) => {
+
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -68,6 +69,7 @@ const ResetPassword = () => {
     } finally {
       setLoading(false)
     }
+
   }
 
   if (validToken === false) {
@@ -110,10 +112,6 @@ const ResetPassword = () => {
     <div className="forgot-password-page">
       <div className="container">
         <div className="forgot-password-card">
-          {/*<button onClick={() => navigate(-1)} className="btn-back">
-            <ArrowLeft size={20} />
-            Torna indietro
-          </button>*/}
 
           <div className="forgot-password-header">
             <Lock size={48} className="header-icon" />

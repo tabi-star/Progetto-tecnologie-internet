@@ -1,5 +1,3 @@
-// src/pages/admin/QRCodeScanner.jsx
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { QrCode, CheckCircle, XCircle, Clock, User, Building, Film, Calendar } from 'lucide-react';
@@ -39,13 +37,15 @@ const QRCodeScanner = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const handleValidateAndUse = async () => {
     if (!result) return;
 
     setLoading(true);
+
     try {
+
       const cleanQRText = extractQRText(qrText);
       const response = await axios.post('/api/qr/validate', { qrText: cleanQRText });
       
@@ -55,31 +55,24 @@ const QRCodeScanner = () => {
 
         const updatedTickets = result.tickets.map(ticket => {
           if (ticket.status === "confirmed") {
-            return { ...ticket, status: "validated" }; // cambia solo i confirmed
+            return { ...ticket, status: "validated" };
           }
-          return ticket; // lascia invariato cancelled / validated
+          return ticket;
         });
 
         setResult(prev => ({
           ...prev,
           tickets: updatedTickets,
-          _justValidated: hadConfirmed   // 🔹 flag temporaneo per mostrare messaggio "appena convalidati"
+          justValidated: hadConfirmed
         }));
-        /*setResult(prev => ({
-          ...prev,
-          tickets: prev.tickets.map(ticket => ({
-            ...ticket,
-            status: 'validated'
-          }))
-        }));*/
-        // alert('✅ Ticket validati con successo!');
       }
     } catch (err) {
       setError(err.response?.data?.error || 'Errore nella validazione');
     } finally {
       setLoading(false);
     }
-  };
+
+  }
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString('it-IT', {
@@ -89,24 +82,20 @@ const QRCodeScanner = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
-  };
+  }
 
   const formatTime = (dateString) => {
     return new Date(dateString).toLocaleString('it-IT', {
       hour: '2-digit',
       minute: '2-digit'
     });
-  };
+  }
 
   const resetForm = () => {
     setQrText('');
     setResult(null);
     setError('');
-  };
-
-  /*useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);*/
+  }
 
   return (
     <div className="qr-scanner-page">
@@ -151,7 +140,7 @@ const QRCodeScanner = () => {
 
             {result && (
               <div className="verification-result">
-                {result.tickets.some(t => t.status === 'validated') && !result._justValidated ?
+                {result.tickets.some(t => t.status === 'validated') && !result.justValidated ?
                   <div className="result-header already-validated">
                     <CheckCircle size={24} />
                     <h2>QR Code già convalidato</h2>
@@ -212,7 +201,7 @@ const QRCodeScanner = () => {
                             <span className="ticket-id">Biglietto #{ticket.id}</span>
                             <span className={`qr-status-badge ${ticket.status}`}>
                               {ticket.status === 'reserved' ? 'Prenotato' : 
-                              ticket.status === 'confirmed' ? 'Confermato' : /*'Cancellato'*/
+                              ticket.status === 'confirmed' ? 'Confermato' :
                               ticket.status === 'validated' ? 'Convalidato' :
                               ticket.status === 'cancelled' ? 'Cancellato' : null}
                             </span>
@@ -233,7 +222,7 @@ const QRCodeScanner = () => {
                     </div>
                   </div>
 
-                  {result.tickets.some(t => t.status === 'confirmed') && ( //reserved
+                  {result.tickets.some(t => t.status === 'confirmed') && (
                     <div className="validation-actions">
                       <button 
                         onClick={handleValidateAndUse}
@@ -243,25 +232,20 @@ const QRCodeScanner = () => {
                         {loading ? 'CONVALIDA...' : result.tickets.length > 1 ? 'CONVALIDA I BIGLIETTI' : 'CONVALIDA IL BIGLIETTO'}
                       </button>
                       <p className="help-text">
-                        {/*Clicca per marcare i biglietti come utilizzati. Questa azione non può essere annullata.*/}
                         Clicca per convalidare i biglietti. Questa azione è irreversibile.
                       </p>
                     </div>
                   )}
 
-                  {/* MESSAGGIO: appena convalidati */}
-                  {result._justValidated && (
+                  {result.justValidated && (
                   <div className="just-used-message">
-                    {/*<CheckCircle size={20} />*/}
                     <span>✅ {result.tickets.length > 1 ? 'Biglietti appena convalidati' : 'Biglietto appena convalidato'} con successo!</span>
                   </div>
                   )}
 
-                  {/*{result.tickets.some(t => t.status === 'validated') && (*/}
-                  {result.tickets.some(t => t.status === 'validated') && !result._justValidated && (
+                  {result.tickets.some(t => t.status === 'validated') && !result.justValidated && (
                     <div className="already-used-message">
                       <CheckCircle size={20} />
-                      {/*<span>Questi biglietti sono già stati utilizzati</span>*/}
                       <span>{result.tickets.length > 1 ? 'Questi biglietti sono già stati convalidati' : 'Questo biglietto è già stato convalidato'}!</span>
                     </div>
                   )}
@@ -269,7 +253,6 @@ const QRCodeScanner = () => {
                   {result.tickets.every(t => t.status === 'cancelled') && (
                     <div className="completely-cancelled-message">
                       <XCircle size={20} />
-                      {/*<span>Questi biglietti sono già stati utilizzati</span>*/}
                       <span>{result.tickets.length > 1 ? 'Questi biglietti sono stati cancellati' : 'Questo biglietto è stato cancellato'}!</span>
                     </div>
                   )}

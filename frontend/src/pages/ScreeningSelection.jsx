@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, useSearchParams, Link } from 'react-router-dom'
 import axios from 'axios'
-import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft, Ticket } from 'lucide-react'
+import { Calendar, Clock, ChevronLeft, ChevronRight, Ticket } from 'lucide-react'
 import './ScreeningSelection.css'
 
 const ScreeningSelection = () => {
   const { movieId } = useParams()
   const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
   const [movie, setMovie] = useState(null)
   const [screenings, setScreenings] = useState([])
   const [selectedDate, setSelectedDate] = useState('')
@@ -38,7 +37,6 @@ const ScreeningSelection = () => {
   }, [movieId])
 
   useEffect(() => {
-    //const storedDate = localStorage.getItem("selectedDate") //OCCHIO AD ELIMINARLO!!!
     const dateFromParams = searchParams.get('date')
     if (dateFromParams) {
       setSelectedDate(dateFromParams)
@@ -95,24 +93,15 @@ const ScreeningSelection = () => {
   }, [screenings]);
 
   useEffect(() => {
-    if (selectedDate && movieId) {
-      fetchScreenings()
+    if (!selectedDate) {
+      setScreenings([])
+      return
     }
+    if (movieId) {
+      fetchScreenings()
+    } 
   }, [selectedDate, movieId])
 
-  /*useEffect(() => {
-    if (selectedDate && movie) {
-      fetchScreenings()
-    }
-  }, [selectedDate, movie])*/
-
-  useEffect(() => {
-    if (!selectedDate) {
-      setScreenings([]);
-    } else if (selectedDate && movie) {
-      fetchScreenings;
-    }
-  }, [selectedDate])
 
   const getWeekDates = () => {
     const dates = []
@@ -133,7 +122,6 @@ const ScreeningSelection = () => {
     return dates
   }
 
-  // Sposta i 7 giorni in avanti
   const handleNextDays = () => {
     scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' })
     const newStart = new Date(startDate)
@@ -141,7 +129,6 @@ const ScreeningSelection = () => {
     setStartDate(newStart)
   }
 
-  // Sposta i 7 giorni indietro (senza andare prima di oggi)
   const handlePrevDays = () => {
     const today = new Date()
     if (startDate.toDateString() === today.toDateString()) return
@@ -173,7 +160,7 @@ const ScreeningSelection = () => {
   return (
     <div className="screening-selection">
       <div className="container">
-        {/* Header */}
+
         <div className="screening-page-header">
           {movie && (
             <div className="movie-mini-data">
@@ -194,7 +181,6 @@ const ScreeningSelection = () => {
           )}
         </div>
 
-        {/* Date Selector */}
         <section className="date-section" ref={dateSectionRef}>
           <h2>
             <Calendar size={24} />
@@ -232,9 +218,9 @@ const ScreeningSelection = () => {
                 <ChevronRight size={30} />
               </button>
           </div>
+
         </section>
 
-        {/* Screenings */}
         <section className="screenings-section">
           <h2>
             <Clock size={24} />
@@ -251,6 +237,7 @@ const ScreeningSelection = () => {
             <div className="screenings-list">
               {screenings.map(screening => (
                 <div key={screening.id} className="screening-card">
+
                   <div className="screening-header">
                     <div className="screening-time">
                       <strong>{formatTime(screening.start_time)} - {getEndTime(screening.start_time, screening.duration_minutes)}</strong>
@@ -285,6 +272,7 @@ const ScreeningSelection = () => {
                       {availableSeats[screening.id] === 0 ? 'Non disponibile' : 'Prenota i posti'}
                     </Link>
                   </div>
+
                 </div>
               ))}
             </div>

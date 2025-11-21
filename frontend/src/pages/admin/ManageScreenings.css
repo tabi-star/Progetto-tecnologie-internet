@@ -1,5 +1,3 @@
-/* src/pages/admin/ManageScreenings.css */
-
 .manage-screenings {
   padding: 2rem 0;
   min-height: 100vh;
@@ -10,17 +8,15 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-bottom: 1rem; /*2rem*/
+  margin-bottom: 1rem;
   flex-wrap: wrap;
-  gap: 0.5rem;/*1rem;*/
+  gap: 0.5rem;
 }
 
 .screenings-header-action {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  /*align-self: flex-start;*/
-  /*margin-bottom: 2rem;*/
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -50,7 +46,6 @@
   gap: 1rem;
   align-items: center;
   flex: 1;
-  /*max-width: 500px;*/
   width: 35%;
 }
 
@@ -215,28 +210,23 @@
 }
 
 .manage-screenings-grid {
-  /*display: flex;
-  flex-direction: column;
-  gap: 1rem;*/
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /*OCCHIO! NEL CASO CI FOSSERO PROBLEMI CON GLI SCHERMI, CAMBIA PX IN REM*/
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   justify-content: center;
   align-items: stretch;
-  gap: 1.5rem; /*2rem 1rem*/
+  gap: 1.5rem;
 }
 
 .manage-screening-card {
   display: flex;
   flex-direction: column;
-  /*justify-content: space-between;*/
   align-items: center;
-  background: #1a1a1a; /*#2c3e50*/
-  padding: 1rem /*1.5rem*/;
+  background: #1a1a1a;
+  padding: 1rem;
   border-radius: 12px;
-  border: 1px solid #34495e;/*#333*/;
+  border: 1px solid #34495e;;
   transition: all 0.3s ease;
-  /*flex-wrap: wrap;*/
-  gap: 1rem; /*1.5rem*/
+  gap: 1rem;
 }
 
 .manage-screening-card:hover {
@@ -250,8 +240,6 @@
   grid-template-columns: 1fr 1fr;
   align-items: center;
   width: 100%;
-  /*gap: 1.5rem;
-  flex: 1;*/
 }
 
 .manage-screening-poster {
@@ -259,19 +247,11 @@
   height: 10rem;
   border-radius: 8px;
   object-fit: cover;
-  /*overflow: hidden;*/
   flex-shrink: 0;
 }
 
-/*.screening-poster img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}*/
-/*RIPRENDIAMO DA QUI!!!*/
 .manage-screening-header h3 {
   font-size: 1.2rem;
-  /*margin-bottom: 1rem;*/
   color: #fff;
   text-align: center;
 }
@@ -287,14 +267,8 @@
 }
 
 .screening-detail-item {
-  /*display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #ccc;
-  font-size: 0.9rem;*/
   display: flex;
   align-items: center;
-  /*gap: 1rem;*/
   padding: 0.75rem;
   font-size: 0.9rem;
   background: #2c3e50;

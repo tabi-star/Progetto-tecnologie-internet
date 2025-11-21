@@ -1,10 +1,8 @@
-// src/pages/Payment.jsx
-
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import axios from 'axios'
-import { ArrowLeft, CreditCard, CheckCircle, Shield } from 'lucide-react'
+import { CreditCard, CheckCircle, Shield } from 'lucide-react'
 import './Payment.css'
 
 const Payment = () => {
@@ -15,7 +13,6 @@ const Payment = () => {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
-  // Ora riceviamo più dati dal SeatSelection
   const { 
     screening, 
     selectedSeats, 
@@ -31,26 +28,22 @@ const Payment = () => {
     }
   }, [screening, selectedSeats, navigate])
 
-  // Calcola il prezzo per ogni posto
   const getSeatPrice = (seat) => {
     return seat.seat_type === 'premium' ? 10.00 : 7.50
   }
 
-  // Calcola il totale base (senza sconto)
   const calculateBaseTotal = () => {
     return selectedSeats.reduce((total, seat) => {
       return total + getSeatPrice(seat)
     }, 0)
   }
 
-  // Calcola l'importo dello sconto
   const calculateDiscountAmount = () => {
     if (!discountApplied) return 0
     const baseTotal = calculateBaseTotal()
     return (baseTotal * discountApplied.discount_percent) / 100
   }
 
-  // Calcola il totale finale
   const calculateFinalTotal = () => {
     const baseTotal = calculateBaseTotal()
     const discountAmount = calculateDiscountAmount()
@@ -58,6 +51,7 @@ const Payment = () => {
   }
 
   const handlePayment = async () => {
+
     if (!user) {
       navigate('/login')
       return
@@ -67,34 +61,29 @@ const Payment = () => {
     setError('')
 
     try {
+      
       const totalToPay = finalTotal || calculateFinalTotal()
       
-      // 1. Crea ordine di pagamento
       const paymentResponse = await axios.post('/api/payments/create-order', {
         amount: totalToPay,
-        ticket_ids: reservationData?.ticket_ids || [] // ASSICURATI che qui ci siano gli ID dei ticket
+        ticket_ids: reservationData?.ticket_ids || []
       })
 
-      // 2. Simula il pagamento
       const captureResponse = await axios.post('/api/payments/capture-order', {
         orderID: paymentResponse.data.orderID
       })
 
       if (captureResponse.data.success) {
-        // 3. Prepara i dati per la conferma - gestisci tutti i valori possibilmente undefined
         const confirmData = {
           ticket_ids: reservationData?.ticket_ids || [],
           payment_order_id: paymentResponse.data.orderID || null,
           payment_id: captureResponse.data.transactionID || `simulated_${Date.now()}`,
-          //qr_code_url: null, // Puoi generarlo dopo se vuoi
           discount_id: discountApplied?.discount_id || null,
           user_id: user.id
         }
 
-        // 4. Conferma i biglietti
         const confirmResponse = await axios.post('/api/tickets/confirm-payment', confirmData)
 
-        // 5. Se c'è uno sconto, segnalo come utilizzato
         if (discountApplied?.discount_id) {
           try {
             await axios.post('/api/discounts/use', {
@@ -117,11 +106,8 @@ const Payment = () => {
     } finally {
       setLoading(false)
     }
-  }
 
-  /*useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);*/
+  }
 
   if (!screening || !selectedSeats) {
     return (
@@ -158,7 +144,6 @@ const Payment = () => {
     )
   }
 
-  // Calcola i totali per il display
   const displayBaseTotal = baseTotal || calculateBaseTotal()
   const displayDiscountAmount = calculateDiscountAmount()
   const displayFinalTotal = finalTotal || calculateFinalTotal()
@@ -166,13 +151,11 @@ const Payment = () => {
   return (
     <div className="payment-page">
       <div className="container">
-        {/* Header */}
         <div className="payment-header">
           <h1>Pagamento</h1>
         </div>
 
         <div className="payment-layout">
-          {/* Riepilogo Ordine */}
           <div className="order-review">
             <h2>Riepilogo ordine</h2>
             
@@ -208,7 +191,6 @@ const Payment = () => {
             <div className="price-breakdown">
               <h4>Dettaglio costo:</h4>
               
-              {/* Dettaglio per ogni posto */}
               {selectedSeats.map(seat => (
                 <div key={seat.seat_number} className="price-row item">
                   <span>Posto {seat.seat_number} ({seat.seat_type})</span>
@@ -235,7 +217,6 @@ const Payment = () => {
             </div>
           </div>
 
-          {/* Metodo di Pagamento */}
           <div className="payment-method">
             <h2>Metodo di pagamento</h2>
             

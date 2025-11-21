@@ -1,7 +1,5 @@
-// src/pages/Login.jsx
-
 import { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { Eye, EyeOff, User, Mail, Lock } from 'lucide-react'
 import './Login.css'
@@ -21,9 +19,6 @@ const Login = () => {
 
   const { login, register } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
-
-  const from = location.state?.from?.pathname || '/'
 
   const handleSubmit = async (e) => {
     e.preventDefault()

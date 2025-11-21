@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, useSearchParams, Link } from 'react-router-dom'
 import axios from 'axios'
-import { Calendar, Clock, ChevronLeft, ChevronRight, ArrowLeft, Ticket, LucideSquareArrowUpRight } from 'lucide-react'
+import { Calendar, ChevronLeft, ChevronRight, Ticket } from 'lucide-react'
 import './MovieDetail.css'
 
 const MovieDetail = () => {
   const { id } = useParams()
-  const navigate = useNavigate()
   const [movie, setMovie] = useState(null)
   const [searchParams] = useSearchParams()
   const [screenings, setScreenings] = useState([])
@@ -38,7 +37,6 @@ const MovieDetail = () => {
   }, [id])
 
   useEffect(() => {
-    //const storedDate = localStorage.getItem("selectedDate") //OCCHIO AD ELIMINARLO!!!
     const dateFromParams = searchParams.get('date')
     if (dateFromParams) {
       setSelectedDate(dateFromParams)
@@ -83,7 +81,7 @@ const MovieDetail = () => {
     } catch (err) {
       console.error(`Errore nel caricamento dei posti per la proiezione ${screeningId}:`, err);
     }
-  };
+  }
 
   useEffect(() => {
     if (screenings.length > 0) {
@@ -93,39 +91,21 @@ const MovieDetail = () => {
         }
       })();
     }
-  }, [screenings]);
-
-  //DA PARLARNE CON TABI!!!
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!dateSelectorDetailRef.current?.contains(event.target)) return;
-      // Se il click NON avviene dentro .date-buttons
-      if (!event.target.closest('.date-buttons') && !event.target.closest('.left-arrow-btn') && !event.target.closest('.right-arrow-btn')) {
-        setSelectedDate('');
-      }
-    };
-
-    window.addEventListener('click', handleClickOutside);
-    return () => window.removeEventListener('click', handleClickOutside);
-  }, []);
-  //PROVA ANCHE CON SOLO L'ID (FORSE)
-  useEffect(() => {
-    if (selectedDate && movie) {
-      fetchScreenings()
-    }
-  }, [selectedDate, movie]) //opure secondo parametro può essere id
+  }, [screenings])
 
   useEffect(() => {
     if (!selectedDate) {
-      setScreenings([]);
-    } else if (selectedDate && movie) {
-      fetchScreenings;
+      setScreenings([])
+      return
     }
-  }, [selectedDate])
+    if (id) {
+      fetchScreenings()
+    }
+  }, [selectedDate, id])
+
 
   const getWeekDates = () => {
     const dates = []
-    const baseDate = selectedDate ? new Date(selectedDate) : new Date()
     for (let i = 0; i < 7; i++) {
       const date = new Date(startDate)
       date.setDate(startDate.getDate() + i)
@@ -143,7 +123,6 @@ const MovieDetail = () => {
     return dates
   }
 
-  // Sposta i 7 giorni in avanti
   const handleNextDays = () => {
     scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' })
     const newStart = new Date(startDate)
@@ -151,7 +130,6 @@ const MovieDetail = () => {
     setStartDate(newStart)
   }
 
-  // Sposta i 7 giorni indietro (senza andare prima di oggi)
   const handlePrevDays = () => {
     const today = new Date()
     if (startDate.toDateString() === today.toDateString()) return
@@ -185,7 +163,6 @@ const MovieDetail = () => {
     <div className="movie-detail">
       <div className="container">
 
-        {/* Movie Hero */}
         <div className="movie-hero">
           <div className="movie-poster-large">
             <img 
@@ -228,10 +205,8 @@ const MovieDetail = () => {
           
         </div>
 
-        {/* Screening Selection */}
         <section className="screenings-section">
 
-          {/* Date Selector */}
           <div className="date-selector" ref={dateSelectorDetailRef}>
             <h2>
               <Calendar size={24} />

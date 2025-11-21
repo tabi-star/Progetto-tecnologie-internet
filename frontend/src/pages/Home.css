@@ -32,7 +32,7 @@
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity 1s ease-in-out; /* durata dello sfumamento */
+  transition: opacity 1s ease-in-out;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,7 +59,6 @@
   height: 100%;
 }
 
-/* Immagine nitida centrata */
 .banner-img {
   opacity: 1;
   position: relative;
@@ -72,7 +71,6 @@
   top: -2px;
 }
 
-/* Testo in primo piano */
 .banner-content {
   position: absolute;
   z-index: 3;
@@ -149,7 +147,7 @@
 .banner-nav .nav-icon {
   filter:
     drop-shadow(0 0 2px rgba(0,0,0,1))
-    drop-shadow(0 0 1px rgba(0,0,0,0.8)); /* più passate -> contorno più spesso */
+    drop-shadow(0 0 1px rgba(0,0,0,0.8));
 }
 
 .banner-progress {
@@ -204,8 +202,8 @@
 }
 
 .cta-section {
-  padding-top: 2vh;   /* riduce lo spazio sopra: 2% dell’altezza dello schermo */
-  padding-bottom: 5vh; /* mantiene un po’ di spazio sotto */
+  padding-top: 2vh;
+  padding-bottom: 5vh;
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
 }
 
@@ -233,7 +231,6 @@
   font-size: 1.1rem;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .banner-title {
     font-size: 2.5rem;

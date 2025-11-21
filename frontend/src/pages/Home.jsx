@@ -36,7 +36,7 @@ const Home = () => {
   const resetProgressBar = () => {
     if (progressRef.current) {
       progressRef.current.style.animation = 'none'
-      void progressRef.current.offsetWidth // forza reflow per riavviare l'animazione
+      void progressRef.current.offsetWidth
       progressRef.current.style.animation = 'progress 5s linear forwards'
     }
   }
@@ -46,11 +46,11 @@ const Home = () => {
     if (upcomingMovies.length <= 1) return
   
     clearInterval(intervalRef.current)
-    resetProgressBar(); // resetta all'inizio
+    resetProgressBar();
     intervalRef.current = setInterval(() => {
       setCurrentSlide(prev => {
         const next = (prev + 1) % upcomingMovies.length
-        resetProgressBar() // ogni cambio slide
+        resetProgressBar()
         return next
       })
     }, 5000)
@@ -80,7 +80,7 @@ const Home = () => {
 
   return (
     <div className="home">
-      {/* Hero Banner */}
+
       <section className="hero">
         {upcomingMovies.length > 0 && (
           <div className="banner">
@@ -91,7 +91,6 @@ const Home = () => {
                 className="banner-slide active"
               >
 
-                {/* Sfondo sfocato */}
                 <div
                   className="banner-bg"
                   style={{
@@ -99,7 +98,6 @@ const Home = () => {
                   }}
                 />
 
-                {/* Immagine principale centrata */}
                 <div className="banner-centered">
                   <img
                     className="banner-img"
@@ -107,7 +105,6 @@ const Home = () => {
                     alt={upcomingMovies[currentSlide]?.title}
                   />
 
-                  {/* Contenuto testuale */}
                   <div className="banner-content">
                     <h1 className="banner-title">{upcomingMovies[currentSlide]?.title}</h1>
                     <div className="banner-actions">
@@ -117,7 +114,6 @@ const Home = () => {
                       </Link>
                     </div>
                 
-                    {/* Dots indicator */}
                     <div className="banner-dots">
                       {upcomingMovies.map((_, index) => (
                         <button
@@ -130,7 +126,6 @@ const Home = () => {
                   </div>
                 </div>
 
-                {/* Navigation */}
                 {upcomingMovies.length > 1 && (
                   <>
                     <button className="banner-nav banner-nav-prev" onClick={prevSlide}>
@@ -139,7 +134,6 @@ const Home = () => {
                     <button className="banner-nav banner-nav-next" onClick={nextSlide}>
                       <ChevronRight size={28} className="nav-icon"/>
                     </button>
-                    {/* Progress bar */}
                     <div className="banner-progress">
                       <div 
                         ref={progressRef}
@@ -160,7 +154,6 @@ const Home = () => {
         )}
       </section>
 
-      {/* CTA Section */}
       <section className="cta-section">
         <div className="container">
           <div className="cta-content">

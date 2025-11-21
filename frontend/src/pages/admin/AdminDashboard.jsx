@@ -1,13 +1,12 @@
 import { useAuth } from '../../contexts/AuthContext'
-import { Link, useNavigate } from 'react-router-dom'
-import { Film, Video, Building, Ticket, Settings, Users, RefreshCw } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Film, Video, Building, Ticket, Settings, RefreshCw, Percent, QrCode } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './AdminDashboard.css'
 
 const AdminDashboard = () => {
   const { user } = useAuth()
-  const navigate = useNavigate()
   const [stats, setStats] = useState({
     activeMovies: 0,
     todayScreenings: 0,
@@ -71,21 +70,26 @@ const AdminDashboard = () => {
       color: '#2ecc71'
     },
     {
-      icon: <Ticket size={32} />,
+      icon: <Percent size={32} />,
       title: 'Codici Sconto',
       description: 'Genera e gestisci i codici sconto dipendenti',
       link: '/admin/discounts',
       color: '#f1c40f'
     },
     {
-      icon: <Users size={32} />,
+      icon: <QrCode size={32} />,
       title: 'Scansiona biglietti',
       description: 'Verifica e convalida i biglietti con QR code',
       link: '/admin/qr-scanner',
       color: '#7a68c9'
     },
     {
-      icon: <Settings size={32} />,
+      icon: (
+              <div style={{ display: 'flex', gap: '0.1rem' }}>
+                <Settings size={25} />
+                <Ticket size={25} />
+              </div>
+            ),
       title: 'Dati e biglietti',
       description: 'Consulta biglietti prenotati',
       link: '/profile',

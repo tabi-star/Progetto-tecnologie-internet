@@ -1,7 +1,6 @@
-// src/pages/ForgotPassword.jsx
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Mail, CheckCircle } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Mail, CheckCircle } from 'lucide-react'
 import axios from 'axios'
 import './ForgotPassword.css'
 
@@ -10,7 +9,6 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -59,10 +57,6 @@ const ForgotPassword = () => {
     <div className="forgot-password-page">
       <div className="container">
         <div className="forgot-password-card">
-          {/*<button onClick={() => navigate(-1)} className="btn-back">
-            <ArrowLeft size={20} />
-            Torna indietro
-          </button>*/}
 
           <div className="forgot-password-header">
             <Mail size={48} className="header-icon" />

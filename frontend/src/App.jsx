@@ -1,5 +1,3 @@
-// src/App.jsx
-
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import Layout from './components/Layout'
@@ -27,7 +25,6 @@ import ScrollToTop from './components/ScrollToTop'
 function App() {
   return (
     <AuthProvider>
-
       <Layout>
         <ScrollToTop />
         <Routes>
@@ -57,7 +54,7 @@ function App() {
             </ProtectedRoute>
           } />
           
-          {/* Admin routes (richiedono login E ruolo admin) */}
+          {/* Admin routes (richiedono login e ruolo admin) */}
           <Route path="/admin" element={
             <ProtectedRoute requireAdmin={true}>
               <AdminDashboard />

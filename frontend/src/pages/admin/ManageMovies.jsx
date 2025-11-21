@@ -1,9 +1,7 @@
-// src/pages/admin/ManageMovies.jsx
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import axios from 'axios'
-import { Plus, Edit2, Trash2, Search, Filter } from 'lucide-react'
+import { Plus, Edit2, Trash2, Search } from 'lucide-react'
 import './ManageMovies.css'
 
 const ManageMovies = () => {
@@ -23,7 +21,7 @@ const ManageMovies = () => {
     description: '',
     duration_minutes: '',
     release_date: '',
-    language: /*''*/'Italiano',
+    language: 'Italiano',
     foto_locandina: '',
     banner_image: '',
   })
@@ -44,6 +42,7 @@ const ManageMovies = () => {
   }
 
   const handleSubmit = async (e) => {
+
     e.preventDefault()
     setError('')
     setSuccess('')
@@ -62,6 +61,7 @@ const ManageMovies = () => {
     } catch (err) {
       setError(err.response?.data?.error || 'Errore nel salvataggio')
     }
+
   }
 
   const handleEdit = (movie) => {
@@ -78,29 +78,7 @@ const ManageMovies = () => {
     setShowForm(true)
   }
 
-  const handleDelete = /*async*/ (/*movieId*/movie) => {
-    /*setMovieToDelete(movie)*/
-    /*if (window.confirm('Sei sicuro di voler eliminare questo film?')) {
-      try {
-        await axios.delete(`/api/movies/${movieId}`)
-        setSuccess('Film eliminato con successo')
-        fetchMovies()
-      } catch (err) {
-        setError('Errore nell\'eliminazione del film')
-      }
-    }*/
-    /*if (!movieToDelete) return
-
-    try {
-      await axios.delete(`/api/movies/${movie.id*//*movieToDelete.id*//*}`)
-      setSuccess('Film eliminato con successo')
-      fetchMovies()
-    } catch (err) {
-    setError('Errore nell\'eliminazione del film')
-    } finally {
-      setShowDeleteModal(false)
-      setMovieToDelete(null)
-    }*/
+  const handleDelete = (movie) => {
     setMovieToDelete(movie)
     setShowDeleteMovieModal(true)
   }
@@ -128,7 +106,7 @@ const ManageMovies = () => {
       description: '',
       duration_minutes: '',
       release_date: '',
-      language: /*'',*/'Italiano',
+      language: 'Italiano',
       foto_locandina: '',
       banner_image: ''
     })
@@ -148,17 +126,12 @@ const ManageMovies = () => {
       releaseDate.includes(searchTerm.toLowerCase()) ||
       createdDate.includes(searchTerm.toLowerCase())
     );
-  });
-
-  /*useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);*/
+  })
 
   if (!user || user.role !== 'admin') {
     return <div className="error">Accesso negato</div>
   }
 
-  {/*I btn-primary|secondary sono nel file index.css*/}
   return (
     <div className="manage-movies">
       <div className="container">
@@ -335,7 +308,7 @@ const ManageMovies = () => {
                     
                 <div className="manage-movie-description-bottom">
                   
-                  <p> {/*className="manage-movie-description"*/}
+                  <p>
                     {movie?.description || null}
                   </p>
 
@@ -355,8 +328,6 @@ const ManageMovies = () => {
                   <button 
                     onClick={() => {
                       handleDelete(movie)
-                      {/*handleDelete(movie)
-                      setShowDeleteModal(true)*/}
                     }}
                     className="manage-btn-action delete"
                   >

@@ -1,9 +1,7 @@
-// src/pages/UserProfile.jsx
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import axios from 'axios'
-import { User, Mail, Edit3, Trash2, Ticket, LogOut, Save, X } from 'lucide-react'
+import { User, Edit3, Trash2, Ticket, LogOut, Save, X } from 'lucide-react'
 import './UserProfile.css'
 
 const UserProfile = () => {
@@ -21,7 +19,6 @@ const UserProfile = () => {
   const [showDeleteTicketModal, setShowDeleteTicketModal] = useState(false)
   const [ticketToDelete, setTicketToDelete] = useState(null)
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false)
-  /*const [accountToDelete, setAccountToDelete] = useState(null)*/
 
   useEffect(() => {
     if (user) {
@@ -84,16 +81,6 @@ const UserProfile = () => {
   }
 
   const handleCancelTicket = (ticket) => {
-    /*if (window.confirm('Sei sicuro di voler cancellare questo biglietto?')) {
-      try {
-        await axios.delete(`/api/tickets/${ticketId}/cancel`)
-        setMessage('Biglietto cancellato con successo')
-        // Ricarica la lista dei biglietti
-        fetchUserTickets()
-      } catch (err) {
-        setError('Errore nella cancellazione del biglietto')
-      }
-    }*/
     setTicketToDelete(ticket)
     setShowDeleteTicketModal(true)
   }
@@ -126,15 +113,7 @@ const UserProfile = () => {
     })
   }
 
-  const handleDeleteAccount = /*async*/ () => {
-    /*if (window.confirm('Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.')) {
-      try {
-        await axios.delete('/api/users/account')
-        logout()
-      } catch (err) {
-        setError('Errore nell\'eliminazione dell\'account')
-      }
-    }*/
+  const handleDeleteAccount = () => {
     setShowDeleteAccountModal(true)
   }
 
@@ -165,7 +144,7 @@ const UserProfile = () => {
         </div>
 
         <div className="profile-content">
-          {/* Sezione Dati Personali */}
+
           <section className="profile-section">
             <div className="section-header">
               <h2>
@@ -266,7 +245,6 @@ const UserProfile = () => {
           {message && <div className="success-message">{message}</div>}
           {error && <div className="error-message">{error}</div>}
 
-          {/* Sezione Biglietti */}
           <section className="profile-section">
             <div className="section-header">
               <h2>
@@ -281,12 +259,11 @@ const UserProfile = () => {
               <>
                 <div className="tickets-grid">
                   {tickets.map(ticket => {
-                    // ✅ Calcoli JS qui dentro (fuori dal JSX)
                     const screeningTime = new Date(ticket.start_time);
                     const now = new Date();
-                    const timeDiff = screeningTime - now; // differenza in millisecondi
-                    const twoHours = 2 * 60 * 60 * 1000; // 2 ore in ms
-                    const canCancel = (ticket.status === 'confirmed') && (timeDiff > twoHours); // true se mancano più di 2 ore
+                    const timeDiff = screeningTime - now;
+                    const twoHours = 2 * 60 * 60 * 1000;
+                    const canCancel = (ticket.status === 'confirmed') && (timeDiff > twoHours);
 
                     return (
                       <div key={ticket.id} className="ticket-card">
@@ -351,7 +328,6 @@ const UserProfile = () => {
                               onClick={() => handleCancelTicket(ticket)}
                               className="btn btn-danger btn-small"
                               disabled={!canCancel} 
-                              /*title={!canCancel ? "Non puoi più cancellare questo biglietto" : ""}*/
                             >
                               <Trash2 size={14} />
                               Cancella Biglietto
@@ -385,7 +361,6 @@ const UserProfile = () => {
             )}
           </section>
 
-          {/* Sezione Account */}
           <section className="profile-section danger-section">
             <div className="section-header">
               <h2>Gestione Account</h2>

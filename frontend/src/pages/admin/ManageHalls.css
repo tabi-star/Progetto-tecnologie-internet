@@ -1,5 +1,3 @@
-/* src/pages/admin/ManageHalls.css */
-
 .manage-halls {
   padding: 2rem 0;
   min-height: 100vh;
@@ -141,7 +139,6 @@
 .hall-header {
   display: flex;
   align-items: center;
-  /*justify-content: center;*/
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -149,7 +146,7 @@
 .hall-icon {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #2ecc71, #27ae60/*#e74c3c, #c0392b*/);
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -236,50 +233,7 @@
   font-size: 0.9rem;
   color: #fff;
   font-weight: 600;
-  /*text-align: left;*/
 }
-
-/*.hall-stats {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: #2c3e50;
-  border-radius: 8px;
-  border: 1px solid #34495e;
-}
-
-.hall-stats svg{
-  color: #e74c3c;
-  flex-shrink: 0;
-  margin-right: 1rem;
-}
-
-.stat {
-  text-align: center;
-}
-
-.stat-value {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #f1c40f;
-  margin-bottom: 0.25rem;
-}
-
-.stat-label {
-  font-size: 0.8rem;
-  color: #ccc;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-stat-screenings-count {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}*/
 
 .hall-actions {
   display: flex;
@@ -327,7 +281,6 @@ stat-screenings-count {
 .error-message {
   color: #e74c3c;
   font-size: 0.9rem;
-  /*margin-top: 0.5rem;*/
   text-align: center;
 }
 
@@ -382,24 +335,3 @@ stat-screenings-count {
     flex-direction: column;
   }
 }
-
-/*.delete-btn-primary {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
-  color: white;
-}
-
-.delete-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
-}
-
-.delete-btn-secondary {
-  background: #34495e;
-  color: white;
-}
-
-.delete-btn-secondary:hover {*/
-  /*background: #2c3e50;*/
-  /*transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(52, 73, 94, 0.4);
-}*/

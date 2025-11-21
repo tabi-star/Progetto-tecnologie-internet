@@ -1,5 +1,3 @@
-// src/pages/admin/AdminDiscounts.jsx
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import axios from 'axios'
@@ -49,7 +47,6 @@ const AdminDiscounts = () => {
     setError('')
     setSuccess('')
 
-    // Imposta la scadenza di default a 30 giorni se non specificata
     const validUntil = formData.valid_until || 
       new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
@@ -96,8 +93,6 @@ const AdminDiscounts = () => {
   }
 
   const isExpired = (validUntil) => {
-    //return new Date(validUntil) < new Date()
-    // il codice è valido fino alla fine del giorno della data valid_until
     const expiry = new Date(validUntil)
     const endOfDay = new Date(expiry)
     endOfDay.setHours(23, 59, 59, 999)
@@ -107,7 +102,7 @@ const AdminDiscounts = () => {
   const fetchUserEmail = async (userId) => {
     try {
       const response = await axios.get(`/api/users/${userId}`);
-      const email = response.data.email; // ← se il backend la restituisce così
+      const email = response.data.email;
       setUserEmails(prev => ({
         ...prev,
         [userId]: email
@@ -146,10 +141,6 @@ const AdminDiscounts = () => {
     }
 
   }
-
-  /*useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);*/
 
   if (!user || user.role !== 'admin') {
     return <div className="error">Accesso negato</div>
@@ -278,111 +269,98 @@ const AdminDiscounts = () => {
           <div className="loading">Caricamento codici...</div>
         ) : (
           <div className="discounts-grid">
+
             {discounts.map(discount => (
+
               <div key={discount.id} className={`discount-card ${discount.used ? 'used' : ''} ${isExpired(discount.valid_until) ? 'expired' : ''}`}>
-                <>
-                <div className="discount-header">
-                  <div className="discount-code">
-                    <h3>{discount.code}</h3>
-                    <button 
-                      onClick={() => copyToClipboard(discount.code)}
-                      className="copy-btn"
-                      title="Copia codice"
-                    >
-                      {copiedCode === discount.code ? (
-                        <CheckCircle size={16} className="copied" />
-                      ) : (
-                        <Copy size={16} />
-                      )}
-                    </button>
-                  </div>
+
+                <>                
+                  <div className="discount-header">
+                    <div className="discount-code">
+                      <h3>{discount.code}</h3>
+                      <button 
+                        onClick={() => copyToClipboard(discount.code)}
+                        className="copy-btn"
+                        title="Copia codice"
+                      >
+                        {copiedCode === discount.code ? (
+                          <CheckCircle size={16} className="copied" />
+                        ) : (
+                          <Copy size={16} />
+                        )}
+                      </button>
+                    </div>
                   
-                  <div className="discount-percent">
-                    <Percent size={20} />
-                    <span>{discount.discount_percent}%</span>
-                  </div>
-                </div>
-
-                <div className="discount-details">
-                  <div className="detail-item">
-                    <Calendar size={20} />
-                    <div className="detail-info">
-                      <span className="detail-label">Valido fino al</span>
-                      <span className="detail-value">{formatDate(discount.valid_until)}</span>
+                    <div className="discount-percent">
+                      <span>{discount.discount_percent}%</span>
                     </div>
                   </div>
 
-                  <div className="detail-item">
-                    {discount.used ? (
-                      <XCircle size={20} className="used-icon" />
-                    ) : isExpired(discount.valid_until) ? (<XCircle size={20} className="expired-icon" />) : (
-                      <CheckCircle size={20} className="available-icon" />
-                    )}
-                    <div className="detail-info-state">
-                      <span className="detail-label">Stato:</span>
-                      <span className="detail-value">
-                        {discount.used ? 'Utilizzato' : isExpired(discount.valid_until) ? 'Scaduto' : 'Disponibile'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/*{discount.used && (
+                  <div className="discount-details">
                     <div className="detail-item">
+                      <Calendar size={20} />
                       <div className="detail-info">
-                        <span className="detail-label">Utilizzato da</span>
-                        <span className="detail-value">Utente #{discount.used_by}</span>
+                        <span className="detail-label">Valido fino al</span>
+                        <span className="detail-value">{formatDate(discount.valid_until)}</span>
                       </div>
                     </div>
-                  )}*/}
-                  {discount.used ?
+
                     <div className="detail-item">
-                      <div className="detail-info-used">
-                        <span className="detail-label">Utilizzato da:</span>
-                        {/*<span className="detail-value">Utente #{discount.used_by}</span>*/}
-                        <div className="detail-info-used-data">
-                          <span className="detail-value-1">Utente #{discount.used_by}</span>
-                          <span className="detail-value-2">
-                            {userEmails[discount.used_by] || 'Caricamento...'}
-                          </span>
+                      {discount.used ? (
+                        <XCircle size={20} className="used-icon" />
+                      ) : isExpired(discount.valid_until) ? (<XCircle size={20} className="expired-icon" />) : (
+                        <CheckCircle size={20} className="available-icon" />
+                      )}
+                      <div className="detail-info-state">
+                        <span className="detail-label">Stato:</span>
+                        <span className="detail-value">
+                          {discount.used ? 'Utilizzato' : isExpired(discount.valid_until) ? 'Scaduto' : 'Disponibile'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {discount.used ?
+                      <div className="detail-item">
+                        <div className="detail-info-used">
+                          <span className="detail-label">Utilizzato da:</span>
+                          <div className="detail-info-used-data">
+                            <span className="detail-value-1">Utente #{discount.used_by}</span>
+                            <span className="detail-value-2">
+                              {userEmails[discount.used_by] || 'Caricamento...'}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    :
-                    null
-                  }
-                </div>
-
-                <div className="discount-stats">
-                  <div className="stat">
-                    <span className="stat-label">Generato il</span>
-                    <span className="stat-value">{formatDate(discount.created_at)}</span>
+                      :
+                      null
+                    }
                   </div>
-                  
-                  {/*{discount.used && (
-                    <div className="stat">
-                      <span className="stat-label">Utilizzato il</span>
-                      <span className="stat-value">{formatDate(discount.used_at)}</span>
-                    </div>
-                  )}*/}
-                  { discount.used ?
-                    <div className="stat">
-                      <span className="stat-label">Utilizzato il</span>
-                      <span className="stat-value">{formatDate(discount.used_at)}</span>
-                    </div>
-                    : null
-                  }
-                </div>
 
-                <div className="discount-status">
-                  {discount.used ? (
-                    <span className="discount-status-badge used">Utilizzato</span>
-                  ) : isExpired(discount.valid_until) ? (
-                    <span className="discount-status-badge expired">Scaduto</span>
-                  ) : (
-                    <span className="discount-status-badge active">Attivo</span>
-                  )}
-                </div>
+                  <div className="discount-stats">
+                    <div className="stat">
+                      <span className="stat-label">Generato il</span>
+                      <span className="stat-value">{formatDate(discount.created_at)}</span>
+                    </div>
+                    { discount.used ?
+                      <div className="stat">
+                        <span className="stat-label">Utilizzato il</span>
+                        <span className="stat-value">{formatDate(discount.used_at)}</span>
+                      </div>
+                      : null
+                    }
+                  </div>
+
+                  <div className="discount-status">
+                    {discount.used ? (
+                      <span className="discount-status-badge used">Utilizzato</span>
+                    ) : isExpired(discount.valid_until) ? (
+                      <span className="discount-status-badge expired">Scaduto</span>
+                    ) : (
+                      <span className="discount-status-badge active">Attivo</span>
+                    )}
+                  </div>
                 </>
+
                 <div className="delete-discount-action">
                   <button className="delete-discount-btn"
                     onClick={() => { handleDelete(discount) }}
@@ -390,8 +368,11 @@ const AdminDiscounts = () => {
                     Elimina codice sconto
                   </button>
                 </div>
+
               </div>
+
             ))}
+
           </div>
         )}
 
@@ -402,6 +383,7 @@ const AdminDiscounts = () => {
             <p>Genera il primo codice sconto per i clienti</p>
           </div>
         )}
+        
       </div>
     </div>
   )

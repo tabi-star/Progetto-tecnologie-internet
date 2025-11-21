@@ -1,10 +1,8 @@
-// src/pages/SeatSelection.jsx
-
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import axios from 'axios'
-import { ArrowLeft, CreditCard, Ticket, X } from 'lucide-react'
+import { CreditCard, X } from 'lucide-react'
 import './SeatSelection.css'
 
 const SeatSelection = () => {
@@ -116,7 +114,6 @@ const SeatSelection = () => {
     }
 
     try {
-        // Riserva i posti temporaneamente
         const seatNumbers = selectedSeats.map(seat => seat.seat_number)
         const reserveResponse = await axios.post('/api/tickets/reserve', {
         screening_id: parseInt(screeningId),
@@ -124,7 +121,6 @@ const SeatSelection = () => {
         discountApplied: discountApplied ? parseInt(discountApplied.discount_percent) : 0        })
 
         if (reserveResponse.data.success) {
-        // Passa ALL i dati necessari al Payment
         navigate('/payment', {
             state: {
             screening,
@@ -133,7 +129,7 @@ const SeatSelection = () => {
             discountApplied,
             finalTotal: calculateFinalTotal(),
             reservationData: reserveResponse.data,
-            ticket_ids: reserveResponse.data.ticket_ids // IMPORTANTE!
+            ticket_ids: reserveResponse.data.ticket_ids
             }
         })
         }
@@ -146,19 +142,14 @@ const SeatSelection = () => {
     if (selectedSeats.some(s => s.seat_number === seat.seat_number)) {
       return 'selected'
     }
-    // Usa il campo status dal backend
     if (seat.status === 'occupied') {
       return 'occupied'
     }
     if (seat.status === 'reserved') {
-      return 'occupied' // oppure puoi creare una classe 'reserved' se vuoi distinguerli
+      return 'occupied'
     }
     return 'available'
   }
-
-  /*useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);*/
 
   if (loading) return <div className="loading">Caricamento posti...</div>
   if (error) return <div className="error">{error}</div>
@@ -166,12 +157,7 @@ const SeatSelection = () => {
   return (
     <div className="seat-selection">
       <div className="container">
-        {/* Header */}
         <div className="seat-header">
-          {/*<button onClick={() => navigate(-1)} className="btn-back">
-            <ArrowLeft size={20} />
-            Torna indietro
-          </button>*/}
           
           {screening && (
             <div className="screening-info">
@@ -186,14 +172,12 @@ const SeatSelection = () => {
         </div>
 
         <div className="seat-layout">
-          {/* Mappa Posti */}
           <div className="seat-map-container">
             <div className="screen-indicator">SCHERMO</div>
             
             <div className="seat-map">
               {seats.length > 0 ? (
                 <div className="seats-grid">
-                  {/* Raggruppa i posti per riga */}
                   {Object.entries(
                     seats.reduce((rows, seat) => {
                       if (!rows[seat.seat_row]) rows[seat.seat_row] = []
@@ -222,7 +206,6 @@ const SeatSelection = () => {
               )}
             </div>
 
-            {/* Legenda */}
             <div className="seat-legend">
               <div className="legend-item">
                 <div className="seat available"></div>
@@ -243,7 +226,6 @@ const SeatSelection = () => {
             </div>
           </div>
 
-          {/* Riepilogo Ordine */}
           <div className="order-summary">
             <h3>Il tuo ordine</h3>
             
@@ -272,7 +254,6 @@ const SeatSelection = () => {
               )}
             </div>
 
-            {/* Codice Sconto */}
             <div className="discount-section">
               <h4>Codice sconto</h4>
               {discountApplied ? (
@@ -305,7 +286,6 @@ const SeatSelection = () => {
               {discountError && <p className="discount-error">{discountError}</p>}
             </div>
 
-            {/* Totale */}
             <div className="price-summary">
               <div className="price-breakdown">
                 <h4>Dettaglio costo:</h4>

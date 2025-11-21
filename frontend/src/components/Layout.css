@@ -1,5 +1,3 @@
-/* src/Layout.css */
-
 .header {
   background: rgba(15, 15, 15, 0.95);
   backdrop-filter: blur(10px);
@@ -29,14 +27,6 @@
 .logo:hover {
   color: #c0392b;
 }
-
-/*.header-actions {
-  display: flex;
-  flex-grow: 1;*/
-  /*justify-content: space-between*//*flex-end;*/
-  /*align-items: center;
-  gap: 1rem;
-}*/
 
 .btn-back {
   background: #34495e;
@@ -70,7 +60,6 @@
   text-decoration: none;
   border-radius: 6px;
   transition: background 0.3s ease;
-  /*width: 100%;*/
 }
 
 .user-link:hover {
@@ -79,7 +68,7 @@
 
 .user-dropdown {
   position: relative;
-  display: inline-flex; /*cambiamento temporaneo*/
+  display: inline-flex;
   width: fit-content;
 }
 
@@ -92,13 +81,11 @@
 .dropdown-content {
   position: absolute;
   top: 100%;
-  /*right: 0;*/
-  left: 0; /* ^ cambiamento temporaneo*/
-  background: #34495e/*#2c3e50*/;
+  left: 0;
+  background: #34495e;
   border-radius: 6px;
-  padding: 0.75rem 0; /* 0 cambiamento temporaneo: 8px;*/
+  padding: 0.75rem 0;
   margin-top: 8px;
-  /*min-width: 100%;*/ /*cambiamento temporaneo*/ /*150px*/
   width: 100%;
   min-width: max-content;
   opacity: 0;
@@ -106,8 +93,7 @@
   transform: translateY(-10px);
   transition: all 0.3s ease;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  box-sizing: border-box; /*cambiamento temporaneo*/
-  /*z-index: 10;*/
+  box-sizing: border-box;
 }
 
 .dropdown-content:hover {
@@ -116,23 +102,23 @@
 
 .dropdown-item {
   width: 100%;
-  background: #34495e; /*none;*/ /*cambiamento temporaneo*/
+  background: #34495e;
   border: none;
   color: white;
-  padding: auto;/*8px 16px;*//*12px;*/ /*cambiamento temporaneo*/
+  padding: auto;
   font-size: inherit;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center; /*aggiunto il 05-11-2025, modifica temporanea*/ /*cambiamento temporaneo*/
+  justify-content: center;
   gap: 8px;
-  border-radius: 6px;/*4px;*/ /*cambiamento temporaneo*/
+  border-radius: 6px;
   transition: background 0.3s ease;
-  box-sizing: border-box; /*cambiamento temporaneo*/
+  box-sizing: border-box;
 }
 
 .dropdown-content:hover .dropdown-item {
-  background: #2c3e50/*#34495e*/;
+  background: #2c3e50;
 }
 
 .main-content {
