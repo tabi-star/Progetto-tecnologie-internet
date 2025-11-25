@@ -72,7 +72,7 @@ const AdminDashboard = () => {
     {
       icon: <Percent size={32} />,
       title: 'Codici Sconto',
-      description: 'Genera e gestisci i codici sconto dipendenti',
+      description: 'Genera e gestisci i codici sconto',
       link: '/admin/discounts',
       color: '#f1c40f'
     },
