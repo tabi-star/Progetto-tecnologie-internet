@@ -1,5 +1,3 @@
-// routes/statsRoutes.js
-
 import { Router } from "express";
 import { 
   getDashboardStats 

@@ -1,4 +1,3 @@
-// models/userModel.js - VERSIONE AGGIORNATA
 import { promisePool } from "../db.js";
 import bcrypt from "bcryptjs";
 
@@ -34,7 +33,7 @@ export const updateUser = async (id, userData) => {
     return { affectedRows: 0 };
   }
 
-  // Costruisci la query dinamicamente
+  // Costruisce la query dinamicamente
   const setClause = Object.keys(fieldsToUpdate).map(field => `${field} = ?`).join(', ');
   const values = Object.values(fieldsToUpdate);
   values.push(id); // Aggiungi l'ID alla fine

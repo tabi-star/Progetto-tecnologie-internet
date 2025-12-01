@@ -1,5 +1,3 @@
-// controllers/authController.js
-
 import { promisePool } from "../db.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";

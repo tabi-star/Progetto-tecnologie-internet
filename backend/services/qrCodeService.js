@@ -1,16 +1,15 @@
-// services/qrCodeService.js - VERSIONE MIGLIORATA (opzionale)
 import QRCode from 'qrcode';
 import { promises as fs } from 'fs';
 import path from 'path';
 
 export const generateQRCode = async (ticket_ids) => {
   try {
-    // ✅ Validazione input
+    // Validazione input
     if (!ticket_ids || !Array.isArray(ticket_ids) || ticket_ids.length === 0) {
       throw new Error('Lista ticket IDs non valida');
     }
 
-    // ✅ Filtra e valida gli ID
+    // Filtra e valida gli ID
     const validTicketIds = ticket_ids.filter(id => 
       id != null && id !== undefined && Number(id) > 0
     );

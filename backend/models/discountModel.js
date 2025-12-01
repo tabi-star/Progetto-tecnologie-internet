@@ -1,4 +1,3 @@
-// models/discountModel.js
 import { promisePool } from "../db.js";
 
 export const createDiscountCode = async (discount) => {
@@ -19,7 +18,7 @@ export const createDiscountCode = async (discount) => {
       throw new Error('La percentuale di sconto deve essere tra 1 e 100');
     }
 
-    // ✅ QUERY CORRETTA per MariaDB
+    // QUERY CORRETTA per MariaDB
     const [result] = await promisePool.execute(
       "INSERT INTO discount_codes (code, discount_percent, valid_until, created_by, created_at) VALUES (?, ?, ?, ?, ?)", 
       [

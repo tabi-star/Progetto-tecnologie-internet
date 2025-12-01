@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -26,7 +25,7 @@ dotenv.config();
 
 const app = express();
 
-// Servi file statici dalla cartella public
+// Serve file statici dalla cartella public
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors());

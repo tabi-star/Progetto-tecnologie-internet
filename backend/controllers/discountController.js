@@ -1,4 +1,3 @@
-// controllers/discountController.js
 import { 
   createDiscountCode, 
   deleteDiscountCode, 
@@ -12,14 +11,14 @@ export const generateDiscountCode = async (req, res) => {
     const { code, discount_percent, valid_until } = req.body;
     const adminId = req.user.id;
 
-    // ✅ Validazione input
+    // Validazione input
     if (discount_percent && (discount_percent < 1 || discount_percent > 100)) {
       return res.status(400).json({ error: "La percentuale di sconto deve essere tra 1 e 100" });
     }
 
     const discountCode = {
       code: code || `ADMIN${Date.now()}`,
-      discount_percent: discount_percent || 20, // ✅ Corretto nome campo (coerente con DB)
+      discount_percent: discount_percent || 20,
       valid_until: valid_until || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 giorni
       created_by: adminId,
       created_at: new Date()
@@ -33,7 +32,7 @@ export const generateDiscountCode = async (req, res) => {
       discount: discountCode 
     });
   } catch (error) {
-    // ✅ Gestione errori specifica per duplicati
+    // Gestione errori specifica per duplicati
     if (error.code === 'ER_DUP_ENTRY') {
       return res.status(409).json({ error: "Codice sconto già esistente" });
     }
@@ -73,7 +72,7 @@ export const validateDiscountCode = async (req, res) => {
     const { code } = req.body;
     const userId = req.user.id;
 
-    // ✅ Validazione input
+    // Validazione input
     if (!code || typeof code !== 'string' || code.trim().length === 0) {
       return res.status(400).json({ error: "Codice sconto non valido" });
     }
@@ -86,7 +85,7 @@ export const validateDiscountCode = async (req, res) => {
 
     res.json({ 
       valid: true, 
-      discount_percent: discount.discount_percent, // ✅ Coerenza con nome campo DB
+      discount_percent: discount.discount_percent,
       discount_id: discount.id
     });
   } catch (error) {
@@ -99,7 +98,7 @@ export const useDiscountCode = async (req, res) => {
     const { discount_id } = req.body;
     const userId = req.user.id;
 
-    // ✅ Validazione input
+    // Validazione input
     if (!discount_id) {
       return res.status(400).json({ error: "ID codice sconto mancante" });
     }

@@ -1,5 +1,3 @@
-// models/statsModel.js
-
 import { promisePool } from "../db.js";
 
 export const getAdminStats = async () => {

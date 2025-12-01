@@ -1,4 +1,3 @@
-// middleware/validation.js
 export const validateMovie = (req, res, next) => {
   const { title, duration_minutes, release_date } = req.body;
   

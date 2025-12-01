@@ -1,4 +1,3 @@
-// routes/payments.js
 import { Router } from "express";
 import { initiatePayment, finalizePayment } from "../controllers/paymentController.js";
 import { authenticateToken } from "../middleware/auth.js";

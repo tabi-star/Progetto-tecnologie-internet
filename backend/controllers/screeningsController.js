@@ -1,4 +1,3 @@
-// controllers/screeningsController.js
 import { 
   getAllScreenings, 
   getScreeningById, 
@@ -22,7 +21,7 @@ export const getScreeningsByMovieAndDate = async (req, res) => {
   try {
     const { movie_id, date } = req.params;
     
-    // ✅ Validazione input
+    // Validazione input
     const movieId = parseInt(movie_id);
     if (!movieId || movieId <= 0) {
       return res.status(400).json({ error: "ID film non valido" });
@@ -32,7 +31,6 @@ export const getScreeningsByMovieAndDate = async (req, res) => {
       return res.status(400).json({ error: "Formato data non valido (YYYY-MM-DD)" });
     }
 
-    /*Vedi se tenere m.title nella SELECT della query*/
     const query = `
       SELECT s.*, h.name as hall_name, h.hall_type, m.title, m.duration_minutes
       FROM screenings s
@@ -68,7 +66,7 @@ export const getScreeningsCountToday = async (req, res) => {
   try {
     const { hall_id } = req.params;
     
-    // ✅ Validazione input
+    // Validazione input
     const hallId = parseInt(hall_id);
     if (!hallId || hallId <= 0) {
       return res.status(400).json({ error: "ID sala non valido" });
@@ -85,7 +83,7 @@ export const addScreening = async (req, res) => {
   try {
     const { movie_id, hall_id, start_time } = req.body;
 
-    // ✅ Validazione input
+    // Validazione input
     if (!movie_id || !hall_id || !start_time) {
       return res.status(400).json({ error: "Campi obbligatori mancanti" });
     }
@@ -132,7 +130,7 @@ export const checkScreeningOverlap = async (req, res) => {
   try {
     const { hall_id, start_time, movie_id, screening_id } = req.body;
     
-    // ✅ Validazione input
+    // Validazione input
     if (!hall_id || !start_time || !movie_id) {
       return res.status(400).json({ error: "Campi obbligatori mancanti" });
     }
@@ -200,7 +198,7 @@ export const modifyScreening = async (req, res) => {
     const { id } = req.params;
     const { movie_id, hall_id, start_time } = req.body;
 
-    // ✅ Validazione input
+    // Validazione input
     if (!movie_id || !hall_id || !start_time) {
       return res.status(400).json({ error: "Campi obbligatori mancanti" });
     }

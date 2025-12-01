@@ -1,4 +1,3 @@
-// routes/screenings.js
 import { Router } from "express";
 import { getScreenings, getScreening, getScreeningsByMovieAndDate, addScreening, modifyScreening, removeScreening, checkScreeningOverlap, getScreeningsCountToday } from "../controllers/screeningsController.js";
 import { authenticateToken, requireAdmin } from "../middleware/auth.js";

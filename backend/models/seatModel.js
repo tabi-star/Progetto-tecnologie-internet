@@ -1,4 +1,3 @@
-// models/seatModel.js
 import { promisePool } from "../db.js";
 
 export const getSeatsByHall = async (hall_id) => {
@@ -56,7 +55,7 @@ export const createSeatsForHall = async (hall_id, rows, columns) => {
         [hall_id]
       );
 
-      // ✅ Inserisce ogni posto individualmente
+      // Inserisce ogni posto individualmente
       for (const seat of seats) {
         await connection.execute(
           `INSERT INTO seats (hall_id, seat_number, seat_row, seat_column, seat_type) 

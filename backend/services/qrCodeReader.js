@@ -1,4 +1,3 @@
-// services/qrCodeReader.js
 import { promisePool } from "../db.js";
 
 const validateInput = (qrText, currentUserId) => {

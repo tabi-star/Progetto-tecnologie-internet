@@ -1,4 +1,3 @@
-// scripts/createAdmin.js
 import bcrypt from 'bcryptjs';
 import readline from 'readline';
 import { promisePool } from '../db.js';
@@ -53,14 +52,14 @@ const createAdminUser = async () => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
     
-    // Query corretta per MariaDB
+    // Query per MariaDB
     const [result] = await promisePool.execute(
       'INSERT INTO users (name, email, password, role, createdAt) VALUES (?, ?, ?, ?, ?)',
       [name.trim(), email.trim().toLowerCase(), hashedPassword, 'admin', new Date()]
     );
     
     console.log('\n' + '='.repeat(40));
-    console.log('✅ ACCOUNT ADMIN CREATO CON SUCCESSO!');
+    console.log('ACCOUNT ADMIN CREATO CON SUCCESSO!');
     console.log('='.repeat(40));
     console.log(`📧 Email: ${email.trim().toLowerCase()}`);
     console.log(`👤 Nome: ${name.trim()}`);

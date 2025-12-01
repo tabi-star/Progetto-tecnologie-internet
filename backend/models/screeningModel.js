@@ -1,4 +1,3 @@
-// models/screeningModel.js
 import { promisePool } from "../db.js";
 
 export const getAllScreenings = async () => {
@@ -73,7 +72,7 @@ export const insertScreening = async (screening) => {
       }
     }
 
-    // ✅ QUERY per MariaDB
+    // QUERY per MariaDB
     const [result] = await promisePool.execute(
       "INSERT INTO screenings (movie_id, hall_id, start_time, createdAt) VALUES (?, ?, ?, ?)", 
       [
@@ -102,7 +101,7 @@ export const updateScreening = async (id, screening) => {
       throw new Error('Dati proiezione non validi');
     }
 
-    // ✅ QUERY per MariaDB - Costruzione dinamica
+    // QUERY per MariaDB - Costruzione dinamica
     const fields = [];
     const values = [];
 
