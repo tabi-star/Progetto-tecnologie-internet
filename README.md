@@ -1,9 +1,9 @@
 # 🎥 TRCinema - Piattaforma di Prenotazione Cinema
 
-## 📋 Panoramica
+## Panoramica
 Piattaforma completa per la gestione e prenotazione di biglietti cinematografici con sistema di pagamento, QR code e pannello amministrativo.
 
-## 🚀 Prerequisiti
+## Prerequisiti
 
 ### **Software Necessari:**
 - [Node.js](https://nodejs.org/) (v16+)
@@ -14,30 +14,33 @@ Piattaforma completa per la gestione e prenotazione di biglietti cinematografici
 ### **Account di Servizio:**
 - Gmail account (per invio email)
 
-## 🗄️ Configurazione Database MariaDB
+## Configurazione Database MariaDB
 
 ### 1. **Installazione MariaDB**
 ```bash
-    # Linux
-    sudo apt update
-    sudo apt install mariadb-server
+# Linux
+sudo apt update
+sudo apt install mariadb-server
 
-    # macOS (con Homebrew)
-    brew install mariadb
+# macOS (con Homebrew)
+brew install mariadb
 
-    # Windows
-    # Scarica installer da: https://mariadb.org/download/
-    ```
+# macOs (senza Homebrew)
+- Scarica installer da: https://mariadb.org/download/
+
+# Windows
+- Scarica installer da: https://mariadb.org/download/
+```
 
 ### 2. **Configurazione Iniziale**
 ```bash
-    # Avvia MariaDB
-    sudo systemctl start mariadb  # Linux
-    # oppure
-    brew services start mariadb   # macOS
+# Avvia MariaDB
+sudo systemctl start mariadb  # Linux
+# oppure
+brew services start mariadb   # macOS
 
-        ## ulteriore alternativa macOS
-        -Per avviare/spegnere MariaDB: “mysql.server start”/“mysql.server stop”
+## ulteriore alternativa macOS
+- Per avviare/spegnere MariaDB: “mysql.server start”/“mysql.server stop”
 
 # Sicurezza iniziale (Linux)
 sudo mysql_secure_installation
@@ -52,7 +55,7 @@ mysql -u root -p
 CREATE DATABASE cinema CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Crea utente (sostituisci 'tuapassword' con una password sicura)
-CREATE USER 'dbeaver'@'localhost' IDENTIFIED BY '';
+CREATE USER 'dbeaver'@'localhost' IDENTIFIED BY 'tuapassword';
 GRANT ALL PRIVILEGES ON cinema.* TO 'dbeaver'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
@@ -61,10 +64,10 @@ EXIT;
 ### 4. **Import Schema (Opzionale)**
 Se hai IL file SQL con lo schema:
 ```bash
-    mysql -u dbeaver cinema < DatabaseCreation.sql
+mysql -u dbeaver cinema < DatabaseCreation.sql
 ```
 
-## 🔧 Configurazione Backend
+## Configurazione Backend
 
 ### 1. **Clona e Installa Dipendenze**
 ```bash
@@ -84,7 +87,7 @@ Crea file `.env` nella cartella `backend/`:
 ```env
 # Server
 PORT=3000
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=http://localhost:3001
 
 # Database MariaDB
 DB_HOST=localhost
@@ -93,7 +96,7 @@ DB_PASS=
 DB_NAME=cinema
 
 # JWT Authentication
-JWT_SECRET=ffc94555896e045ad6d2deead98b55fcf13a6f19695f6dd130f53a18c378ffd7
+JWT_SECRET=ffc94555896e045ad6d2deead98b55fcf13a6f19695f6dd130f53a18c378ffd7     # Esempio di codice JWT
 JWT_EXPIRES_IN=24h
 
 # Email (Gmail)
@@ -107,16 +110,16 @@ APP_PASSWORD=          # Password app da Google Account
 3. Genera "App Password"
 4. Usala in `APP_PASSWORD` nel `.env`
 
-## 🖥️ Avvio Backend
+## Avvio Backend
 
 ### **Modalità Sviluppo (con auto-reload):**
 ```bash
 npm run dev
 ```
-    ## alternativa macOS
+    ## alternativa Linux/macOS/Windows (Windows solo tramite Git Bash, PowerShell o WSL)
     /backend: “./node_modules/.bin/nodemon server.js”
 
-✅ Output atteso:
+Output atteso:
 ```
 🚀 Server avviato su http://localhost:3000
 📧 Email configurata: ✅
@@ -129,7 +132,7 @@ npm run dev
 npm start
 ```
 
-## 📱 Configurazione Frontend
+## Configurazione Frontend
 
 ### 1. **Installa Dipendenze**
 ```bash
@@ -140,18 +143,18 @@ npm install
 ### 2. **Configurazione Vite**
 Il frontend usa Vite con proxy automatico verso il backend. Nessuna configurazione aggiuntiva necessaria se:
 - Backend: `http://localhost:3000`
-- Frontend: `http://localhost:5173`
+- Frontend: `http://localhost:3001`
 
 ### 3. **Avvio Frontend**
 ```bash
 npm run dev
 ```
-    ## alternativa macOS
+    ## alternativa Linux/macOS/Windows (Windows solo tramite Git Bash, PowerShell o WSL)
     /frontend: “./node_modules/.bin/vite”
 
-✅ Si apre automaticamente su: `http://localhost:5173`
+Si apre automaticamente su: `http://localhost:3001`
 
-## 🛠️ Scripts Utili Backend
+## Scripts Utili Backend
 
 ### **Script di Amministrazione:**
 ```bash
@@ -171,7 +174,6 @@ Email: [inserisci email]
 ```bash
 npm run dev      # Avvio con nodemon (sviluppo)
 npm start        # Avvio produzione
-npm test         # Esegui test
 ```
 
 ### **Comandi NPM Frontend:**
@@ -181,18 +183,18 @@ npm run build    # Build produzione
 npm run preview  # Preview build
 ```
 
-## 🌐 Struttura API Endpoints
+## Struttura API Endpoints
 
 ### **Backend API (http://localhost:3000):**
 ```
-GET    /api/movies           # Lista film
-POST   /api/movies           # Aggiungi film
-GET    /api/screenings       # Proiezioni
-POST   /api/tickets/reserve  # Prenota posti
-POST   /api/tickets/confirm  # Conferma pagamento
-GET    /api/users/my-tickets # Biglietti utente
-POST   /api/discounts/generate # Genera sconti
-GET    /api/qr/verify        # Verifica QR code
+GET    /api/movies              # Lista film
+POST   /api/movies              # Aggiungi film
+GET    /api/screenings          # Proiezioni
+POST   /api/tickets/reserve     # Prenota posti
+POST   /api/tickets/confirm     # Conferma pagamento
+GET    /api/users/my-tickets    # Biglietti utente
+POST   /api/discounts/generate  # Genera sconti
+GET    /api/qr/verify           # Verifica QR code
 ```
 
 ### **Health Check:**
@@ -201,7 +203,7 @@ GET    http://localhost:3000
 ```
 ✅ Risposta: `{"message": "🎥 🎬 TRCinema attiva", "version": "1.0.0"}`
 
-## 🐛 Risoluzione Problemi
+## Risoluzione Problemi
 
 ### **Database Connection Error:**
 ```bash
@@ -237,27 +239,50 @@ kill -9 <PID>
 
 ```
 cinema-project/
+│
 ├── backend/
-│   ├── controllers/     # Logica business
-│   ├── models/         # Database models
-│   ├── routes/         # API endpoints
-│   ├── middleware/     # Autenticazione/validazione
-│   ├── services/       # Servizi (email, QR code)
-│   ├── scripts/        # Script utilità
-│   ├── public/         # File statici
-│   ├── .env           # Variabili ambiente
-│   └── server.js      # Entry point
+│   │
+│   ├── controllers/        # Logica business
+│   ├── models/             # Database models
+│   ├── routes/             # API endpoints
+│   ├── middleware/         # Autenticazione/validazione
+│   ├── services/           # Servizi (email, QR code, pagamento)
+│   ├── scripts/            # Script utilità
+│   ├── public/             # File statici
+│   ├── node_modules/       # Pacchetti di Node installati per il backend
+│   ├── .env                # Variabili ambiente
+│   ├── server.js           # Entry point
+│   ├── db.js               # Configurazione database
+│   ├── package.json        # Pacchetti di Node da installare con il comando "npm install"
+│   └── package-lock.json   # Definisce la versione dei pacchetti di Node da installare con il comando "npm install"
 │
 ├── frontend/
+│   │
+│   ├── public/             # Logo Vite e placeholder per i film
+│   │
 │   ├── src/
-│   │   ├── pages/     # Componenti pagina
-│   │   ├── contexts/  # React context
-│   │   └── App.jsx    # App principale
-│   └── vite.config.js # Configurazione Vite
+│   │   ├── assets/         # Logo React
+│   │   ├── components/     # Componenti che hanno effetti in tutte le pagine
+│   │   ├── pages/          # Componenti pagina
+│   │   ├── contexts/       # React context
+│   │   ├── App.jsx         # App principale
+│   │   ├── index.css       # Stili di elementi globali presenti in tutto il sito
+│   │   └── main.jsx        # Inizializza React e monta l'app nell'elemento root
+│   │
+│   ├── node_modules/       # Pacchetti di Node installati per il frontend
+│   │
+│   ├── vite.config.js      # Configurazione Vite
+│   ├── index.html          # Entry point del frontend
+│   ├── README.md           # Descrizione del template per React con Vite, con supporto HMR e configurazioni ESLint
+│   ├── eslint.config.js    # Configurazione ESLint
+│   ├── .gitignore          # File contenente cosa non deve essere caricato su Git
+│   ├── package.json        # Pacchetti di Node da installare con il comando "npm install"
+│   └── package-lock.json   # Definisce la versione dei pacchetti di Node da installare con il comando "npm install"
 │
-└── README.md          # Questo file
-└── DatabaseCreation.sql # script per creare il database
-└── Script_CleanDB.sql # script per pulire il database
+├── README.md               # Questo file
+├── DatabaseCreation.sql    # Script per creare il database
+├── Script_CleanDB.sql      # Script per pulire il database
+└── .gitignore              # File contenente cosa non deve essere caricato su Git
 ```
 
 ## 🌟 Feature Principali
@@ -279,6 +304,4 @@ Per problemi:
 
 ---
 
-**🎉 La tua piattaforma cinema è pronta!** Buona programmazione! 🍿
-
-**Happy Coding!** 👨‍💻👩‍💻
+**La tua piattaforma cinema è pronta!**
