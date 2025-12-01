@@ -1,3 +1,4 @@
+```markdown
 # 🎥 TRCinema - Piattaforma di Prenotazione Cinema
 
 ## Panoramica
@@ -25,11 +26,11 @@ sudo apt install mariadb-server
 # macOS (con Homebrew)
 brew install mariadb
 
-# macOs (senza Homebrew)
-- Scarica installer da: https://mariadb.org/download/
+# macOS (senza Homebrew)
+# Scarica installer da: https://mariadb.org/download/
 
 # Windows
-- Scarica installer da: https://mariadb.org/download/
+# Scarica installer da: https://mariadb.org/download/
 ```
 
 ### 2. **Configurazione Iniziale**
@@ -39,8 +40,8 @@ sudo systemctl start mariadb  # Linux
 # oppure
 brew services start mariadb   # macOS
 
-## ulteriore alternativa macOS
-- Per avviare/spegnere MariaDB: “mysql.server start”/“mysql.server stop”
+# Ulteriore alternativa macOS
+# Per avviare/spegnere MariaDB: "mysql.server start"/"mysql.server stop"
 
 # Sicurezza iniziale (Linux)
 sudo mysql_secure_installation
@@ -62,7 +63,7 @@ EXIT;
 ```
 
 ### 4. **Import Schema (Opzionale)**
-Se hai IL file SQL con lo schema:
+Se hai un file SQL con lo schema:
 ```bash
 mysql -u dbeaver cinema < DatabaseCreation.sql
 ```
@@ -72,12 +73,15 @@ mysql -u dbeaver cinema < DatabaseCreation.sql
 ### 1. **Clona e Installa Dipendenze**
 ```bash
 # Clona repository
-git clone cinema-project
-# Spostarsi rispettivamente in
-cd cinema-project/backend
-cd cinema-project/frontend
+git clone <repository-url>
+cd cinema-project
 
-# Ed Installare le dipendenze
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd ../frontend
 npm install
 ```
 
@@ -96,7 +100,7 @@ DB_PASS=
 DB_NAME=cinema
 
 # JWT Authentication
-JWT_SECRET=ffc94555896e045ad6d2deead98b55fcf13a6f19695f6dd130f53a18c378ffd7     # Esempio di codice JWT
+JWT_SECRET=ffc94555896e045ad6d2deead98b55fcf13a6f19695f6dd130f53a18c378ffd7
 JWT_EXPIRES_IN=24h
 
 # Email (Gmail)
@@ -114,12 +118,15 @@ APP_PASSWORD=          # Password app da Google Account
 
 ### **Modalità Sviluppo (con auto-reload):**
 ```bash
+cd backend
 npm run dev
 ```
-    ## alternativa Linux/macOS/Windows (Windows solo tramite Git Bash, PowerShell o WSL)
-    /backend: “./node_modules/.bin/nodemon server.js”
+**Alternative:**
+```bash
+./node_modules/.bin/nodemon server.js  # Linux/macOS/Windows (via Git Bash/PowerShell/WSL)
+```
 
-Output atteso:
+**Output atteso:**
 ```
 🚀 Server avviato su http://localhost:3000
 📧 Email configurata: ✅
@@ -136,7 +143,7 @@ npm start
 
 ### 1. **Installa Dipendenze**
 ```bash
-cd ../frontend
+cd frontend
 npm install
 ```
 
@@ -149,8 +156,10 @@ Il frontend usa Vite con proxy automatico verso il backend. Nessuna configurazio
 ```bash
 npm run dev
 ```
-    ## alternativa Linux/macOS/Windows (Windows solo tramite Git Bash, PowerShell o WSL)
-    /frontend: “./node_modules/.bin/vite”
+**Alternative:**
+```bash
+./node_modules/.bin/vite  # Linux/macOS/Windows (via Git Bash/PowerShell/WSL)
+```
 
 Si apre automaticamente su: `http://localhost:3001`
 
@@ -158,7 +167,7 @@ Si apre automaticamente su: `http://localhost:3001`
 
 ### **Script di Amministrazione:**
 ```bash
-# Crea account admin (eseguire dalla cartella madre /backend)
+# Crea account admin (eseguire dalla cartella backend)
 node scripts/createAdmin.js
 
 # Output atteso:
@@ -186,16 +195,27 @@ npm run preview  # Preview build
 ## Struttura API Endpoints
 
 ### **Backend API (http://localhost:3000):**
-```
-GET    /api/movies              # Lista film
-POST   /api/movies              # Aggiungi film
-GET    /api/screenings          # Proiezioni
-POST   /api/tickets/reserve     # Prenota posti
-POST   /api/tickets/confirm     # Conferma pagamento
-GET    /api/users/my-tickets    # Biglietti utente
-POST   /api/discounts/generate  # Genera sconti
-GET    /api/qr/verify           # Verifica QR code
-```
+| Metodo | Endpoint | Descrizione |
+|--------|----------|-------------|
+| GET | `/api/movies` | Lista film |
+| GET | `/api/movies/upcoming` | Film in arrivo |
+| GET | `/api/movies/available` | Film prenotabili |
+| POST | `/api/movies` | Aggiungi film (admin) |
+| PUT | `/api/movies/:id` | Modifica film (admin) |
+| DELETE | `/api/movies/:id` | Elimina film (admin) |
+| GET | `/api/screenings` | Proiezioni |
+| GET | `/api/screenings/:id` | Dettaglio proiezione |
+| POST | `/api/screenings` | Aggiungi proiezione (admin) |
+| POST | `/api/tickets/reserve` | Prenota posti |
+| POST | `/api/tickets/confirm-payment` | Conferma pagamento |
+| GET | `/api/tickets/my-tickets` | Biglietti utente |
+| POST | `/api/discounts/generate` | Genera sconti (admin) |
+| GET | `/api/discounts/my-codes` | Codici sconto admin |
+| POST | `/api/qr/verify` | Verifica QR code (admin) |
+| POST | `/api/qr/validate` | Valida ticket (admin) |
+| GET | `/api/users/my-tickets` | Biglietti utente |
+| POST | `/api/users/login` | Login utente |
+| POST | `/api/users` | Registrazione utente |
 
 ### **Health Check:**
 ```
@@ -235,7 +255,7 @@ lsof -i :3000
 kill -9 <PID>
 ```
 
-## 📁 Struttura Progetto
+## Struttura Progetto
 
 ```
 cinema-project/
@@ -253,8 +273,8 @@ cinema-project/
 │   ├── .env                # Variabili ambiente
 │   ├── server.js           # Entry point
 │   ├── db.js               # Configurazione database
-│   ├── package.json        # Pacchetti di Node da installare con il comando "npm install"
-│   └── package-lock.json   # Definisce la versione dei pacchetti di Node da installare con il comando "npm install"
+│   ├── package.json        # Pacchetti di Node da installare
+│   └── package-lock.json   # Versioni dei pacchetti
 │
 ├── frontend/
 │   │
@@ -262,30 +282,27 @@ cinema-project/
 │   │
 │   ├── src/
 │   │   ├── assets/         # Logo React
-│   │   ├── components/     # Componenti che hanno effetti in tutte le pagine
+│   │   ├── components/     # Componenti condivisi
 │   │   ├── pages/          # Componenti pagina
 │   │   ├── contexts/       # React context
 │   │   ├── App.jsx         # App principale
-│   │   ├── index.css       # Stili di elementi globali presenti in tutto il sito
-│   │   └── main.jsx        # Inizializza React e monta l'app nell'elemento root
+│   │   ├── index.css       # Stili globali
+│   │   └── main.jsx        # Inizializzazione React
 │   │
 │   ├── node_modules/       # Pacchetti di Node installati per il frontend
 │   │
 │   ├── vite.config.js      # Configurazione Vite
 │   ├── index.html          # Entry point del frontend
-│   ├── README.md           # Descrizione del template per React con Vite, con supporto HMR e configurazioni ESLint
-│   ├── eslint.config.js    # Configurazione ESLint
-│   ├── .gitignore          # File contenente cosa non deve essere caricato su Git
-│   ├── package.json        # Pacchetti di Node da installare con il comando "npm install"
-│   └── package-lock.json   # Definisce la versione dei pacchetti di Node da installare con il comando "npm install"
+│   ├── package.json        # Pacchetti di Node da installare
+│   └── package-lock.json   # Versioni dei pacchetti
 │
 ├── README.md               # Questo file
 ├── DatabaseCreation.sql    # Script per creare il database
 ├── Script_CleanDB.sql      # Script per pulire il database
-└── .gitignore              # File contenente cosa non deve essere caricato su Git
+└── .gitignore              # File da ignorare su Git
 ```
 
-## 🌟 Feature Principali
+## Feature Principali
 
 1. **🎬 Prenotazione Posti** - Selezione interattiva posti
 2. **💳 Pagamento Sicuro** - Sistema pagamento simulato
@@ -294,7 +311,7 @@ cinema-project/
 5. **📧 Notifiche Email** - Conferme automatiche
 6. **🎟️ Codici Sconto** - Sistema sconti personalizzati
 
-## 📞 Supporto
+## Supporto
 
 Per problemi:
 1. Verifica log backend (`npm run dev`)
@@ -304,4 +321,5 @@ Per problemi:
 
 ---
 
-**La tua piattaforma cinema è pronta!**
+**🎉 La tua piattaforma cinema è pronta!** Buona programmazione! 🍿
+```
