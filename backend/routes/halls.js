@@ -1,4 +1,3 @@
-// routes/halls.js
 import { Router } from "express";
 import { 
   getHalls, 

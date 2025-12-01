@@ -1,8 +1,7 @@
-// models/ticketModel.js
 import { promisePool } from "../db.js";
 import { sendConfirmationEmail } from '../services/emailService.js';
 
-// ✅ FUNZIONI DI VALIDAZIONE per evitare SQL INJECTION
+// FUNZIONI DI VALIDAZIONE per evitare SQL INJECTION
 const validateSeatNumbers = (seat_numbers) => {
   if (!Array.isArray(seat_numbers) || seat_numbers.length === 0) {
     return false;
@@ -64,7 +63,7 @@ export const insertTicket = async (ticket) => {
       }
     }
 
-    // ✅ QUERY per MariaDB
+    // QUERY per MariaDB
     const [result] = await promisePool.execute(
       "INSERT INTO tickets (screening_id, user_id, seat_number, status, price, bookedAt) VALUES (?, ?, ?, ?, ?, ?)", 
       [

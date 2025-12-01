@@ -1,5 +1,3 @@
-// routes/seats.js
-
 import { Router } from "express";
 import { getHallSeats, getScreeningSeats } from "../controllers/seatsController.js";
 import { optionalAuth } from "../middleware/auth.js"; 

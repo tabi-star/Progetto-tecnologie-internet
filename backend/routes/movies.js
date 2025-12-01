@@ -1,4 +1,3 @@
-// routes/movies.js
 import { Router } from "express";
 import { getMovies, getMovie, getMoviesByScreeningsDate, getUpcoming, getAvailable, addMovie, modifyMovie, removeMovie } from "../controllers/moviesController.js";
 import { authenticateToken, requireAdmin } from "../middleware/auth.js";

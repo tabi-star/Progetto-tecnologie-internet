@@ -1,4 +1,3 @@
-// controllers/usersController.js
 import { insertUser, getUserByEmail, getUserById, verifyPassword, updateUser, deleteUser } from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 

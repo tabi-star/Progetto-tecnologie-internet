@@ -1,4 +1,3 @@
-// routes/users.js
 import { Router } from "express";
 import { 
   getUserWithId,

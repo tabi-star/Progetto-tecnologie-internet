@@ -1,4 +1,3 @@
-// models/movieModel.js
 import { promisePool } from "../db.js";
 
 export const getAllMovies = async () => {
@@ -85,7 +84,7 @@ export const insertMovie = async (movie) => {
       }
     }
 
-    // ✅ QUERY per MariaDB
+    // QUERY per MariaDB
     const [result] = await promisePool.execute(
       "INSERT INTO movies (title, description, duration_minutes, release_date, language, foto_locandina, banner_image, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
       [
@@ -118,7 +117,7 @@ export const updateMovie = async (id, movie) => {
       throw new Error('Dati film non validi');
     }
 
-    // ✅ QUERY per MariaDB - Costruzione dinamica
+    // QUERY per MariaDB - Costruzione dinamica
     const fields = [];
     const values = [];
 

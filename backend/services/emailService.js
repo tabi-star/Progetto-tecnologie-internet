@@ -1,5 +1,3 @@
-// services/emailService.js
-
 import nodemailer from 'nodemailer';
 
 const createTransporter = () => {
@@ -9,14 +7,14 @@ const createTransporter = () => {
       user: process.env.EMAIL_USER,
       pass: process.env.APP_PASSWORD
     },
-    // ✅ Timeout per prevenire blocchi
+    // Timeout per prevenire blocchi
     connectionTimeout: 10000, // 10 secondi
     socketTimeout: 15000      // 15 secondi
   });
 };
 
 export const sendConfirmationEmail = async (userEmail, tickets, totalAmount) => {
-  // Assicurati che totalAmount sia un numero
+  // Assicura che totalAmount sia un numero
   const finalTotalAmount = Number(totalAmount) || 
                           tickets.reduce((sum, ticket) => sum + Number(ticket.price || 0), 0);
   

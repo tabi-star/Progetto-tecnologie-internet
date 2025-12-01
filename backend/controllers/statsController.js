@@ -1,5 +1,3 @@
-// controllers/statsController.js
-
 import { getAdminStats } from '../models/statsModel.js';
 
 export const getDashboardStats = async (req, res) => {

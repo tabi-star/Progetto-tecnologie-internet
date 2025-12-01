@@ -1,6 +1,4 @@
-// services/paymentService.js
-
-// Servizio di pagamento simulato per testing
+// Servizio di pagamento simulato
 export const createOrder = async (amount, ticket_ids) => {
   console.log(`🎯 Pagamento simulato - Creazione ordine per €${amount}`);
   

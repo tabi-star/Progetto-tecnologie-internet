@@ -1,4 +1,3 @@
-// controllers/ticketsController.js
 import { 
   getAllTickets, 
   getTicketsByUser, 
@@ -32,7 +31,7 @@ export const reserveTicketSeats = async (req, res) => {
     const { screening_id, seat_numbers, discountApplied } = req.body;
     const user_id = req.user.id;
 
-    // ✅ Validazione input migliorata
+    // Validazione input
     if (!screening_id) {
       return res.status(400).json({ error: "Screening ID obbligatorio" });
     }
@@ -64,7 +63,7 @@ export const confirmTicketPayment = async (req, res) => {
     const { ticket_ids, discount_id, payment_order_id } = req.body;
     const user_id = req.user.id;
 
-    // ✅ Validazione input migliorata
+    // Validazione input
     if (!ticket_ids || !Array.isArray(ticket_ids) || ticket_ids.length === 0) {
       return res.status(400).json({ error: "Lista ticket IDs obbligatoria e non vuota" });
     }
@@ -75,7 +74,7 @@ export const confirmTicketPayment = async (req, res) => {
       return res.status(400).json({ error: "Formato ticket IDs non valido" });
     }
 
-    // ✅ GENERA IL QR CODE PRIMA
+    // GENERA IL QR CODE PRIMA
     const qr_code_url = await generateQRCode(validTicketIds);
 
     const payment_data = {
@@ -86,7 +85,7 @@ export const confirmTicketPayment = async (req, res) => {
       discount_id: discount_id ? parseInt(discount_id) : null
     };
 
-    // ✅ CONFERMA I TICKET (questo gestirà anche l'email)
+    // CONFERMA I TICKET (questo gestirà anche l'email)
     const tickets = await confirmTickets(validTicketIds, payment_data);
 
     res.json({
@@ -105,7 +104,7 @@ export const cancelUserTicket = async (req, res) => {
     const { ticket_id } = req.params;
     const user_id = req.user.id;
 
-    // ✅ Validazione input
+    // Validazione input
     const ticketId = parseInt(ticket_id);
     if (!ticketId || ticketId <= 0) {
       return res.status(400).json({ error: "Ticket ID non valido" });
@@ -125,7 +124,7 @@ export const addTicket = async (req, res) => {
     const { screening_id, seat_number } = req.body;
     const user_id = req.user.id;
 
-    // ✅ Validazione input
+    // Validazione input
     if (!screening_id || !seat_number) {
       return res.status(400).json({ error: "Screening ID e numero posto obbligatori" });
     }

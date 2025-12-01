@@ -1,4 +1,3 @@
-// models/hallModel.js
 import { promisePool } from "../db.js";
 
 export const getAllHalls = async () => {
@@ -39,7 +38,7 @@ export const insertHall = async (hall) => {
       }
     }
 
-    // ✅ QUERY per MariaDB
+    // QUERY per MariaDB
     const [result] = await promisePool.execute(
       "INSERT INTO halls (name, hall_type, capacity, createdAt) VALUES (?, ?, ?, ?)", 
       [
@@ -67,7 +66,7 @@ export const updateHall = async (id, hall) => {
       throw new Error('Dati sala non validi');
     }
 
-    // ✅ QUERY per MariaDB - Costruzione dinamica
+    // QUERY per MariaDB - Costruzione dinamica
     const fields = [];
     const values = [];
 

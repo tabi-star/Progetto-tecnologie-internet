@@ -1,5 +1,3 @@
-// routes/qrCodeRoutes.js
-
 import { Router } from "express";
 import { 
   verifyQRCode, 

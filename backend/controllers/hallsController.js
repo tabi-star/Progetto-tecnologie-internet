@@ -1,4 +1,3 @@
-// controllers/hallsController.js
 import { getAllHalls, getHallById, insertHall, updateHall, deleteHall } from "../models/hallModel.js";
 import { createSeatsForHall } from "../models/seatModel.js";
 
@@ -104,7 +103,7 @@ export const generateSeatsForHall = async (req, res) => {
       return res.status(400).json({ error: "Il numero di file e colonne deve essere positivo" });
     }
 
-    // Converti in numeri
+    // Converte in numeri
     const numRows = parseInt(rows);
     const numColumns = parseInt(columns);
 
