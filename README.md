@@ -100,7 +100,10 @@ DB_PASS=
 DB_NAME=cinema
 
 # JWT Authentication
-JWT_SECRET=ffc94555896e045ad6d2deead98b55fcf13a6f19695f6dd130f53a18c378ffd7
+```bash
+openssl rand -hex 32
+```
+JWT_SECRET=dbeddfb3c7815b26f62d2d073aea1a00f0250ef54e6bdd892d710749d4e6e61b # Esempio di codice JWT
 JWT_EXPIRES_IN=24h
 
 # Email (Gmail)
@@ -123,7 +126,7 @@ npm run dev
 ```
 **Alternative:**
 ```bash
-./node_modules/.bin/nodemon server.js  # Linux/macOS/Windows (via Git Bash/PowerShell/WSL)
+./node_modules/.bin/nodemon server.js  # Linux/macOS/Windows (con Git Bash/PowerShell/WSL)
 ```
 
 **Output atteso:**
@@ -158,7 +161,7 @@ npm run dev
 ```
 **Alternative:**
 ```bash
-./node_modules/.bin/vite  # Linux/macOS/Windows (via Git Bash/PowerShell/WSL)
+./node_modules/.bin/vite  # Linux/macOS/Windows (con Git Bash/PowerShell/WSL)
 ```
 
 Si apre automaticamente su: `http://localhost:3001`
@@ -195,27 +198,29 @@ npm run preview  # Preview build
 ## Struttura API Endpoints
 
 ### **Backend API (http://localhost:3000):**
-| Metodo | Endpoint | Descrizione |
-|--------|----------|-------------|
-| GET | `/api/movies` | Lista film |
-| GET | `/api/movies/upcoming` | Film in arrivo |
-| GET | `/api/movies/available` | Film prenotabili |
-| POST | `/api/movies` | Aggiungi film (admin) |
-| PUT | `/api/movies/:id` | Modifica film (admin) |
-| DELETE | `/api/movies/:id` | Elimina film (admin) |
-| GET | `/api/screenings` | Proiezioni |
-| GET | `/api/screenings/:id` | Dettaglio proiezione |
-| POST | `/api/screenings` | Aggiungi proiezione (admin) |
-| POST | `/api/tickets/reserve` | Prenota posti |
-| POST | `/api/tickets/confirm-payment` | Conferma pagamento |
-| GET | `/api/tickets/my-tickets` | Biglietti utente |
-| POST | `/api/discounts/generate` | Genera sconti (admin) |
-| GET | `/api/discounts/my-codes` | Codici sconto admin |
-| POST | `/api/qr/verify` | Verifica QR code (admin) |
-| POST | `/api/qr/validate` | Valida ticket (admin) |
-| GET | `/api/users/my-tickets` | Biglietti utente |
-| POST | `/api/users/login` | Login utente |
-| POST | `/api/users` | Registrazione utente |
+|--------|--------------------------------|-----------------------------|
+| Metodo |            Endpoint            |         Descrizione         |
+|--------|--------------------------------|-----------------------------|
+| GET    | `/api/movies`                  | Lista film                  |
+| GET    | `/api/movies/upcoming`         | Film in arrivo              |
+| GET    | `/api/movies/available`        | Film prenotabili            |
+| POST   | `/api/movies`                  | Aggiungi film (admin)       |
+| PUT    | `/api/movies/:id`              | Modifica film (admin)       |
+| DELETE | `/api/movies/:id`              | Elimina film (admin)        |
+| GET    | `/api/screenings`              | Proiezioni                  |
+| GET    | `/api/screenings/:id`          | Dettaglio proiezione        |
+| POST   | `/api/screenings`              | Aggiungi proiezione (admin) |
+| POST   | `/api/tickets/reserve`         | Prenota posti               |
+| POST   | `/api/tickets/confirm-payment` | Conferma pagamento          |
+| GET    | `/api/tickets/my-tickets`      | Biglietti utente            |
+| POST   | `/api/discounts/generate`      | Genera sconti (admin)       |
+| GET    | `/api/discounts/my-codes`      | Codici sconto admin         |
+| POST   | `/api/qr/verify`               | Verifica QR code (admin)    |
+| POST   | `/api/qr/validate`             | Valida ticket (admin)       |
+| GET    | `/api/users/my-tickets`        | Biglietti utente            |
+| POST   | `/api/users/login`             | Login utente                |
+| POST   | `/api/users`                   | Registrazione utente        |
+|--------|--------------------------------|-----------------------------|
 
 ### **Health Check:**
 ```
