@@ -58,7 +58,6 @@ export const getAvailableMovies = async () => {
       FROM movies m
       INNER JOIN screenings s ON m.id = s.movie_id
       WHERE s.start_time > NOW()
-      AND m.release_date <= CURDATE()
       GROUP BY m.id
       ORDER BY next_screening ASC, m.title ASC
     `;
