@@ -305,7 +305,7 @@ const UserProfile = () => {
                             <div className="ticket-qr-section">
                               <p className="qr-label">QR Code</p>
                               <img 
-                                src={`http://localhost:3000${ticket.qr_code_url}`}
+                                src={`http://${window.location.hostname}:3000${ticket.qr_code_url}`}
                                 alt="QR Code"
                                 className="qr-code"
                                 onError={(e) => {
